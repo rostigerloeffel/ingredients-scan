@@ -9,7 +9,6 @@ interface CameraPreviewProps {
 const CameraPreview: React.FC<CameraPreviewProps> = ({ onCapture }) => {
   const [cameras, setCameras] = useState<MediaDeviceInfo[]>([]);
   const [selectedCamera, setSelectedCamera] = useState<string>('');
-  const [cameraPermissionGranted, setCameraPermissionGranted] = useState(false);
   const webcamRef = useRef<Webcam>(null);
 
   // Kameras nach Kamera-Berechtigung abrufen
@@ -18,7 +17,6 @@ const CameraPreview: React.FC<CameraPreviewProps> = ({ onCapture }) => {
       try {
         // Erst Kamera-Berechtigung anfordern
         await navigator.mediaDevices.getUserMedia({ video: true });
-        setCameraPermissionGranted(true);
         
         // Dann alle Kameras abrufen
         const devices = await navigator.mediaDevices.enumerateDevices();

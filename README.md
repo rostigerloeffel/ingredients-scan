@@ -39,9 +39,23 @@ Die App wird automatisch über GitHub Actions auf GitHub Pages deployed.
 
 ### GitHub Pages manuell aktivieren:
 
-1. Gehen Sie zu **Settings** → **Pages** in Ihrem GitHub Repository
-2. Unter **Source** wählen Sie **GitHub Actions**
-3. Die App wird dann unter `https://[username].github.io/ingredients-scan/` verfügbar sein
+1. **Repository öffnen** → `https://github.com/rostigerloeffel/ingredients-scan`
+2. **Settings** → **Pages** (in der linken Seitenleiste)
+3. **Source** → **GitHub Actions** auswählen
+4. **Save** klicken
+5. **Warten** - Die erste Deployment kann 2-3 Minuten dauern
+
+**Nach der Aktivierung:**
+- Die App wird unter `https://rostigerloeffel.github.io/ingredients-scan/` verfügbar sein
+- Jeder Push auf den `main` Branch löst automatisch ein neues Deployment aus
+- GitHub Actions werden im **Actions** Tab angezeigt
+
+### Troubleshooting:
+
+Falls GitHub Pages nicht funktioniert:
+1. Überprüfen Sie die **Actions** → **Deploy to GitHub Pages**
+2. Stellen Sie sicher, dass **Settings** → **Pages** → **Source** auf **GitHub Actions** steht
+3. Warten Sie 5-10 Minuten nach der ersten Aktivierung
 
 ## 📱 Verwendung
 

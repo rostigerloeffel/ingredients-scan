@@ -46,56 +46,6 @@ const CameraPreview: React.FC<CameraPreviewProps> = ({ onCapture }) => {
         throw new Error('Kamera wird von diesem Browser nicht unterstützt');
       }
 
-      // iOS Safari: Direkt Kamera starten ohne enumerateDevices
-      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-      
-      if (isIOS) {
-        // iOS Safari: Starte direkt mit der Umgebungskamera
-        try {
-          const tempStream = await navigator.mediaDevices.getUserMedia({
-            video: {
-              facingMode: 'environment',
-              width: { ideal: 1280, max: 1920 },
-              height: { ideal: 720, max: 1080 }
-            }
-          });
-          tempStream.getTracks().forEach(track => track.stop());
-          setHasPermission(true);
-          
-          // Für iOS: Verwende einen Dummy-Camera-Eintrag
-          setCameras([{
-            deviceId: 'ios-camera',
-            kind: 'videoinput',
-            label: 'iPhone Kamera',
-            groupId: 'ios-group'
-          } as MediaDeviceInfo]);
-          setSelectedCamera('ios-camera');
-          setIsLoading(false);
-          return;
-        } catch (iosErr: any) {
-          console.error('iOS Kamera-Initialisierung fehlgeschlagen:', iosErr);
-          
-          // Fallback für iOS: Versuche es ohne spezifische Constraints
-          try {
-            const fallbackStream = await navigator.mediaDevices.getUserMedia({ video: true });
-            fallbackStream.getTracks().forEach(track => track.stop());
-            setHasPermission(true);
-            
-            setCameras([{
-              deviceId: 'ios-camera',
-              kind: 'videoinput',
-              label: 'iPhone Kamera',
-              groupId: 'ios-group'
-            } as MediaDeviceInfo]);
-            setSelectedCamera('ios-camera');
-            setIsLoading(false);
-            return;
-          } catch (fallbackErr: any) {
-            throw iosErr; // Werfe den ursprünglichen Fehler
-          }
-        }
-      }
-
       // Kamera-Berechtigung anfordern
       const tempStream = await navigator.mediaDevices.getUserMedia({ video: true });
       tempStream.getTracks().forEach(track => track.stop()); // Temporären Stream stoppen
@@ -145,91 +95,19 @@ const CameraPreview: React.FC<CameraPreviewProps> = ({ onCapture }) => {
       setIsLoading(true);
       setError(null);
 
-      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-      
       let constraints;
       
-      if (isIOS || selectedCamera === 'ios-camera') {
-        // iOS-spezifische Constraints - mehrere Optionen versuchen
-        const iosConstraints = [
-          {
-            video: {
-              facingMode: 'environment',
-              width: { ideal: 1280, max: 1920 },
-              height: { ideal: 720, max: 1080 },
-              aspectRatio: { ideal: 4/3 }
-            }
-          },
-          {
-            video: {
-              facingMode: 'environment',
-              width: { ideal: 1280 },
-              height: { ideal: 720 }
-            }
-          },
-          {
-            video: {
-              facingMode: 'environment'
-            }
-          },
-          {
-            video: true
+      if (cameras.length === 1) {
+        // Wenn nur eine Kamera verfügbar ist, verwende einfache Constraints
+        constraints = {
+          video: {
+            facingMode: 'environment',
+            width: { ideal: 1280, max: 1920 },
+            height: { ideal: 720, max: 1080 }
           }
-        ];
-
-        let newStream = null;
-        let lastError = null;
-
-        for (const constraint of iosConstraints) {
-          try {
-            newStream = await navigator.mediaDevices.getUserMedia(constraint);
-            break; // Erfolgreich, Schleife verlassen
-          } catch (err) {
-            lastError = err;
-            console.log('iOS Kamera-Constraint fehlgeschlagen, versuche nächste Option:', err);
-          }
-        }
-
-        if (!newStream) {
-          throw lastError || new Error('Keine iOS Kamera-Option funktioniert');
-        }
-
-        setStream(newStream);
-        
-        if (videoRef.current) {
-          videoRef.current.srcObject = newStream;
-          
-          // iOS Safari: Zusätzliche Event-Handler
-          videoRef.current.onloadedmetadata = () => {
-            console.log('iOS: onloadedmetadata triggered');
-            setIsLoading(false);
-          };
-          videoRef.current.oncanplay = () => {
-            console.log('iOS: oncanplay triggered');
-            setIsLoading(false);
-          };
-          videoRef.current.oncanplaythrough = () => {
-            console.log('iOS: oncanplaythrough triggered');
-            setIsLoading(false);
-          };
-          videoRef.current.onloadeddata = () => {
-            console.log('iOS: onloadeddata triggered');
-            setIsLoading(false);
-          };
-          
-          // Fallback falls Events nicht ausgelöst werden
-          setTimeout(() => {
-            if (isLoading) {
-              console.log('iOS: Fallback timeout triggered');
-              setIsLoading(false);
-            }
-          }, 3000);
-        } else {
-          setIsLoading(false);
-        }
-
+        };
       } else {
-        // Standard-Constraints für andere Browser
+        // Wenn mehrere Kameras verfügbar sind, verwende deviceId
         constraints = {
           video: {
             deviceId: { exact: selectedCamera },
@@ -238,28 +116,28 @@ const CameraPreview: React.FC<CameraPreviewProps> = ({ onCapture }) => {
             facingMode: 'environment'
           }
         };
+      }
 
-        const newStream = await navigator.mediaDevices.getUserMedia(constraints);
+      const newStream = await navigator.mediaDevices.getUserMedia(constraints);
 
-        setStream(newStream);
+      setStream(newStream);
+      
+      if (videoRef.current) {
+        videoRef.current.srcObject = newStream;
         
-        if (videoRef.current) {
-          videoRef.current.srcObject = newStream;
-          
-          // Standard Event-Handler
-          videoRef.current.onloadedmetadata = () => {
-            setIsLoading(false);
-          };
-          
-          // Fallback falls Events nicht ausgelöst werden
-          setTimeout(() => {
-            if (isLoading) {
-              setIsLoading(false);
-            }
-          }, 5000);
-        } else {
+        // Event-Handler für Video-Loading
+        videoRef.current.onloadedmetadata = () => {
           setIsLoading(false);
-        }
+        };
+        
+        // Fallback falls Events nicht ausgelöst werden
+        setTimeout(() => {
+          if (isLoading) {
+            setIsLoading(false);
+          }
+        }, 5000);
+      } else {
+        setIsLoading(false);
       }
 
     } catch (err: any) {
@@ -377,7 +255,7 @@ const CameraPreview: React.FC<CameraPreviewProps> = ({ onCapture }) => {
       </div>
       
       <div className="camera-controls">
-        {cameras.length > 0 && (
+        {cameras.length > 1 && (
           <div className="camera-selector">
             <label htmlFor="camera-select">Kamera:</label>
             <select

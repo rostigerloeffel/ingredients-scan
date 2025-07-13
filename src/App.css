@@ -251,6 +251,13 @@
   .result-view {
     gap: 1rem;
   }
+  .api-key-indicator {
+    position: static;
+    margin: 0 auto 1rem auto;
+    width: fit-content;
+    top: auto;
+    right: auto;
+  }
 }
 
 @media (max-width: 480px) {
@@ -263,5 +270,12 @@
   }
   .result-view {
     gap: 0.7rem;
+  }
+  .api-key-indicator {
+    position: static;
+    margin: 0 auto 0.8rem auto;
+    width: fit-content;
+    top: auto;
+    right: auto;
   }
 }

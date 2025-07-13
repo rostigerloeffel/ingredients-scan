@@ -46,6 +46,33 @@ const CameraPreview: React.FC<CameraPreviewProps> = ({ onCapture }) => {
         throw new Error('Kamera wird von diesem Browser nicht unterstützt');
       }
 
+      // iOS Safari: Direkt Kamera starten ohne enumerateDevices
+      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+      
+      if (isIOS) {
+        // iOS Safari: Starte direkt mit der Umgebungskamera
+        const tempStream = await navigator.mediaDevices.getUserMedia({
+          video: {
+            facingMode: 'environment',
+            width: { ideal: 1280, max: 1920 },
+            height: { ideal: 720, max: 1080 }
+          }
+        });
+        tempStream.getTracks().forEach(track => track.stop());
+        setHasPermission(true);
+        
+        // Für iOS: Verwende einen Dummy-Camera-Eintrag
+        setCameras([{
+          deviceId: 'ios-camera',
+          kind: 'videoinput',
+          label: 'iPhone Kamera',
+          groupId: 'ios-group'
+        } as MediaDeviceInfo]);
+        setSelectedCamera('ios-camera');
+        setIsLoading(false);
+        return;
+      }
+
       // Kamera-Berechtigung anfordern
       const tempStream = await navigator.mediaDevices.getUserMedia({ video: true });
       tempStream.getTracks().forEach(track => track.stop()); // Temporären Stream stoppen
@@ -95,29 +122,63 @@ const CameraPreview: React.FC<CameraPreviewProps> = ({ onCapture }) => {
       setIsLoading(true);
       setError(null);
 
-      const newStream = await navigator.mediaDevices.getUserMedia({
-        video: {
-          deviceId: { exact: selectedCamera },
-          width: { ideal: 1280, max: 1920 },
-          height: { ideal: 720, max: 1080 },
-          facingMode: 'environment' // Bevorzuge Rückkamera auf Mobilgeräten
-        }
-      });
+      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+      
+      let constraints;
+      
+      if (isIOS || selectedCamera === 'ios-camera') {
+        // iOS-spezifische Constraints
+        constraints = {
+          video: {
+            facingMode: 'environment',
+            width: { ideal: 1280, max: 1920 },
+            height: { ideal: 720, max: 1080 },
+            aspectRatio: { ideal: 4/3 }
+          }
+        };
+      } else {
+        // Standard-Constraints für andere Browser
+        constraints = {
+          video: {
+            deviceId: { exact: selectedCamera },
+            width: { ideal: 1280, max: 1920 },
+            height: { ideal: 720, max: 1080 },
+            facingMode: 'environment'
+          }
+        };
+      }
+
+      const newStream = await navigator.mediaDevices.getUserMedia(constraints);
 
       setStream(newStream);
       
       if (videoRef.current) {
         videoRef.current.srcObject = newStream;
-        // Warte bis das Video geladen ist
-        videoRef.current.onloadedmetadata = () => {
-          setIsLoading(false);
-        };
-        // Fallback falls onloadedmetadata nicht ausgelöst wird
+        
+        // iOS Safari: Zusätzliche Event-Handler
+        if (isIOS) {
+          videoRef.current.onloadedmetadata = () => {
+            setIsLoading(false);
+          };
+          videoRef.current.oncanplay = () => {
+            setIsLoading(false);
+          };
+          videoRef.current.oncanplaythrough = () => {
+            setIsLoading(false);
+          };
+        } else {
+          // Standard Event-Handler
+          videoRef.current.onloadedmetadata = () => {
+            setIsLoading(false);
+          };
+        }
+        
+        // Fallback falls Events nicht ausgelöst werden
         setTimeout(() => {
           if (isLoading) {
             setIsLoading(false);
           }
-        }, 3000);
+        }, 5000);
       } else {
         setIsLoading(false);
       }
@@ -133,6 +194,8 @@ const CameraPreview: React.FC<CameraPreviewProps> = ({ onCapture }) => {
         errorMessage = 'Ausgewählte Kamera nicht gefunden';
       } else if (err.name === 'NotReadableError') {
         errorMessage = 'Kamera wird bereits von einer anderen Anwendung verwendet';
+      } else if (err.name === 'OverconstrainedError') {
+        errorMessage = 'Kamera-Unterstützung nicht verfügbar. Bitte verwenden Sie eine andere Kamera.';
       }
       
       setError(errorMessage);
@@ -216,6 +279,8 @@ const CameraPreview: React.FC<CameraPreviewProps> = ({ onCapture }) => {
           autoPlay
           playsInline
           muted
+          webkit-playsinline="true"
+          x-webkit-airplay="allow"
           className="camera-video"
         />
         

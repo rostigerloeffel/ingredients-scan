@@ -40,10 +40,6 @@ export default function ToleranceQuestion({ analysis, onComplete, onCancel }: To
     }
   };
 
-  const getToleranceIcon = (tolerance: 'good' | 'bad') => {
-    return tolerance === 'good' ? '✅' : '❌';
-  };
-
   const getToleranceText = (tolerance: 'good' | 'bad') => {
     return tolerance === 'good' ? 'Gut vertragen' : 'Schlecht vertragen';
   };

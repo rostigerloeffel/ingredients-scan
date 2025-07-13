@@ -58,15 +58,6 @@ export default function AnalysisResult({ analysis, onNewScan }: AnalysisResultPr
     }
   };
 
-  const getWarningTitle = (severity: 'high' | 'medium' | 'low') => {
-    switch (severity) {
-      case 'high': return 'Unverträglichkeit erkannt';
-      case 'medium': return 'Mögliche Unverträglichkeit';
-      case 'low': return 'Hinweis';
-      default: return 'Warnung';
-    }
-  };
-
   return (
     <div className="analysis-result">
       <div className="result-header">

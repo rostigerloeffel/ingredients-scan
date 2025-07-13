@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { OpenAIService } from '../services/openaiService';
-import './ApiKeyDialog.css';
 
 interface ApiKeyDialogProps {
   isVisible: boolean;

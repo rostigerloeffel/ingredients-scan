@@ -106,7 +106,7 @@ const CameraScanner: React.FC<CameraScannerProps> = ({ onCapture }) => {
 
         {/* Scan-Button */}
         <button onClick={capture} className="scan-button">
-          📸 Zutatenliste scannen
+          📸 Inhaltsstoffe scannen
         </button>
       </div>
     </div>

@@ -1,0 +1,382 @@
+/* IngredientLists Dialog Styling */
+.ingredient-lists-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.ingredient-lists-modal {
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+  max-width: 600px;
+  width: 100%;
+  max-height: 90vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+.lists-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 1.5rem 1rem 1.5rem;
+  border-bottom: 1px solid #e3e6eb;
+  background: #f8f9fa;
+}
+
+.lists-header h2 {
+  margin: 0;
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #22314a;
+}
+
+.close-button {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: #7a8599;
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 4px;
+  transition: color 0.2s;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.close-button:hover {
+  color: #22314a;
+  background: #f0f2f5;
+}
+
+.lists-tabs {
+  display: flex;
+  background: #f8f9fa;
+  border-bottom: 1px solid #e3e6eb;
+}
+
+.tab-button {
+  flex: 1;
+  background: none;
+  border: none;
+  padding: 1rem 1.5rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #7a8599;
+  transition: all 0.2s;
+  border-bottom: 2px solid transparent;
+}
+
+.tab-button:hover {
+  color: #22314a;
+  background: #f0f2f5;
+}
+
+.tab-button.active {
+  color: #22314a;
+  border-bottom-color: #00ff88;
+  background: #ffffff;
+}
+
+.tab-icon {
+  font-size: 1.1rem;
+}
+
+.tab-text {
+  font-weight: 500;
+}
+
+.tab-count {
+  font-size: 0.85rem;
+  opacity: 0.7;
+}
+
+.lists-content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 1.5rem;
+  box-sizing: border-box;
+}
+
+.tab-description {
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border-left: 4px solid #00ff88;
+}
+
+.tab-description p {
+  margin: 0;
+  color: #22314a;
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
+.search-section {
+  margin-bottom: 1.5rem;
+}
+
+.search-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid #d6dbe2;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  color: #22314a;
+  background: #ffffff;
+  transition: border-color 0.2s;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #00ff88;
+  box-shadow: 0 0 0 3px rgba(0, 255, 136, 0.1);
+}
+
+.search-input::placeholder {
+  color: #7a8599;
+}
+
+.ingredients-section {
+  min-height: 200px;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: #7a8599;
+}
+
+.empty-icon {
+  font-size: 3rem;
+  display: block;
+  margin-bottom: 1rem;
+  opacity: 0.5;
+}
+
+.empty-state p {
+  margin: 0.5rem 0;
+  font-size: 0.95rem;
+}
+
+.empty-hint {
+  font-size: 0.85rem !important;
+  opacity: 0.7;
+}
+
+.ingredients-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #e3e6eb;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.ingredients-header h3 {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #7a8599;
+}
+
+.delete-selected-button {
+  background: #ff4757;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background 0.2s;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.delete-selected-button:hover {
+  background: #ff3742;
+}
+
+.ingredients-list {
+  margin-bottom: 1.5rem;
+}
+
+.ingredient-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem;
+  border: 1px solid #e3e6eb;
+  border-radius: 6px;
+  margin-bottom: 0.5rem;
+  background: #ffffff;
+  transition: all 0.2s;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.ingredient-item:hover {
+  border-color: #00ff88;
+  background: #f8fff9;
+}
+
+.ingredient-item.selected {
+  border-color: #00ff88;
+  background: #f0fff4;
+}
+
+.ingredient-content {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex: 1;
+  cursor: pointer;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.ingredient-checkbox {
+  width: 18px;
+  height: 18px;
+  accent-color: #00ff88;
+  cursor: pointer;
+}
+
+.ingredient-name {
+  font-size: 0.95rem;
+  color: #22314a;
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+  min-width: 0;
+}
+
+.delete-single-button {
+  background: none;
+  border: none;
+  color: #ff4757;
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 4px;
+  transition: background 0.2s;
+  font-size: 1rem;
+}
+
+.delete-single-button:hover {
+  background: #fff5f5;
+}
+
+.list-actions {
+  display: flex;
+  justify-content: center;
+  padding-top: 1rem;
+  border-top: 1px solid #e3e6eb;
+}
+
+.clear-all-button {
+  background: #ff4757;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background 0.2s;
+  font-weight: 500;
+}
+
+.clear-all-button:hover {
+  background: #ff3742;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .ingredient-lists-overlay {
+    padding: 0.5rem;
+  }
+  
+  .ingredient-lists-modal {
+    max-height: 95vh;
+  }
+  
+  .lists-header {
+    padding: 1rem 1rem 0.75rem 1rem;
+  }
+  
+  .lists-header h2 {
+    font-size: 1.2rem;
+  }
+  
+  .tab-button {
+    padding: 0.75rem 1rem;
+    font-size: 0.9rem;
+  }
+  
+  .lists-content {
+    padding: 1rem;
+  }
+  
+  .ingredient-item {
+    padding: 0.5rem;
+  }
+  
+  .ingredient-name {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .ingredient-lists-overlay {
+    padding: 0.25rem;
+  }
+  
+  .lists-header {
+    padding: 0.75rem 0.75rem 0.5rem 0.75rem;
+  }
+  
+  .lists-header h2 {
+    font-size: 1.1rem;
+  }
+  
+  .tab-button {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.85rem;
+  }
+  
+  .lists-content {
+    padding: 0.75rem;
+  }
+  
+  .ingredient-item {
+    padding: 0.5rem;
+  }
+  
+  .ingredient-name {
+    font-size: 0.85rem;
+  }
+} 

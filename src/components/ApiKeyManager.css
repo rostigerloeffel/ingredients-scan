@@ -1,0 +1,304 @@
+.api-key-manager-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+  overflow-y: auto;
+}
+
+.api-key-manager-dialog {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  max-width: 500px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  margin: auto;
+  box-sizing: border-box;
+}
+
+.dialog-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 1.5rem 1rem 1.5rem;
+  border-bottom: 1px solid #e3e6eb;
+}
+
+.dialog-header h2 {
+  margin: 0;
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #22314a;
+}
+
+.close-button {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: #7a8599;
+  cursor: pointer;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  transition: background 0.2s;
+}
+
+.close-button:hover {
+  background: #f2f4f7;
+  color: #22314a;
+}
+
+.close-button:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.close-button:disabled:hover {
+  background: none;
+  color: #7a8599;
+}
+
+.dialog-info {
+  padding: 1.5rem 1.5rem 0 1.5rem;
+  border-bottom: 1px solid #e3e6eb;
+}
+
+.dialog-info p {
+  margin: 0 0 1rem 0;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: #22314a;
+}
+
+.dialog-info p:last-child {
+  margin-bottom: 0;
+}
+
+.dialog-info strong {
+  color: #22314a;
+  font-weight: 600;
+}
+
+.dialog-info a {
+  color: #4a9eff;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.dialog-info a:hover {
+  text-decoration: underline;
+}
+
+.api-key-form {
+  padding: 1.5rem;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: #22314a;
+  font-size: 0.95rem;
+}
+
+.input-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.api-key-input {
+  flex: 1;
+  padding: 0.75rem;
+  border: 1px solid #d6dbe2;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  color: #22314a;
+  background: #fff;
+  transition: border 0.2s;
+}
+
+.api-key-input:focus {
+  outline: none;
+  border-color: #bfc8d6;
+}
+
+.api-key-input::placeholder {
+  color: #7a8599;
+}
+
+.toggle-visibility {
+  position: absolute;
+  right: 0.75rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.25rem;
+  font-size: 1rem;
+  color: #7a8599;
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+
+.toggle-visibility:hover {
+  background: #f2f4f7;
+}
+
+.form-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.save-button,
+.delete-button,
+.cancel-button {
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s, border 0.2s;
+  border: 1px solid;
+}
+
+.save-button {
+  background: #e9ecf2;
+  color: #22314a;
+  border-color: #d6dbe2;
+}
+
+.save-button:hover:not(:disabled) {
+  background: #dbe1ea;
+  border-color: #c7cdd6;
+}
+
+.save-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.delete-button {
+  background: #f8f9fb;
+  color: #b23c3c;
+  border-color: #e3e6eb;
+}
+
+.delete-button:hover {
+  background: #f2f4f7;
+  border-color: #d6dbe2;
+}
+
+.cancel-button {
+  background: #f8f9fb;
+  color: #7a8599;
+  border-color: #e3e6eb;
+}
+
+.cancel-button:hover {
+  background: #f2f4f7;
+  border-color: #d6dbe2;
+}
+
+.dialog-footer {
+  padding: 1rem 1.5rem 1.5rem 1.5rem;
+  border-top: 1px solid #e3e6eb;
+  background: #f8f9fb;
+  border-radius: 0 0 12px 12px;
+}
+
+.dialog-footer p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #7a8599;
+  line-height: 1.4;
+}
+
+.dialog-footer strong {
+  color: #22314a;
+}
+
+.required-notice {
+  margin-top: 0.5rem !important;
+  color: #b23c3c !important;
+  font-size: 0.85rem !important;
+}
+
+.required-notice strong {
+  color: #b23c3c !important;
+}
+
+@media (max-width: 768px) {
+  .api-key-manager-dialog {
+    max-width: 100%;
+    margin: 0 1rem;
+  }
+  
+  .dialog-header {
+    padding: 1.2rem 1.2rem 0.8rem 1.2rem;
+  }
+  
+  .dialog-header h2 {
+    font-size: 1.2rem;
+  }
+  
+  .api-key-form {
+    padding: 1.2rem;
+  }
+  
+  .form-actions {
+    flex-direction: column;
+  }
+  
+  .save-button,
+  .delete-button,
+  .cancel-button {
+    width: 100%;
+  }
+  
+  .dialog-footer {
+    padding: 0.8rem 1.2rem 1.2rem 1.2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .api-key-manager-overlay {
+    padding: 0.5rem;
+  }
+  
+  .api-key-manager-dialog {
+    margin: 0;
+  }
+  
+  .dialog-header {
+    padding: 1rem 1rem 0.7rem 1rem;
+  }
+  
+  .api-key-form {
+    padding: 1rem;
+  }
+  
+  .dialog-footer {
+    padding: 0.7rem 1rem 1rem 1rem;
+  }
+} 

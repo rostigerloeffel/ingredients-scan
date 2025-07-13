@@ -80,7 +80,7 @@ Falls GitHub Pages nicht funktioniert:
 
 1. **App öffnen** - Kamera wird automatisch aktiviert
 2. **Zutatenliste positionieren** - Im Scan-Fenster platzieren
-3. **Foto aufnehmen** - "Zutatenliste scannen" Button drücken
+3. **Foto aufnehmen** - "Inhaltsstoffe scannen" Button drücken
 4. **Bild überprüfen** - Vorschau des aufgenommenen Bildes
 5. **Neuer Scan** - "Neuen Scan starten" für weitere Aufnahmen
 

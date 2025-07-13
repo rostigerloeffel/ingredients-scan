@@ -62,6 +62,13 @@ export class OpenAIService {
   }
 
   /**
+   * Gibt den aktuellen API-Schlüssel zurück
+   */
+  static getApiKey(): string | null {
+    return this.apiKey || this.loadApiKeyFromStorage();
+  }
+
+  /**
    * Gibt den aktuellen API-Schlüssel zurück (maskiert)
    */
   static getMaskedApiKey(): string {
@@ -71,6 +78,13 @@ export class OpenAIService {
     // Zeige nur die ersten 7 und letzten 4 Zeichen
     if (key.length <= 11) return '***' + key.slice(-4);
     return key.slice(0, 7) + '***' + key.slice(-4);
+  }
+
+  /**
+   * Löscht den API-Schlüssel
+   */
+  static deleteApiKey() {
+    this.clearApiKey();
   }
 
   /**

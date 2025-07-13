@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import './ApiKeyInput.css';
 
 interface ApiKeyInputProps {
   onApiKeySubmit: (apiKey: string) => void;

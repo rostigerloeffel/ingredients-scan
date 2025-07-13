@@ -1,0 +1,125 @@
+.analysis-result {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  max-width: 800px;
+  width: 100%;
+  padding: 20px;
+}
+
+.analysis-result h2 {
+  margin: 0;
+  font-size: 2rem;
+  font-weight: 600;
+  text-align: center;
+  color: #00ff88;
+}
+
+.analysis-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+}
+
+.analysis-section {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  padding: 20px;
+  border: 1px solid rgba(0, 255, 136, 0.2);
+  backdrop-filter: blur(10px);
+}
+
+.analysis-section h3 {
+  margin: 0 0 15px 0;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #00ff88;
+}
+
+.ingredients-list,
+.allergens-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ingredient-item,
+.allergen-item {
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  font-size: 14px;
+  color: white;
+}
+
+.allergen-item {
+  background: rgba(255, 107, 107, 0.2);
+  border-left: 3px solid #ff6b6b;
+}
+
+.nutrition-info,
+.summary-text {
+  color: white;
+  font-size: 14px;
+  line-height: 1.5;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+}
+
+.analysis-controls {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .analysis-result {
+    padding: 15px;
+  }
+  
+  .analysis-result h2 {
+    font-size: 1.6rem;
+  }
+  
+  .analysis-section {
+    padding: 15px;
+  }
+  
+  .analysis-section h3 {
+    font-size: 1.1rem;
+  }
+  
+  .ingredient-item,
+  .allergen-item {
+    font-size: 13px;
+    padding: 6px 10px;
+  }
+  
+  .nutrition-info,
+  .summary-text {
+    font-size: 13px;
+    padding: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .analysis-result {
+    padding: 10px;
+  }
+  
+  .analysis-result h2 {
+    font-size: 1.4rem;
+  }
+  
+  .analysis-section {
+    padding: 12px;
+  }
+  
+  .analysis-section h3 {
+    font-size: 1rem;
+  }
+} 

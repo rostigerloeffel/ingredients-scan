@@ -23,6 +23,10 @@ Eine React-App zum Scannen von Zutatenlisten mit der Kamera.
 # Abhängigkeiten installieren
 npm install
 
+# OpenAI API-Key konfigurieren
+# Erstelle eine .env-Datei im Projektverzeichnis:
+# VITE_OPENAI_API_KEY=your_openai_api_key_here
+
 # Entwicklungsserver starten
 npm run dev
 
@@ -32,6 +36,15 @@ npm run build
 # Code-Qualität prüfen
 npm run lint
 ```
+
+### OpenAI API-Key Setup
+
+1. **Erstelle eine `.env`-Datei** im Projektverzeichnis
+2. **Füge deinen API-Key hinzu:**
+   ```
+   VITE_OPENAI_API_KEY=sk-proj-your-api-key-here
+   ```
+3. **Starte den Entwicklungsserver neu** nach dem Hinzufügen der .env-Datei
 
 ## 🌐 Deployment
 

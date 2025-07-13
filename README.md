@@ -56,6 +56,12 @@ Falls GitHub Pages nicht funktioniert:
 1. Überprüfen Sie die **Actions** → **Deploy to GitHub Pages**
 2. Stellen Sie sicher, dass **Settings** → **Pages** → **Source** auf **GitHub Actions** steht
 3. Warten Sie 5-10 Minuten nach der ersten Aktivierung
+4. **Cache leeren** - Browser-Cache löschen oder Hard Refresh (Ctrl+F5)
+
+### Aktuelle Version:
+- **Design:** Neon-Grün Theme mit dunklem Hintergrund
+- **Features:** Vollständig responsive Kamera-Scanner
+- **Status:** Bereit für Deployment
 
 ## 📱 Verwendung
 

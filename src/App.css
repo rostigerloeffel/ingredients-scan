@@ -11,10 +11,10 @@
 .app h1 {
   margin: 0 0 20px 0;
   font-size: 2.5rem;
-  font-weight: 700;
+  font-weight: 600;
   text-align: center;
-  color: #2c3e50;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  color: #4a5568;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 .result-view {
@@ -29,8 +29,9 @@
 .result-view h2 {
   margin: 0;
   font-size: 1.8rem;
-  font-weight: 600;
+  font-weight: 500;
   text-align: center;
+  color: #4a5568;
 }
 
 .image-preview {
@@ -38,8 +39,8 @@
   max-width: 600px;
   border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-  background: white;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  background: #f8f9fa;
 }
 
 .image-preview img {

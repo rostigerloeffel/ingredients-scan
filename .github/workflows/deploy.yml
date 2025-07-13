@@ -4,13 +4,14 @@ on:
   push:
     branches: [ main ]
 
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      pages: write
-      id-token: write
     
     steps:
       - name: Checkout
@@ -30,6 +31,8 @@ jobs:
       
       - name: Setup Pages
         uses: actions/configure-pages@v4
+        with:
+          enablement: true
       
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3

@@ -1,69 +1,65 @@
-# React + TypeScript + Vite
+# Ingredient Scanner
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Eine React-App zum Scannen von Zutatenlisten mit der Kamera.
 
-Currently, two official plugins are available:
+## 🚀 Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- 📱 **Kamera-Scanner** - Direkte Kamera-Aktivierung beim App-Start
+- 🔄 **Multi-Kamera-Support** - Wechsel zwischen verfügbaren Kameras
+- 🎯 **Scan-Fenster** - Visueller Guide für optimale Aufnahme
+- 📸 **Foto-Aufnahme** - Hochqualitative Bilder im JPEG-Format
+- 📱 **Responsive Design** - Optimiert für mobile Geräte
 
-## Expanding the ESLint configuration
+## 🛠️ Technologie-Stack
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- **React 18** mit TypeScript
+- **Vite** für schnelle Entwicklung
+- **react-webcam** für Kamera-Funktionalität
+- **GitHub Pages** für Deployment
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## 🚀 Lokale Entwicklung
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
+```bash
+# Abhängigkeiten installieren
+npm install
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+# Entwicklungsserver starten
+npm run dev
+
+# Build für Produktion
+npm run build
+
+# Code-Qualität prüfen
+npm run lint
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## 🌐 Deployment
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+Die App wird automatisch über GitHub Actions auf GitHub Pages deployed.
 
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+### GitHub Pages manuell aktivieren:
+
+1. Gehen Sie zu **Settings** → **Pages** in Ihrem GitHub Repository
+2. Unter **Source** wählen Sie **GitHub Actions**
+3. Die App wird dann unter `https://[username].github.io/ingredients-scan/` verfügbar sein
+
+## 📱 Verwendung
+
+1. **App öffnen** - Kamera wird automatisch aktiviert
+2. **Zutatenliste positionieren** - Im Scan-Fenster platzieren
+3. **Foto aufnehmen** - "Zutatenliste scannen" Button drücken
+4. **Bild überprüfen** - Vorschau des aufgenommenen Bildes
+5. **Neuer Scan** - "Neuen Scan starten" für weitere Aufnahmen
+
+## 🔧 Entwicklung
+
+Die App ist in TypeScript geschrieben und verwendet moderne React-Patterns:
+
+- **Komponenten-basierte Architektur**
+- **TypeScript** für Typsicherheit
+- **CSS Modules** für Styling
+- **Responsive Design** für alle Geräte
+
+## 📄 Lizenz
+
+MIT License

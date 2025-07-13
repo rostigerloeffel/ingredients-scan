@@ -1,34 +1,41 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
+import CameraScanner from './components/CameraScanner'
 import './App.css'
+import './components/CameraScanner.css'
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [capturedImage, setCapturedImage] = useState<string | null>(null);
+
+  const handleCapture = (imageSrc: string) => {
+    setCapturedImage(imageSrc);
+    console.log('Foto aufgenommen:', imageSrc);
+    // Hier können Sie später die Bildverarbeitung implementieren
+  };
+
+  const handleNewScan = () => {
+    setCapturedImage(null);
+  };
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
+    <div className="app">
       <h1>Ingredient Scanner</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+      
+      {!capturedImage ? (
+        <CameraScanner onCapture={handleCapture} />
+      ) : (
+        <div className="result-view">
+          <h2>Gescannte Zutatenliste</h2>
+          <div className="image-preview">
+            <img src={capturedImage} alt="Gescannte Zutatenliste" />
+          </div>
+          <div className="result-controls">
+            <button onClick={handleNewScan} className="new-scan-button">
+              🔄 Neuen Scan starten
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
   )
 }
 

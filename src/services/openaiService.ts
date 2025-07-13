@@ -1,11 +1,5 @@
 import OpenAI from 'openai';
 
-// OpenAI Client initialisieren
-const openai = new OpenAI({
-  apiKey: import.meta.env.VITE_OPENAI_API_KEY || '',
-  dangerouslyAllowBrowser: true // Für Client-seitige Nutzung
-});
-
 export interface IngredientAnalysis {
   ingredients: string[];
   allergens: string[];
@@ -14,20 +8,41 @@ export interface IngredientAnalysis {
 }
 
 export class OpenAIService {
-  
+  private static apiKey: string | null = null;
+
+  /**
+   * Setzt den API-Schlüssel für die Analyse
+   */
+  static setApiKey(apiKey: string) {
+    this.apiKey = apiKey;
+  }
+
+  /**
+   * Prüft, ob ein API-Schlüssel gesetzt ist
+   */
+  static hasApiKey(): boolean {
+    return this.apiKey !== null && this.apiKey.length > 0;
+  }
+
   /**
    * Analysiert ein Bild von einer Zutatenliste
    */
   static async analyzeIngredients(imageBase64: string): Promise<IngredientAnalysis> {
     // API Key Validierung
-    if (!import.meta.env.VITE_OPENAI_API_KEY) {
-      throw new Error('OpenAI API-Schlüssel fehlt. Bitte fügen Sie VITE_OPENAI_API_KEY in Ihre .env-Datei hinzu.');
+    if (!this.apiKey) {
+      throw new Error('OpenAI API-Schlüssel fehlt. Bitte geben Sie Ihren API-Schlüssel ein.');
     }
 
     // Bilddaten Validierung
     if (!imageBase64 || imageBase64.length < 100) {
       throw new Error('Ungültiges Bild. Bitte stellen Sie sicher, dass das Bild klar und gut lesbar ist.');
     }
+
+    // OpenAI Client mit aktuellem API-Schlüssel initialisieren
+    const openai = new OpenAI({
+      apiKey: this.apiKey,
+      dangerouslyAllowBrowser: true // Für Client-seitige Nutzung
+    });
 
     try {
       const response = await openai.chat.completions.create({
@@ -97,7 +112,7 @@ export class OpenAIService {
       
       // Spezifische Fehlermeldungen basierend auf dem Fehlertyp
       if (error?.status === 401) {
-        throw new Error('Ungültiger API-Schlüssel. Bitte überprüfen Sie Ihren OpenAI API-Schlüssel in der .env-Datei.');
+        throw new Error('Ungültiger API-Schlüssel. Bitte überprüfen Sie Ihren OpenAI API-Schlüssel.');
       } else if (error?.status === 429) {
         throw new Error('API-Limit erreicht. Bitte warten Sie einen Moment und versuchen Sie es erneut.');
       } else if (error?.status === 400) {

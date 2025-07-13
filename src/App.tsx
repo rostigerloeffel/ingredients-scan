@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import CameraScanner from './components/CameraScanner'
 import AnalysisResult from './components/AnalysisResult'
+import ApiKeyInput from './components/ApiKeyInput'
 import { OpenAIService, type IngredientAnalysis } from './services/openaiService'
 import './App.css'
 import './components/CameraScanner.css'
@@ -11,6 +12,12 @@ function App() {
   const [analysis, setAnalysis] = useState<IngredientAnalysis | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showApiKeyInput, setShowApiKeyInput] = useState(!OpenAIService.hasApiKey());
+
+  const handleApiKeySubmit = (apiKey: string) => {
+    OpenAIService.setApiKey(apiKey);
+    setShowApiKeyInput(false);
+  };
 
   const handleCapture = async (imageSrc: string) => {
     setCapturedImage(imageSrc);
@@ -37,6 +44,10 @@ function App() {
     setError(null);
   };
 
+  const handleChangeApiKey = () => {
+    setShowApiKeyInput(true);
+  };
+
   const getErrorIcon = (errorMessage: string) => {
     if (errorMessage.includes('API-Schlüssel')) return '🔑';
     if (errorMessage.includes('Netzwerk')) return '🌐';
@@ -49,7 +60,7 @@ function App() {
 
   const getErrorSuggestion = (errorMessage: string) => {
     if (errorMessage.includes('API-Schlüssel')) {
-      return 'Überprüfen Sie Ihre .env-Datei und stellen Sie sicher, dass VITE_OPENAI_API_KEY korrekt gesetzt ist.';
+      return 'Überprüfen Sie Ihren OpenAI API-Schlüssel oder ändern Sie ihn über die Einstellungen.';
     }
     if (errorMessage.includes('Netzwerk')) {
       return 'Überprüfen Sie Ihre Internetverbindung und versuchen Sie es erneut.';
@@ -72,6 +83,22 @@ function App() {
   return (
     <div className="app">
       <h1>Ingredient Scanner</h1>
+      
+      {/* API-Schlüssel-Eingabe */}
+      <ApiKeyInput 
+        onApiKeySubmit={handleApiKeySubmit}
+        isVisible={showApiKeyInput}
+      />
+      
+      {/* API-Schlüssel-Status und Ändern-Button */}
+      {!showApiKeyInput && (
+        <div className="api-key-status">
+          <span className="status-indicator">🔑 API-Schlüssel gesetzt</span>
+          <button onClick={handleChangeApiKey} className="change-api-key-button">
+            🔄 API-Schlüssel ändern
+          </button>
+        </div>
+      )}
       
       {!capturedImage ? (
         <CameraScanner onCapture={handleCapture} />

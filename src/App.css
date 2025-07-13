@@ -17,6 +17,46 @@
   text-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
 }
 
+/* API-Schlüssel-Status */
+.api-key-status {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 20px;
+  padding: 12px 20px;
+  background: rgba(0, 255, 136, 0.1);
+  border-radius: 12px;
+  border: 1px solid rgba(0, 255, 136, 0.3);
+}
+
+.status-indicator {
+  color: #00ff88;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.change-api-key-button {
+  background: linear-gradient(135deg, #4ecdc4, #44a08d);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(78, 205, 196, 0.3);
+}
+
+.change-api-key-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(78, 205, 196, 0.4);
+}
+
+.change-api-key-button:active {
+  transform: translateY(0);
+}
+
 .result-view {
   display: flex;
   flex-direction: column;
@@ -90,6 +130,13 @@
     margin: 10px 0 15px 0;
   }
   
+  .api-key-status {
+    flex-direction: column;
+    gap: 10px;
+    padding: 10px 15px;
+    margin-bottom: 15px;
+  }
+  
   .result-view {
     padding: 0 10px;
   }
@@ -119,6 +166,20 @@
   .app h1 {
     font-size: 1.6rem;
     margin: 8px 0 12px 0;
+  }
+  
+  .api-key-status {
+    padding: 8px 12px;
+    margin-bottom: 10px;
+  }
+  
+  .status-indicator {
+    font-size: 13px;
+  }
+  
+  .change-api-key-button {
+    padding: 6px 12px;
+    font-size: 11px;
   }
   
   .result-view h2 {

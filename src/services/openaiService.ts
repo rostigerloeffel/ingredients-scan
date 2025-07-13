@@ -9,19 +9,68 @@ export interface IngredientAnalysis {
 
 export class OpenAIService {
   private static apiKey: string | null = null;
+  private static readonly STORAGE_KEY = 'ingredient_scanner_api_key';
 
   /**
-   * Setzt den API-Schlüssel für die Analyse
+   * Lädt den API-Schlüssel aus dem localStorage
+   */
+  static loadApiKeyFromStorage(): string | null {
+    if (this.apiKey) return this.apiKey;
+    
+    try {
+      const stored = localStorage.getItem(this.STORAGE_KEY);
+      if (stored) {
+        this.apiKey = stored;
+        return stored;
+      }
+    } catch (error) {
+      console.warn('Fehler beim Laden des API-Schlüssels aus localStorage:', error);
+    }
+    return null;
+  }
+
+  /**
+   * Setzt den API-Schlüssel und speichert ihn im localStorage
    */
   static setApiKey(apiKey: string) {
     this.apiKey = apiKey;
+    try {
+      localStorage.setItem(this.STORAGE_KEY, apiKey);
+    } catch (error) {
+      console.warn('Fehler beim Speichern des API-Schlüssels in localStorage:', error);
+    }
+  }
+
+  /**
+   * Löscht den API-Schlüssel aus dem localStorage
+   */
+  static clearApiKey() {
+    this.apiKey = null;
+    try {
+      localStorage.removeItem(this.STORAGE_KEY);
+    } catch (error) {
+      console.warn('Fehler beim Löschen des API-Schlüssels aus localStorage:', error);
+    }
   }
 
   /**
    * Prüft, ob ein API-Schlüssel gesetzt ist
    */
   static hasApiKey(): boolean {
-    return this.apiKey !== null && this.apiKey.length > 0;
+    if (this.apiKey) return true;
+    return this.loadApiKeyFromStorage() !== null;
+  }
+
+  /**
+   * Gibt den aktuellen API-Schlüssel zurück (maskiert)
+   */
+  static getMaskedApiKey(): string {
+    const key = this.apiKey || this.loadApiKeyFromStorage();
+    if (!key) return '';
+    
+    // Zeige nur die ersten 7 und letzten 4 Zeichen
+    if (key.length <= 11) return '***' + key.slice(-4);
+    return key.slice(0, 7) + '***' + key.slice(-4);
   }
 
   /**
@@ -29,7 +78,7 @@ export class OpenAIService {
    */
   static async analyzeIngredients(imageBase64: string): Promise<IngredientAnalysis> {
     // API Key Validierung
-    if (!this.apiKey) {
+    if (!this.apiKey && !this.loadApiKeyFromStorage()) {
       throw new Error('OpenAI API-Schlüssel fehlt. Bitte geben Sie Ihren API-Schlüssel ein.');
     }
 
@@ -40,7 +89,7 @@ export class OpenAIService {
 
     // OpenAI Client mit aktuellem API-Schlüssel initialisieren
     const openai = new OpenAI({
-      apiKey: this.apiKey,
+      apiKey: this.apiKey || this.loadApiKeyFromStorage()!,
       dangerouslyAllowBrowser: true // Für Client-seitige Nutzung
     });
 

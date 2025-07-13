@@ -1,7 +1,8 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import CameraScanner from './components/CameraScanner'
 import AnalysisResult from './components/AnalysisResult'
 import ApiKeyInput from './components/ApiKeyInput'
+import ApiKeyDialog from './components/ApiKeyDialog'
 import { OpenAIService, type IngredientAnalysis } from './services/openaiService'
 import './App.css'
 import './components/CameraScanner.css'
@@ -12,11 +13,27 @@ function App() {
   const [analysis, setAnalysis] = useState<IngredientAnalysis | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [showApiKeyInput, setShowApiKeyInput] = useState(!OpenAIService.hasApiKey());
+  const [showApiKeyInput, setShowApiKeyInput] = useState(false);
+  const [showApiKeyDialog, setShowApiKeyDialog] = useState(false);
+  const [hasApiKey, setHasApiKey] = useState(false);
+
+  // Prüfe beim Start, ob ein API-Schlüssel vorhanden ist
+  useEffect(() => {
+    const apiKeyExists = OpenAIService.hasApiKey();
+    setHasApiKey(apiKeyExists);
+    setShowApiKeyInput(!apiKeyExists);
+  }, []);
 
   const handleApiKeySubmit = (apiKey: string) => {
     OpenAIService.setApiKey(apiKey);
     setShowApiKeyInput(false);
+    setHasApiKey(true);
+  };
+
+  const handleApiKeyChange = () => {
+    const apiKeyExists = OpenAIService.hasApiKey();
+    setHasApiKey(apiKeyExists);
+    setShowApiKeyInput(!apiKeyExists);
   };
 
   const handleCapture = async (imageSrc: string) => {
@@ -42,10 +59,6 @@ function App() {
     setCapturedImage(null);
     setAnalysis(null);
     setError(null);
-  };
-
-  const handleChangeApiKey = () => {
-    setShowApiKeyInput(true);
   };
 
   const getErrorIcon = (errorMessage: string) => {
@@ -90,13 +103,18 @@ function App() {
         isVisible={showApiKeyInput}
       />
       
-      {/* API-Schlüssel-Status und Ändern-Button */}
-      {!showApiKeyInput && (
-        <div className="api-key-status">
-          <span className="status-indicator">🔑 API-Schlüssel gesetzt</span>
-          <button onClick={handleChangeApiKey} className="change-api-key-button">
-            🔄 API-Schlüssel ändern
-          </button>
+      {/* API-Schlüssel-Dialog */}
+      <ApiKeyDialog
+        isVisible={showApiKeyDialog}
+        onClose={() => setShowApiKeyDialog(false)}
+        onApiKeyChange={handleApiKeyChange}
+      />
+      
+      {/* Dezenter API-Schlüssel-Hinweis */}
+      {hasApiKey && !showApiKeyInput && (
+        <div className="api-key-indicator" onClick={() => setShowApiKeyDialog(true)}>
+          <span className="indicator-icon">🔑</span>
+          <span className="indicator-text">API-Schlüssel gesetzt</span>
         </div>
       )}
       

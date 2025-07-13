@@ -8,14 +8,21 @@ interface CameraScannerProps {
 const CameraScanner: React.FC<CameraScannerProps> = ({ onCapture }) => {
   const [cameras, setCameras] = useState<MediaDeviceInfo[]>([]);
   const [selectedCamera, setSelectedCamera] = useState<string>('');
+  const [cameraPermissionGranted, setCameraPermissionGranted] = useState(false);
   const webcamRef = useRef<Webcam>(null);
 
-  // Kameras beim Laden der Komponente abrufen
+  // Kameras nach Kamera-Berechtigung abrufen
   React.useEffect(() => {
     const getCameras = async () => {
       try {
+        // Erst Kamera-Berechtigung anfordern
+        await navigator.mediaDevices.getUserMedia({ video: true });
+        setCameraPermissionGranted(true);
+        
+        // Dann alle Kameras abrufen
         const devices = await navigator.mediaDevices.enumerateDevices();
         const videoDevices = devices.filter(device => device.kind === 'videoinput');
+        console.log('Gefundene Kameras:', videoDevices.length, videoDevices);
         setCameras(videoDevices);
         
         if (videoDevices.length > 0) {
@@ -73,6 +80,11 @@ const CameraScanner: React.FC<CameraScannerProps> = ({ onCapture }) => {
       </div>
 
       <div className="camera-controls">
+        {/* Debug-Info */}
+        <div className="debug-info" style={{ color: '#00ff88', fontSize: '12px', marginBottom: '10px' }}>
+          Kameras gefunden: {cameras.length} | Berechtigung: {cameraPermissionGranted ? 'Ja' : 'Nein'}
+        </div>
+
         {/* Kamera-Auswahl */}
         {cameras.length > 1 && (
           <div className="camera-selector">

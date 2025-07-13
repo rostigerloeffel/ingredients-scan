@@ -24,7 +24,8 @@ function App() {
       setAnalysis(analysisResult);
     } catch (err) {
       console.error('Analyse-Fehler:', err);
-      setError(err instanceof Error ? err.message : 'Unbekannter Fehler');
+      const errorMessage = err instanceof Error ? err.message : 'Unbekannter Fehler';
+      setError(errorMessage);
     } finally {
       setIsAnalyzing(false);
     }
@@ -34,6 +35,38 @@ function App() {
     setCapturedImage(null);
     setAnalysis(null);
     setError(null);
+  };
+
+  const getErrorIcon = (errorMessage: string) => {
+    if (errorMessage.includes('API-Schlüssel')) return '🔑';
+    if (errorMessage.includes('Netzwerk')) return '🌐';
+    if (errorMessage.includes('Server')) return '🖥️';
+    if (errorMessage.includes('Bild')) return '📷';
+    if (errorMessage.includes('Zutaten')) return '🔍';
+    if (errorMessage.includes('Limit')) return '⏰';
+    return '❌';
+  };
+
+  const getErrorSuggestion = (errorMessage: string) => {
+    if (errorMessage.includes('API-Schlüssel')) {
+      return 'Überprüfen Sie Ihre .env-Datei und stellen Sie sicher, dass VITE_OPENAI_API_KEY korrekt gesetzt ist.';
+    }
+    if (errorMessage.includes('Netzwerk')) {
+      return 'Überprüfen Sie Ihre Internetverbindung und versuchen Sie es erneut.';
+    }
+    if (errorMessage.includes('Server')) {
+      return 'Die OpenAI-Server sind temporär überlastet. Bitte versuchen Sie es in einigen Minuten erneut.';
+    }
+    if (errorMessage.includes('Bild')) {
+      return 'Stellen Sie sicher, dass das Bild klar, gut beleuchtet und die Zutatenliste gut lesbar ist.';
+    }
+    if (errorMessage.includes('Zutaten')) {
+      return 'Positionieren Sie die Kamera so, dass die gesamte Zutatenliste sichtbar ist.';
+    }
+    if (errorMessage.includes('Limit')) {
+      return 'Warten Sie einen Moment und versuchen Sie es dann erneut.';
+    }
+    return 'Versuchen Sie es erneut oder starten Sie einen neuen Scan.';
   };
 
   return (
@@ -53,15 +86,28 @@ function App() {
             <div className="analyzing">
               <div className="loading-spinner"></div>
               <p>Analysiere Zutatenliste...</p>
+              <p className="analyzing-hint">Dies kann einige Sekunden dauern</p>
             </div>
           )}
           
           {error && (
             <div className="error-message">
-              <p>❌ {error}</p>
-              <button onClick={handleNewScan} className="new-scan-button">
-                🔄 Neuen Scan starten
-              </button>
+              <div className="error-header">
+                <span className="error-icon">{getErrorIcon(error)}</span>
+                <h3>Analyse fehlgeschlagen</h3>
+              </div>
+              <p className="error-text">{error}</p>
+              <div className="error-suggestion">
+                <strong>Vorschlag:</strong> {getErrorSuggestion(error)}
+              </div>
+              <div className="error-actions">
+                <button onClick={handleNewScan} className="new-scan-button">
+                  🔄 Neuen Scan starten
+                </button>
+                <button onClick={() => setError(null)} className="retry-button">
+                  🔁 Erneut versuchen
+                </button>
+              </div>
             </div>
           )}
           

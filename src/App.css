@@ -80,18 +80,65 @@
 @media (max-width: 768px) {
   .app {
     padding: 10px;
+    min-height: 100vh;
+    justify-content: flex-start;
   }
   
   .app h1 {
-    font-size: 2rem;
+    font-size: 1.8rem;
+    margin: 10px 0 15px 0;
+  }
+  
+  .result-view {
+    padding: 0 10px;
   }
   
   .result-view h2 {
-    font-size: 1.5rem;
+    font-size: 1.4rem;
+    margin-bottom: 15px;
+  }
+  
+  .image-preview {
+    max-width: 100%;
+    border-radius: 8px;
   }
   
   .new-scan-button {
-    padding: 14px 28px;
+    padding: 12px 24px;
     font-size: 16px;
+    min-width: 160px;
+  }
+}
+
+@media (max-width: 480px) {
+  .app {
+    padding: 5px;
+  }
+  
+  .app h1 {
+    font-size: 1.6rem;
+    margin: 8px 0 12px 0;
+  }
+  
+  .result-view h2 {
+    font-size: 1.2rem;
+  }
+  
+  .new-scan-button {
+    padding: 10px 20px;
+    font-size: 14px;
+    min-width: 140px;
+  }
+}
+
+/* Landscape Mode für Mobile */
+@media (max-width: 768px) and (orientation: landscape) {
+  .app {
+    padding: 5px;
+  }
+  
+  .app h1 {
+    font-size: 1.4rem;
+    margin: 5px 0 10px 0;
   }
 }

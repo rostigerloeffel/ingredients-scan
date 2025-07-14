@@ -2,7 +2,7 @@ body, html, #root {
   background: #242424 !important;
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif !important;
   color: #f3f3f3;
-  min-height: 100vh;
+  min-height: 100%;
 }
 
 button {
@@ -34,13 +34,13 @@ button:active {
   align-items: center;
   padding: 2.5rem 1rem 1.5rem 1rem;
   max-width: 600px;
-  margin: 0 auto;
+  margin: 0;
   width: 100%;
   box-sizing: border-box;
 }
 
 .app h1 {
-  margin: 0 0 2.5rem 0;
+  margin: 0;
   font-size: 2.2rem;
   font-weight: 600;
   text-align: center;

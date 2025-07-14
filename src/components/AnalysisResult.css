@@ -125,6 +125,10 @@
   transition: background 0.2s, border 0.2s;
 }
 
+.ingredient-name {
+  color: #fff;
+}
+
 .ingredient-card:hover {
   background: #353535;
   border-color: #666;

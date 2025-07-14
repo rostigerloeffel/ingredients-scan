@@ -157,10 +157,10 @@ export default function AnalysisResult({ analysis }: AnalysisResultProps) {
           {/* Buttons zum Hinzufügen aller Inhaltsstoffe */}
           <div className="ingredients-actions">
             <button onClick={handleAddAllToPositiveList} className="add-all-button positive">
-              ✅ Alle zu Verträglichkeitsliste hinzufügen
+              ✅ Gut verträglich
             </button>
             <button onClick={handleAddAllToNegativeList} className="add-all-button negative">
-              ❌ Alle zu Unverträglichkeitsliste hinzufügen
+              ❌ Nicht verträglich
             </button>
           </div>
         </div>

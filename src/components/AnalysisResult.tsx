@@ -15,9 +15,11 @@ interface IntoleranceWarning {
 export default function AnalysisResult({ analysis }: AnalysisResultProps) {
   const [intoleranceWarnings, setIntoleranceWarnings] = useState<IntoleranceWarning[]>([]);
   const [hasWarnings, setHasWarnings] = useState(false);
+  const [displayedIngredients, setDisplayedIngredients] = useState<string[]>(analysis.ingredients);
 
   useEffect(() => {
     checkIntolerances();
+    setDisplayedIngredients(analysis.ingredients);
   }, [analysis]);
 
   const checkIntolerances = () => {
@@ -38,6 +40,22 @@ export default function AnalysisResult({ analysis }: AnalysisResultProps) {
     
     setIntoleranceWarnings(warnings);
     setHasWarnings(warnings.length > 0);
+  };
+
+  const handleAddAllToPositiveList = () => {
+    const positiveList = IngredientListService.getPositiveList();
+    const newPositiveList = [...positiveList, ...displayedIngredients];
+    IngredientListService.savePositiveList(newPositiveList);
+  };
+
+  const handleAddAllToNegativeList = () => {
+    const negativeList = IngredientListService.getNegativeList();
+    const newNegativeList = [...negativeList, ...displayedIngredients];
+    IngredientListService.saveNegativeList(newNegativeList);
+  };
+
+  const handleRemoveIngredient = (ingredientToRemove: string) => {
+    setDisplayedIngredients(prev => prev.filter(ingredient => ingredient !== ingredientToRemove));
   };
 
   const getWarningIcon = (severity: 'high' | 'medium' | 'low') => {
@@ -63,12 +81,12 @@ export default function AnalysisResult({ analysis }: AnalysisResultProps) {
       <div className="result-header">
         <h2>📋 Analyseergebnis</h2>
         <p className="result-summary">
-          {analysis.ingredients.length} Inhaltsstoffe erkannt
+          {displayedIngredients.length} Inhaltsstoffe erkannt
         </p>
       </div>
 
       {/* Hinweis, wenn keine Inhaltsstoffe erkannt wurden */}
-      {analysis.ingredients.length === 0 && (
+      {displayedIngredients.length === 0 && (
         <div className="no-ingredients-warning">
           <p>⚠️ Es konnten keine Inhaltsstoffe erkannt werden.</p>
         </div>
@@ -111,18 +129,21 @@ export default function AnalysisResult({ analysis }: AnalysisResultProps) {
       )}
 
       {/* Normale Analyseergebnisse */}
-      {analysis.ingredients.length > 0 && (
+      {displayedIngredients.length > 0 && (
         <div className="ingredients-section">
           <h3>🔍 Erkannte Inhaltsstoffe</h3>
           <div className="ingredients-grid">
-            {analysis.ingredients.map((ingredient, index) => {
+            {displayedIngredients.map((ingredient, index) => {
               const isIntolerant = intoleranceWarnings.some(
                 warning => warning.ingredient.toLowerCase() === ingredient.toLowerCase()
               );
+              
               return (
                 <div 
                   key={index} 
                   className={`ingredient-card ${isIntolerant ? 'intolerant' : ''}`}
+                  onClick={() => handleRemoveIngredient(ingredient)}
+                  title="Klicken zum Löschen"
                 >
                   <span className="ingredient-name">{ingredient}</span>
                   {isIntolerant && (
@@ -131,6 +152,16 @@ export default function AnalysisResult({ analysis }: AnalysisResultProps) {
                 </div>
               );
             })}
+          </div>
+          
+          {/* Buttons zum Hinzufügen aller Inhaltsstoffe */}
+          <div className="ingredients-actions">
+            <button onClick={handleAddAllToPositiveList} className="add-all-button positive">
+              ✅ Alle zu Verträglichkeitsliste hinzufügen
+            </button>
+            <button onClick={handleAddAllToNegativeList} className="add-all-button negative">
+              ❌ Alle zu Unverträglichkeitsliste hinzufügen
+            </button>
           </div>
         </div>
       )}

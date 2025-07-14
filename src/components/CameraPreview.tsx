@@ -6,6 +6,8 @@ interface CameraPreviewProps {
   onCapture: (imageSrc: string) => void;
 }
 
+const CAMERA_STORAGE_KEY = 'selected_camera';
+
 const CameraPreview: React.FC<CameraPreviewProps> = ({ onCapture }) => {
   const [cameras, setCameras] = useState<MediaDeviceInfo[]>([]);
   const [selectedCamera, setSelectedCamera] = useState<string>('');
@@ -24,7 +26,11 @@ const CameraPreview: React.FC<CameraPreviewProps> = ({ onCapture }) => {
         console.log('Gefundene Kameras:', videoDevices.length, videoDevices);
         setCameras(videoDevices);
         
-        if (videoDevices.length > 0) {
+        // Prüfe, ob eine Kamera im LocalStorage gespeichert ist
+        const storedCamera = localStorage.getItem(CAMERA_STORAGE_KEY);
+        if (storedCamera && videoDevices.some(cam => cam.deviceId === storedCamera)) {
+          setSelectedCamera(storedCamera);
+        } else if (videoDevices.length > 0) {
           setSelectedCamera(videoDevices[0].deviceId);
         }
       } catch (error) {
@@ -48,6 +54,7 @@ const CameraPreview: React.FC<CameraPreviewProps> = ({ onCapture }) => {
   // Kamera wechseln
   const handleCameraChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedCamera(event.target.value);
+    localStorage.setItem(CAMERA_STORAGE_KEY, event.target.value);
   };
 
   return (

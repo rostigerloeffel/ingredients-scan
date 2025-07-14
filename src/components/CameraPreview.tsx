@@ -101,7 +101,6 @@ const CameraPreview: React.FC<CameraPreviewProps> = ({ onCapture }) => {
             </select>
           </div>
         )}
-
         {/* Scan-Button */}
         <button onClick={capture} className="scan-button">
           📷 Inhaltsstoffe scannen

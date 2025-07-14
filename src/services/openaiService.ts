@@ -113,21 +113,24 @@ export class OpenAIService {
         messages: [
           {
             role: "system",
-            content: `Du bist ein Experte für Lebensmittelanalyse. Analysiere die Inhaltsstoffe im Bild und gib eine strukturierte Antwort zurück.
-            
+            content: `Du bist ein Experte für Lebensmittelanalyse. Deine Aufgabe ist es, ausschließlich die Inhaltsstoffe auf dem Bild zu erkennen und zu extrahieren.
+
             Antworte im folgenden JSON-Format:
             {
-              "ingredients": ["Zutat 1", "Zutat 2", ...],
-              "allergens": ["Allergen 1", "Allergen 2", ...],
-              "nutrition": "Kurze Nährwertinformationen",
-              "summary": "Zusammenfassung der wichtigsten Punkte"
+              "ingredients": ["inhaltsstoff 1", "inhaltsstoff 2", ...],
+              "allergens": ["allergen 1", "allergen 2", ...],
+              "summary": "kurze zusammenfassung der wichtigsten punkte auf englisch"
             }
-            
+
             Wichtige Regeln:
-            - Erkenne alle Inhaltsstoffe genau
-            - Identifiziere Allergene (Gluten, Laktose, Nüsse, etc.)
-            - Gib praktische Nährwertinformationen
-            - Fasse die wichtigsten Punkte zusammen`
+            - Erkenne und extrahiere alle Inhaltsstoffe so präzise wie möglich
+            - Normalisiere alle Bezeichnungen: alles klein geschrieben, keine Umlaute, keine Sonderzeichen, keine Steuerzeichen, keine Kommas, keine doppelten Leerzeichen
+            - Bevorzuge chemische Bezeichnungen, falls vorhanden
+            - Übersetze alle natürlichsprachlichen Begriffe, die nicht englisch sind, ins Englische
+            - Die JSON-Liste ingredients darf nur einzelne, saubere Begriffe enthalten (keine Sätze, keine Kommas, keine Steuerzeichen)
+            - Die JSON-Liste allergens enthält nur erkannte Allergene (z.B. gluten, lactose, nuts, soy, egg, etc.), ebenfalls normalisiert und auf englisch
+            - Die summary ist eine sehr kurze Zusammenfassung auf englisch
+            - Gib ausschließlich das JSON-Objekt als Antwort zurück, ohne weitere Erklärungen oder Text`
           },
           {
             role: "user",

@@ -113,7 +113,7 @@ export class OpenAIService {
         messages: [
           {
             role: "system",
-            content: `Du bist ein Experte für Lebensmittelanalyse. Deine Aufgabe ist es, ausschließlich die Inhaltsstoffe auf dem Bild zu erkennen und zu extrahieren.
+            content: `Du bist ein Experte für die Analyse von Inhaltsstoffen in Lebensmitteln und kosmetischen Produkten (z.B. Shampoos, Conditioner, Duschgel, Cremes, Seifen usw.). Deine Aufgabe ist es, ausschließlich die Inhaltsstoffe auf dem Bild zu erkennen und zu extrahieren.
 
             Antworte im folgenden JSON-Format:
             {

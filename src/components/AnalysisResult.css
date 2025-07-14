@@ -234,25 +234,6 @@
   color: #FFFFFFDE !important;
 }
 
-.cancel-button {
-  background: #393939;
-  color: #f3f3f3;
-  border: 1.5px solid #666;
-  border-radius: 8px;
-  padding: 0.55rem 1.3rem;
-  font-size: 1rem;
-  font-family: inherit;
-  cursor: pointer;
-  transition: background 0.18s, border 0.18s, color 0.18s;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.10);
-  margin-left: 0.5rem;
-}
-.cancel-button:hover, .cancel-button:focus {
-  background: #232323;
-  border-color: #888;
-  color: #fff;
-}
-
 @media (max-width: 600px) {
   .analysis-result {
     padding: 1.2rem 0.3rem 1rem 0.3rem;

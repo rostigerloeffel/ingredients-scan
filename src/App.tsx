@@ -78,7 +78,7 @@ function App() {
     if (errorMessage.includes('Netzwerk')) return '🌐';
     if (errorMessage.includes('Server')) return '🖥️';
     if (errorMessage.includes('Bild')) return '📷';
-    if (errorMessage.includes('Zutaten')) return '🔍';
+    if (errorMessage.includes('Inhaltsstoffe')) return '🔍';
     if (errorMessage.includes('Limit')) return '⏰';
     return '❌';
   };
@@ -94,10 +94,10 @@ function App() {
       return 'Die OpenAI-Server sind temporär überlastet. Bitte versuchen Sie es in einigen Minuten erneut.';
     }
     if (errorMessage.includes('Bild')) {
-      return 'Stellen Sie sicher, dass das Bild klar, gut beleuchtet und die Zutatenliste gut lesbar ist.';
+      return 'Stellen Sie sicher, dass das Bild klar, gut beleuchtet und die Inhaltsstoffe gut lesbar sind.';
     }
-    if (errorMessage.includes('Zutaten')) {
-      return 'Positionieren Sie die Kamera so, dass die gesamte Zutatenliste sichtbar ist.';
+    if (errorMessage.includes('Inhaltsstoffe')) {
+      return 'Positionieren Sie die Kamera so, dass alle Inhaltsstoffe sichtbar sind.';
     }
     if (errorMessage.includes('Limit')) {
       return 'Warten Sie einen Moment und versuchen Sie es dann erneut.';
@@ -149,15 +149,15 @@ function App() {
         <CameraPreview onCapture={handleCapture} />
       ) : (
         <div className="result-view">
-          <h2>Gescannte Zutatenliste</h2>
+          <h2>Gescannte Inhaltsstoffe</h2>
           <div className="image-preview">
-            <img src={capturedImage} alt="Gescannte Zutatenliste" />
+            <img src={capturedImage} alt="Gescannte Inhaltsstoffe" />
           </div>
           
           {isAnalyzing && (
             <div className="analyzing">
               <div className="loading-spinner"></div>
-              <p>Analysiere Zutatenliste...</p>
+              <p>Analysiere Inhaltsstoffe...</p>
               <p className="analyzing-hint">Dies kann einige Sekunden dauern</p>
             </div>
           )}
@@ -173,10 +173,10 @@ function App() {
                 <strong>Vorschlag:</strong> {getErrorSuggestion(error)}
               </div>
               <div className="error-actions">
-                <button onClick={handleNewScan} className="new-scan-button">
+                <button onClick={handleNewScan} className="action-button">
                   🔄 Neuen Scan starten
                 </button>
-                <button onClick={() => setError(null)} className="retry-button">
+                <button onClick={() => setError(null)} className="action-button">
                   🔁 Erneut versuchen
                 </button>
               </div>
@@ -189,7 +189,7 @@ function App() {
           
           {!analysis && !isAnalyzing && !error && (
             <div className="result-controls">
-              <button onClick={handleNewScan} className="new-scan-button">
+              <button onClick={handleNewScan} className="action-button">
                 🔄 Neuen Scan starten
               </button>
             </div>

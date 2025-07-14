@@ -1,3 +1,31 @@
+body, html, #root {
+  background: #242424 !important;
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif !important;
+  color: #f3f3f3;
+  min-height: 100vh;
+  overflow: hidden !important;
+}
+
+button {
+  font-family: inherit;
+  border: 1px solid #444;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  background: #303030;
+  color: #f3f3f3;
+  transition: background 0.2s, border 0.2s, box-shadow 0.2s;
+}
+
+button:hover {
+  background: #353535;
+  border-color: #666;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+}
+
+button:active {
+  background: #282828;
+}
+
 .app {
   min-height: 100%;
   color: #222;
@@ -17,7 +45,7 @@
   font-size: 2.2rem;
   font-weight: 600;
   text-align: center;
-  color: #22314a;
+  color: #FFFFFFDE !important;
   letter-spacing: 0.01em;
   text-shadow: none;
   background: none;
@@ -27,7 +55,7 @@
   position: fixed;
   top: 18px;
   right: 18px;
-  background: #f0f2f5;
+  background: #232323;
   border: 1px solid #d6dbe2;
   border-radius: 16px;
   padding: 6px 14px;
@@ -41,11 +69,18 @@
   color: #22314a;
   box-shadow: none;
   z-index: 100;
+  color: #FFFFFFDE;
 }
 
 .api-key-indicator:hover {
   background: #e8ecf0;
   border-color: #c7cdd6;
+  color: #22314a;
+  box-shadow: none;
+}
+
+.api-key-indicator:active {
+  background: #f0f2f5;
 }
 
 .indicator-icon {
@@ -57,6 +92,10 @@
 .indicator-text {
   color: #22314a;
   white-space: nowrap;
+}
+
+.api-key-indicator .indicator-text {
+  color: #FFFFFFDE !important;
 }
 
 .result-view {
@@ -75,6 +114,7 @@
   text-align: center;
   color: #22314a;
   width: 100%;
+  color: #FFFFFFDE;
 }
 
   .image-preview {
@@ -98,28 +138,6 @@
   justify-content: center;
   margin-top: 1.2rem;
   width: 100%;
-}
-
-.new-scan-button {
-  background: #e8ecf0;
-  color: #22314a;
-  border: 1px solid #d6dbe2;
-  border-radius: 10px;
-  padding: 12px 24px;
-  font-size: 1rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background 0.2s, border 0.2s;
-  box-shadow: none;
-}
-
-.new-scan-button:hover {
-  background: #dae0e8;
-  border-color: #c7cdd6;
-}
-
-.new-scan-button:active {
-  background: #f0f2f5;
 }
 
 .analyzing {
@@ -150,6 +168,7 @@
   font-size: 1rem;
   margin: 0;
   text-align: center;
+  color: #FFFFFFDE;
 }
 
 .analyzing-hint {
@@ -217,7 +236,7 @@
   margin-top: 0.5rem;
 }
 
-.retry-button {
+.action-button {
   background: #e8ecf0;
   color: #22314a;
   border: 1px solid #d6dbe2;
@@ -230,12 +249,12 @@
   box-shadow: none;
 }
 
-.retry-button:hover {
+.action-button:hover {
   background: #dae0e8;
   border-color: #c7cdd6;
 }
 
-.retry-button:active {
+.action-button:active {
   background: #f0f2f5;
 }
 

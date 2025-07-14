@@ -31,10 +31,7 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({ isVisible, onClose, onApi
   };
 
   const handleClose = () => {
-    // Erlaube Schließen nur wenn ein API-Key vorhanden ist
-    if (OpenAIService.hasApiKey()) {
-      onClose();
-    }
+    onClose();
   };
 
   const handleDelete = () => {
@@ -69,7 +66,7 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({ isVisible, onClose, onApi
         <div className="dialog-info">
           <p>
             <strong>Wofür wird der API-Schlüssel benötigt?</strong><br/>
-            Die App verwendet OpenAI's KI, um Zutatenlisten aus Fotos zu analysieren und Allergene zu erkennen.
+            Die App verwendet OpenAI's KI, um Inhaltsstoffe aus Fotos zu analysieren und Allergene zu erkennen.
           </p>
           <p>
             <strong>Wie erhalte ich einen API-Schlüssel?</strong><br/>
@@ -114,6 +111,7 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({ isVisible, onClose, onApi
               type="button"
               onClick={handleDelete}
               className="delete-button"
+              disabled={!isValid}
             >
               Löschen
             </button>

@@ -1,0 +1,252 @@
+.analysis-result {
+  background: #232323;
+  border-radius: 18px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.18);
+  padding: 2rem 1.5rem 1.5rem 1.5rem;
+  margin: 2rem auto;
+  max-width: 600px;
+  color: #f3f3f3;
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+}
+
+.result-header h2 {
+  color: #f3f3f3;
+  font-size: 1.6rem;
+  margin-bottom: 0.2rem;
+  font-weight: 700;
+}
+
+.result-summary {
+  color: #bdbdbd;
+  font-size: 1rem;
+  margin-bottom: 1.2rem;
+}
+
+.intolerance-warnings {
+  background: #2d2323;
+  border: 1.5px solid #ff6b6b;
+  border-radius: 14px;
+  box-shadow: 0 2px 12px rgba(255,107,107,0.08);
+  padding: 1.2rem 1rem 1rem 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.warnings-header {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  margin-bottom: 0.5rem;
+}
+
+.warning-icon {
+  font-size: 1.5rem;
+}
+
+.warnings-header h3 {
+  color: #ff6b6b;
+  font-size: 1.15rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.warning-description {
+  color: #ffb3b3;
+  font-size: 1rem;
+  margin-bottom: 0.7rem;
+}
+
+.warning-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+  margin-bottom: 0.7rem;
+}
+
+.warning-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  border: 1.5px solid #ff6b6b;
+  background: #3a2323;
+  border-radius: 8px;
+  padding: 0.4rem 0.9rem;
+  font-size: 1rem;
+  color: #ff6b6b;
+  box-shadow: 0 2px 8px rgba(255,107,107,0.08);
+}
+
+.warning-item-icon {
+  font-size: 1.2rem;
+}
+
+.warning-advice {
+  background: #2d2d2d;
+  border-radius: 8px;
+  padding: 0.6rem 0.8rem;
+  margin-top: 0.5rem;
+  color: #ffe082;
+  font-size: 0.98rem;
+}
+
+.ingredients-section {
+  margin-top: 1.5rem;
+}
+
+.ingredients-section h3 {
+  color: #4ecdc4;
+  font-size: 1.15rem;
+  font-weight: 600;
+  margin-bottom: 0.7rem;
+}
+
+.ingredients-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+}
+
+.ingredient-card {
+  background: #292929;
+  border: 1.5px solid #444;
+  border-radius: 8px;
+  padding: 0.5rem 1.1rem;
+  color: #f3f3f3;
+  font-size: 1rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  position: relative;
+}
+
+.ingredient-card.intolerant {
+  border-color: #ff6b6b;
+  background: #3a2323;
+  color: #ffb3b3;
+}
+
+.intolerance-badge {
+  background: #ff6b6b;
+  color: #fff;
+  border-radius: 6px;
+  padding: 0.1rem 0.6rem;
+  font-size: 0.92rem;
+  margin-left: 0.5rem;
+  font-weight: 600;
+  box-shadow: 0 1px 4px rgba(255,107,107,0.10);
+}
+
+.allergens-section {
+  margin-top: 1.5rem;
+  background: #2d2d23;
+  border: 1.5px solid #ffa726;
+  border-radius: 12px;
+  padding: 1rem 1rem 0.7rem 1rem;
+  box-shadow: 0 2px 12px rgba(255,167,38,0.08);
+}
+
+.allergens-section h3 {
+  color: #ffa726;
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 0.7rem;
+}
+
+.allergens-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+}
+
+.allergen-card {
+  background: #29291f;
+  border: 1.5px solid #ffa726;
+  border-radius: 8px;
+  padding: 0.4rem 1rem;
+  color: #ffa726;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  box-shadow: 0 2px 8px rgba(255,167,38,0.08);
+}
+
+.allergen-icon {
+  font-size: 1.2rem;
+}
+
+.nutrition-section {
+  margin-top: 1.5rem;
+  background: #232d23;
+  border: 1.5px solid #4ecdc4;
+  border-radius: 12px;
+  padding: 1rem 1rem 0.7rem 1rem;
+  box-shadow: 0 2px 12px rgba(78,205,196,0.08);
+}
+
+.nutrition-section h3 {
+  color: #4ecdc4;
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 0.7rem;
+}
+
+.nutrition-text {
+  color: #b2f7ef;
+  font-size: 1rem;
+}
+
+.summary-section {
+  margin-top: 1.5rem;
+  background: #23232d;
+  border: 1.5px solid #bdbdbd;
+  border-radius: 12px;
+  padding: 1rem 1rem 0.7rem 1rem;
+  box-shadow: 0 2px 12px rgba(189,189,189,0.08);
+}
+
+.summary-section h3 {
+  color: #bdbdbd;
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 0.7rem;
+}
+
+.summary-text {
+  color: #e0e0e0;
+  font-size: 1rem;
+}
+
+.result-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 2rem;
+}
+
+.analysis-result h2,
+.analysis-result h3,
+.result-header h2,
+.warnings-header h3,
+.ingredients-section h3,
+.allergens-section h3,
+.nutrition-section h3,
+.summary-section h3 {
+  color: #FFFFFFDE !important;
+}
+
+@media (max-width: 600px) {
+  .analysis-result {
+    padding: 1.2rem 0.3rem 1rem 0.3rem;
+    margin: 1rem 0.2rem;
+  }
+  .ingredients-grid, .allergens-grid {
+    gap: 0.4rem;
+  }
+  .ingredient-card, .allergen-card {
+    padding: 0.4rem 0.7rem;
+    font-size: 0.97rem;
+  }
+  .result-actions {
+    margin-top: 1.2rem;
+  }
+} 

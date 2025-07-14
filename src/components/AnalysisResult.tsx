@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { type IngredientAnalysis } from '../services/openaiService';
 import { IngredientListService } from '../services/ingredientLists';
+import './AnalysisResult.css';
 
 interface AnalysisResultProps {
   analysis: IngredientAnalysis;

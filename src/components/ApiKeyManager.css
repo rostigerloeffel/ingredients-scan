@@ -10,7 +10,6 @@
   justify-content: center;
   z-index: 1000;
   padding: 1rem;
-  overflow-y: auto;
 }
 
 .api-key-manager-dialog {
@@ -20,8 +19,7 @@
   max-width: 500px;
   width: 100%;
   max-height: 90vh;
-  overflow-y: auto;
-  overflow-x: hidden;
+  overflow: visible;
   margin: auto;
   box-sizing: border-box;
 }
@@ -165,59 +163,49 @@
 .form-actions {
   display: flex;
   gap: 0.75rem;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   min-width: 0;
   overflow: hidden;
+  justify-content: center;
 }
 
 .save-button,
 .delete-button,
 .cancel-button {
-  padding: 0.75rem 1.5rem;
-  border-radius: 8px;
-  font-size: 0.95rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background 0.2s, border 0.2s;
-  border: 1px solid;
+  background: #232323;
+  color: #FFFFFFDE;
+  border: 1.5px solid #444;
+  border-radius: 10px;
+  font-size: 1.05rem;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+  padding: 12px 0;
+  width: 100%;
+  flex: 1 1 0;
+  text-align: center;
+  white-space: nowrap;
+  margin: 0;
+  transition: background 0.2s, border 0.2s, box-shadow 0.2s;
 }
 
-.save-button {
-  background: #e9ecf2;
-  color: #22314a;
-  border-color: #d6dbe2;
+.save-button:hover:not(:disabled),
+.delete-button:hover:not(:disabled),
+.cancel-button:hover:not(:disabled) {
+  background: #353535;
+  border-color: #666;
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.16);
 }
 
-.save-button:hover:not(:disabled) {
-  background: #dbe1ea;
-  border-color: #c7cdd6;
+.save-button:active,
+.delete-button:active,
+.cancel-button:active {
+  background: #181818;
 }
 
 .save-button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
-}
-
-.delete-button {
-  background: #f8f9fb;
-  color: #b23c3c;
-  border-color: #e3e6eb;
-}
-
-.delete-button:hover {
-  background: #f2f4f7;
-  border-color: #d6dbe2;
-}
-
-.cancel-button {
-  background: #f8f9fb;
-  color: #7a8599;
-  border-color: #e3e6eb;
-}
-
-.cancel-button:hover {
-  background: #f2f4f7;
-  border-color: #d6dbe2;
 }
 
 .dialog-footer {
@@ -300,5 +288,13 @@
   
   .dialog-footer {
     padding: 0.7rem 1rem 1rem 1rem;
+  }
+
+  .save-button,
+  .delete-button,
+  .cancel-button {
+    padding: 9px 0;
+    font-size: 0.92rem;
+    width: 100%;
   }
 } 

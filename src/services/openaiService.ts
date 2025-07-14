@@ -88,7 +88,7 @@ export class OpenAIService {
   }
 
   /**
-   * Analysiert ein Bild von einer Zutatenliste
+   * Analysiert ein Bild von Inhaltsstoffen
    */
   static async analyzeIngredients(imageBase64: string): Promise<IngredientAnalysis> {
     // API Key Validierung
@@ -113,7 +113,7 @@ export class OpenAIService {
         messages: [
           {
             role: "system",
-            content: `Du bist ein Experte für Lebensmittelanalyse. Analysiere die Zutatenliste im Bild und gib eine strukturierte Antwort zurück.
+            content: `Du bist ein Experte für Lebensmittelanalyse. Analysiere die Inhaltsstoffe im Bild und gib eine strukturierte Antwort zurück.
             
             Antworte im folgenden JSON-Format:
             {
@@ -124,7 +124,7 @@ export class OpenAIService {
             }
             
             Wichtige Regeln:
-            - Erkenne alle Zutaten genau
+            - Erkenne alle Inhaltsstoffe genau
             - Identifiziere Allergene (Gluten, Laktose, Nüsse, etc.)
             - Gib praktische Nährwertinformationen
             - Fasse die wichtigsten Punkte zusammen`
@@ -134,7 +134,7 @@ export class OpenAIService {
             content: [
               {
                 type: "text",
-                text: "Analysiere diese Zutatenliste und gib mir eine strukturierte Analyse zurück."
+                text: "Analysiere diese Inhaltsstoffe und gib mir eine strukturierte Analyse zurück."
               },
               {
                 type: "image_url",
@@ -160,7 +160,7 @@ export class OpenAIService {
         
         // Validierung der Analyse-Struktur
         if (!analysis.ingredients || !Array.isArray(analysis.ingredients)) {
-          throw new Error('Ungültige Analyse-Struktur: Zutaten fehlen');
+          throw new Error('Ungültige Analyse-Struktur: Inhaltsstoffe fehlen');
         }
         
         return analysis as IngredientAnalysis;
@@ -230,7 +230,7 @@ export class OpenAIService {
 
     // Validierung der geparsten Daten
     if (ingredients.length === 0) {
-      throw new Error('Keine Zutaten im Bild erkannt. Bitte stellen Sie sicher, dass die Zutatenliste klar sichtbar ist.');
+      throw new Error('Keine Inhaltsstoffe im Bild erkannt. Bitte stellen Sie sicher, dass die Inhaltsstoffe klar sichtbar sind.');
     }
 
     return {

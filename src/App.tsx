@@ -5,6 +5,7 @@ import ResultView from './components/ResultView';
 import ApiKeyManager from './components/ApiKeyManager'
 import IngredientLists from './components/IngredientLists'
 import { OpenAIService, type IngredientAnalysis } from './services/openaiService'
+import { TesseractService } from './services/tesseractService'
 import './App.css'
 import './components/ListsButtons.css'
 import './components/CameraPreview.css'
@@ -48,8 +49,40 @@ function App() {
     try {
       // Base64-String ohne Präfix extrahieren
       const base64Data = croppedImage.split(',')[1];
-      const result = await OpenAIService.analyzeIngredients(base64Data);
-      setAnalysis(result);
+      
+      // OCR und OpenAI-Analyse parallel ausführen
+      const [ocrIngredients, aiResult] = await Promise.allSettled([
+        TesseractService.extractIngredients(base64Data),
+        OpenAIService.analyzeIngredients(base64Data)
+      ]);
+
+      // Ergebnis verarbeiten
+      let finalResult: IngredientAnalysis;
+      
+      if (aiResult.status === 'fulfilled') {
+        // OpenAI-Analyse erfolgreich
+        finalResult = aiResult.value;
+        
+        // OCR-Ergebnisse hinzufügen, falls verfügbar
+        if (ocrIngredients.status === 'fulfilled' && ocrIngredients.value.length > 0) {
+          const combinedIngredients = Array.from(new Set([
+            ...finalResult.ingredients,
+            ...ocrIngredients.value
+          ]));
+          finalResult.ingredients = combinedIngredients;
+        }
+      } else {
+        // Nur OCR verfügbar
+        const ocrResult = ocrIngredients.status === 'fulfilled' ? ocrIngredients.value : [];
+        finalResult = {
+          ingredients: ocrResult,
+          allergens: [],
+          nutrition: '',
+          summary: 'OCR fallback: Ingredients extracted from image text.'
+        };
+      }
+      
+      setAnalysis(finalResult);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unbekannter Fehler');
       setAnalysis(null);

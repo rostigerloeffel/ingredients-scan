@@ -75,7 +75,7 @@ export default function ToleranceQuestion({ analysis, onComplete, onCancel }: To
           <button
             className={`tolerance-button good ${selectedTolerance === 'good' ? 'selected' : ''}`}
             onClick={() => handleToleranceSelect('good')}
-            disabled={isProcessing}
+            disabled={isProcessing || analysis.ingredients.length === 0}
           >
             <span className="tolerance-icon">✅</span>
             <div className="tolerance-content">
@@ -87,7 +87,7 @@ export default function ToleranceQuestion({ analysis, onComplete, onCancel }: To
           <button
             className={`tolerance-button bad ${selectedTolerance === 'bad' ? 'selected' : ''}`}
             onClick={() => handleToleranceSelect('bad')}
-            disabled={isProcessing}
+            disabled={isProcessing || analysis.ingredients.length === 0}
           >
             <span className="tolerance-icon">❌</span>
             <div className="tolerance-content">

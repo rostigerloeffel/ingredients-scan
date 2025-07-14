@@ -68,6 +68,13 @@ export default function AnalysisResult({ analysis, onNewScan }: AnalysisResultPr
         </p>
       </div>
 
+      {/* Hinweis, wenn keine Inhaltsstoffe erkannt wurden */}
+      {analysis.ingredients.length === 0 && (
+        <div className="no-ingredients-warning">
+          <p>⚠️ Es konnten keine Inhaltsstoffe erkannt werden.</p>
+        </div>
+      )}
+
       {/* Unverträglichkeits-Warnungen */}
       {hasWarnings && (
         <div className="intolerance-warnings">

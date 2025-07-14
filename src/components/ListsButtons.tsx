@@ -4,9 +4,10 @@ import './ListsButtons.css';
 
 interface ListsButtonsProps {
   onShowLists: () => void;
+  disabled?: boolean;
 }
 
-const ListsButtons: React.FC<ListsButtonsProps> = ({ onShowLists }) => {
+const ListsButtons: React.FC<ListsButtonsProps> = ({ onShowLists, disabled }) => {
   const positiveCount = IngredientListService.getPositiveList().length;
   const negativeCount = IngredientListService.getNegativeList().length;
 
@@ -15,12 +16,14 @@ const ListsButtons: React.FC<ListsButtonsProps> = ({ onShowLists }) => {
       <button 
         onClick={onShowLists}
         className="lists-button positive"
+        disabled={disabled}
       >
         ✅ Verträglich ({positiveCount})
       </button>
       <button 
         onClick={onShowLists}
         className="lists-button negative"
+        disabled={disabled}
       >
         ❌ Unverträglich ({negativeCount})
       </button>

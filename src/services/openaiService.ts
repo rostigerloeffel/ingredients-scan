@@ -92,18 +92,24 @@ export class OpenAIService {
    * Analysiert ein Bild von Inhaltsstoffen
    */
   static async analyzeIngredients(imageBase64: string): Promise<IngredientAnalysis> {
-    // API Key Validierung
-    if (!this.apiKey && !this.loadApiKeyFromStorage()) {
-      throw new Error('OpenAI API-Schlüssel fehlt. Bitte geben Sie Ihren API-Schlüssel ein.');
-    }
-
     // Bilddaten Validierung
     if (!imageBase64 || imageBase64.length < 100) {
       throw new Error('Ungültiges Bild. Bitte stellen Sie sicher, dass das Bild klar und gut lesbar ist.');
     }
 
-    // OCR-Analyse parallel starten
-    const ocrPromise = this.ocrIngredients(imageBase64);
+    // OCR-Analyse immer durchführen
+    const ocrIngredients = await this.ocrIngredients(imageBase64);
+
+    // Wenn kein API-Key vorhanden ist, nur OCR zurückgeben und speziellen Hinweis setzen
+    if (!this.apiKey && !this.loadApiKeyFromStorage()) {
+      const result: IngredientAnalysis = {
+        ingredients: ocrIngredients,
+        allergens: [],
+        nutrition: '',
+        summary: 'Die automatische KI-Analyse ist aktuell nicht verfügbar, weil kein OpenAI-Key hinterlegt ist. Die Texterkennung funktioniert trotzdem – du kannst die Zutatenliste wie gewohnt scannen.'
+      };
+      return result;
+    }
 
     // OpenAI-Analyse starten
     const openAIPromise = (async () => {
@@ -202,16 +208,15 @@ export class OpenAIService {
     })();
 
     // Beide Ergebnisse abwarten
-    const [ocrResult, openAIResult] = await Promise.allSettled([ocrPromise, openAIPromise]);
+    const openAIResult = await Promise.resolve(openAIPromise).then(
+      value => ({ status: 'fulfilled', value }),
+      reason => ({ status: 'rejected', reason })
+    );
 
     // Ergebnis-Verrechnung
     let aiResult: IngredientAnalysis | null = null;
-    if (openAIResult.status === 'fulfilled') {
+    if (openAIResult.status === 'fulfilled' && 'value' in openAIResult) {
       aiResult = openAIResult.value;
-    }
-    let ocrIngredients: string[] = [];
-    if (ocrResult.status === 'fulfilled') {
-      ocrIngredients = ocrResult.value;
     }
 
     // Wenn AI keine oder zu wenige Inhaltsstoffe liefert, ergänze mit OCR

@@ -203,7 +203,8 @@
   background: #181818;
 }
 
-.save-button:disabled {
+.save-button:disabled,
+.delete-button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }

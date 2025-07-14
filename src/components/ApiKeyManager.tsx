@@ -129,11 +129,6 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({ isVisible, onClose, onApi
           <p>
             <strong>Hinweis:</strong> Der API-Schlüssel wird nur lokal in Ihrem Browser gespeichert.
           </p>
-          {!OpenAIService.hasApiKey() && (
-            <p className="required-notice">
-              <strong>Erforderlich:</strong> Ein API-Schlüssel ist erforderlich, um die App zu nutzen.
-            </p>
-          )}
         </div>
       </div>
     </div>

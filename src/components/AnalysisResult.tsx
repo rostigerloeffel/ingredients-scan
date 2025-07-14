@@ -112,28 +112,29 @@ export default function AnalysisResult({ analysis, onNewScan }: AnalysisResultPr
       )}
 
       {/* Normale Analyseergebnisse */}
-      <div className="ingredients-section">
-        <h3>🔍 Erkannte Inhaltsstoffe</h3>
-        <div className="ingredients-grid">
-          {analysis.ingredients.map((ingredient, index) => {
-            const isIntolerant = intoleranceWarnings.some(
-              warning => warning.ingredient.toLowerCase() === ingredient.toLowerCase()
-            );
-            
-            return (
-              <div 
-                key={index} 
-                className={`ingredient-card ${isIntolerant ? 'intolerant' : ''}`}
-              >
-                <span className="ingredient-name">{ingredient}</span>
-                {isIntolerant && (
-                  <span className="intolerance-badge">🚨 Unverträglich</span>
-                )}
-              </div>
-            );
-          })}
+      {analysis.ingredients.length > 0 && (
+        <div className="ingredients-section">
+          <h3>🔍 Erkannte Inhaltsstoffe</h3>
+          <div className="ingredients-grid">
+            {analysis.ingredients.map((ingredient, index) => {
+              const isIntolerant = intoleranceWarnings.some(
+                warning => warning.ingredient.toLowerCase() === ingredient.toLowerCase()
+              );
+              return (
+                <div 
+                  key={index} 
+                  className={`ingredient-card ${isIntolerant ? 'intolerant' : ''}`}
+                >
+                  <span className="ingredient-name">{ingredient}</span>
+                  {isIntolerant && (
+                    <span className="intolerance-badge">🚨 Unverträglich</span>
+                  )}
+                </div>
+              );
+            })}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Allergene */}
       {analysis.allergens.length > 0 && (
@@ -166,11 +167,7 @@ export default function AnalysisResult({ analysis, onNewScan }: AnalysisResultPr
         </div>
       )}
 
-      <div className="result-actions">
-        <button onClick={onNewScan} className="new-scan-button">
-          🔄 Neuen Scan starten
-        </button>
-      </div>
+      {/* Button für neuen Scan entfernt */}
     </div>
   );
 } 

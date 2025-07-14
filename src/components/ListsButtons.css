@@ -45,6 +45,18 @@
   background: #232323;
 }
 
+.lists-button .lists-button[disabled],
+.lists-button[disabled],
+.lists-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: #232323;
+  color: #888 !important;
+  border-color: #444;
+  box-shadow: none;
+  filter: grayscale(0.5);
+}
+
 @media (max-width: 480px) {
   .lists-buttons {
     gap: 0.3rem;

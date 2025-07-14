@@ -348,13 +348,6 @@ button:active {
   width: 100%;
 }
 
-.layout-middle {
-  display: flex;
-  flex-direction: column;
-  min-height: 0;
-  width: 100%;
-}
-
 .layout-bottom {
   display: flex;
   width: 100%;

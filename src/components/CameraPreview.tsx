@@ -1,7 +1,8 @@
 import React, { useState, useRef, useCallback } from 'react';
 import Webcam from 'react-webcam';
 import './CameraPreview.css';
-import Cropper from 'react-easy-crop';
+import { Cropper } from 'react-cropper';
+import '../styles/cropper.css';
 
 interface CameraPreviewProps {
   onCapture: (imageSrc: string) => void;
@@ -15,9 +16,7 @@ const CameraPreview: React.FC<CameraPreviewProps> = ({ onCapture }) => {
   const webcamRef = useRef<Webcam>(null);
   const [showCrop, setShowCrop] = useState(false);
   const [rawImage, setRawImage] = useState<string | null>(null);
-  const [crop, setCrop] = useState({ x: 0, y: 0 });
-  const [zoom, setZoom] = useState(1);
-  const [croppedAreaPixels, setCroppedAreaPixels] = useState<any>(null);
+  const cropperRef = useRef<HTMLImageElement>(null);
 
   // Kameras nach Kamera-Berechtigung abrufen
   React.useEffect(() => {
@@ -58,45 +57,15 @@ const CameraPreview: React.FC<CameraPreviewProps> = ({ onCapture }) => {
     }
   }, []);
 
-  // Cropping-Callback
-  const onCropComplete = useCallback((_: any, croppedAreaPixels: { width: number; height: number; x: number; y: number }) => {
-    setCroppedAreaPixels(croppedAreaPixels);
-  }, []);
-
   // Bild zuschneiden und weitergeben
-  const handleCropConfirm = async () => {
-    if (!rawImage || !croppedAreaPixels) return;
-    const cropped = await getCroppedImg(rawImage, croppedAreaPixels);
+  const handleCropConfirm = () => {
+    if (!rawImage || !cropperRef.current) return;
+    // @ts-ignore
+    const cropped = cropperRef.current.cropper.getCroppedCanvas().toDataURL('image/jpeg', 0.95);
     setShowCrop(false);
     setRawImage(null);
     onCapture(cropped);
   };
-
-  // Hilfsfunktion zum Croppen
-  async function getCroppedImg(imageSrc: string, crop: any): Promise<string> {
-    return new Promise((resolve) => {
-      const image = new window.Image();
-      image.onload = () => {
-        const canvas = document.createElement('canvas');
-        canvas.width = crop.width;
-        canvas.height = crop.height;
-        const ctx = canvas.getContext('2d')!;
-        ctx.drawImage(
-          image,
-          crop.x,
-          crop.y,
-          crop.width,
-          crop.height,
-          0,
-          0,
-          crop.width,
-          crop.height
-        );
-        resolve(canvas.toDataURL('image/jpeg', 0.95));
-      };
-      image.src = imageSrc;
-    });
-  }
 
   // Kamera wechseln
   const handleCameraChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -106,28 +75,24 @@ const CameraPreview: React.FC<CameraPreviewProps> = ({ onCapture }) => {
 
   return (
     <div className="camera-preview">
-      {/* Cropping-Dialog */}
+      {/* Cropping-UI mit react-cropper */}
       {showCrop && rawImage && (
         <div className="cropper-modal">
           <div className="cropper-container">
             <Cropper
-              image={rawImage}
-              crop={crop}
-              zoom={zoom}
-              aspect={4/3}
-              onCropChange={setCrop}
-              onZoomChange={setZoom}
-              onCropComplete={onCropComplete}
+              src={rawImage}
+              style={{ width: '100%', maxWidth: 500, height: 350 }}
+              initialAspectRatio={4/3}
+              aspectRatio={4/3}
+              guides={true}
+              viewMode={1}
+              dragMode="move"
+              background={false}
+              responsive={true}
+              autoCropArea={1}
+              ref={cropperRef}
             />
             <div className="cropper-controls">
-              <input
-                type="range"
-                min={1}
-                max={3}
-                step={0.01}
-                value={zoom}
-                onChange={e => setZoom(Number(e.target.value))}
-              />
               <button onClick={handleCropConfirm} className="scan-button">Ausschnitt übernehmen</button>
               <button onClick={() => { setShowCrop(false); setRawImage(null); }} className="cancel-button">Abbrechen</button>
             </div>

@@ -14,7 +14,6 @@ interface ResultViewProps {
 }
 
 const ResultView: React.FC<ResultViewProps> = ({
-  capturedImage,
   analysis,
   isAnalyzing,
   error,
@@ -61,7 +60,7 @@ const ResultView: React.FC<ResultViewProps> = ({
             </div>
           )}
           {!isAnalyzing && !error && analysis && (
-            <AnalysisResult analysis={analysis} onNewScan={handleClose} />
+            <AnalysisResult analysis={analysis} />
           )}
         </>
       }

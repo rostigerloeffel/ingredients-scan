@@ -5,7 +5,6 @@ import './AnalysisResult.css';
 
 interface AnalysisResultProps {
   analysis: IngredientAnalysis;
-  onNewScan: () => void;
 }
 
 interface IntoleranceWarning {
@@ -13,7 +12,7 @@ interface IntoleranceWarning {
   severity: 'high' | 'medium' | 'low';
 }
 
-export default function AnalysisResult({ analysis, onNewScan }: AnalysisResultProps) {
+export default function AnalysisResult({ analysis }: AnalysisResultProps) {
   const [intoleranceWarnings, setIntoleranceWarnings] = useState<IntoleranceWarning[]>([]);
   const [hasWarnings, setHasWarnings] = useState(false);
 

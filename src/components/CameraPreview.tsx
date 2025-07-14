@@ -1,7 +1,6 @@
-import React, { useState, useRef, useImperativeHandle, forwardRef, useEffect } from 'react';
+import { useRef, useImperativeHandle, forwardRef } from 'react';
 import Webcam from 'react-webcam';
 import './CameraPreview.css';
-import { Cropper } from 'react-cropper';
 import '../styles/cropper.css';
 
 export interface CameraPreviewHandle {
@@ -9,11 +8,10 @@ export interface CameraPreviewHandle {
 }
 
 interface CameraPreviewProps {
-  onCapture?: (imageSrc: string) => void;
   cameraId?: string;
 }
 
-const CameraPreview = forwardRef<CameraPreviewHandle, CameraPreviewProps>(({ onCapture, cameraId }, ref) => {
+const CameraPreview = forwardRef<CameraPreviewHandle, CameraPreviewProps>(({ cameraId }, ref) => {
   const webcamRef = useRef<Webcam>(null);
 
   useImperativeHandle(ref, () => ({

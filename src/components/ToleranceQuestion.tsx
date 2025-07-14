@@ -71,6 +71,13 @@ export default function ToleranceQuestion({ analysis, onComplete, onCancel }: To
           </div>
         </div>
 
+        {/* Hinweis, wenn keine Inhaltsstoffe erkannt wurden */}
+        {analysis.ingredients.length === 0 && (
+          <div className="no-ingredients-warning">
+            <p>⚠️ Es konnten keine Inhaltsstoffe erkannt werden.</p>
+          </div>
+        )}
+
         <div className="tolerance-options">
           <button
             className={`tolerance-button good ${selectedTolerance === 'good' ? 'selected' : ''}`}

@@ -22,6 +22,7 @@ html, body {
 }
 
 body {
+  margin: 0;
   background: #f5f6f8;
   color: #222;
 }

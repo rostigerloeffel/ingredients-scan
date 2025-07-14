@@ -8,8 +8,6 @@ interface ResultViewProps {
   error: string | null;
   analysis: IngredientAnalysis | null;
   showToleranceQuestion: boolean;
-  onNewScan: () => void;
-  setError: (err: string | null) => void;
 }
 
 const getErrorIcon = (errorMessage: string) => {
@@ -50,8 +48,6 @@ const ResultView: React.FC<ResultViewProps> = ({
   error,
   analysis,
   showToleranceQuestion,
-  onNewScan,
-  setError,
 }) => {
   const [showAnalysis, setShowAnalysis] = React.useState(true);
 
@@ -83,11 +79,8 @@ const ResultView: React.FC<ResultViewProps> = ({
             <strong>Vorschlag:</strong> {getErrorSuggestion(error)}
           </div>
           <div className="error-actions">
-            <button onClick={onNewScan} className="action-button">
-              🔄 Neuen Scan starten
-            </button>
-            <button onClick={() => setError(null)} className="action-button">
-              🔁 Erneut versuchen
+            <button onClick={() => setShowAnalysis(false)} className="action-button">
+              ✖️ Schließen
             </button>
           </div>
         </div>
@@ -106,9 +99,7 @@ const ResultView: React.FC<ResultViewProps> = ({
 
       {!analysis && !isAnalyzing && !error && (
         <div className="result-controls">
-          <button onClick={onNewScan} className="action-button">
-            🔄 Neuen Scan starten
-          </button>
+          {/* Kein Button mehr hier */}
         </div>
       )}
     </div>

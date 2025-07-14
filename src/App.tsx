@@ -58,13 +58,6 @@ function App() {
     }
   };
 
-  const handleNewScan = () => {
-    setCapturedImage(null);
-    setAnalysis(null);
-    setError(null);
-    setShowToleranceQuestion(false);
-  };
-
   const handleToleranceComplete = () => {
     setShowToleranceQuestion(false);
   };
@@ -122,8 +115,6 @@ function App() {
           error={error}
           analysis={analysis}
           showToleranceQuestion={showToleranceQuestion}
-          onNewScan={handleNewScan}
-          setError={setError}
         />
       )}
     </div>

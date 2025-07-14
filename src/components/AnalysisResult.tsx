@@ -160,8 +160,8 @@ export default function AnalysisResult({ analysis, onNewScan }: AnalysisResultPr
       )}
 
       <div className="result-actions">
-        <button onClick={onNewScan} className="new-scan-button">
-          🔄 Neuen Scan starten
+        <button onClick={onNewScan} className="cancel-button">
+          ✖️ Abbrechen
         </button>
       </div>
     </div>

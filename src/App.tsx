@@ -20,6 +20,7 @@ function App() {
   const [showToleranceQuestion, setShowToleranceQuestion] = useState(false);
   const [showIngredientLists, setShowIngredientLists] = useState(false);
   const [hasApiKey, setHasApiKey] = useState(false);
+  const [showResultView, setShowResultView] = useState(false);
 
   // Prüfe beim Start, ob ein API-Schlüssel vorhanden ist
   useEffect(() => {
@@ -40,6 +41,7 @@ function App() {
     setCapturedImage(imageSrc);
     setError(null);
     setIsAnalyzing(true);
+    setShowResultView(true);
     
     try {
       // Base64-String ohne "data:image/jpeg;base64," Präfix extrahieren
@@ -106,7 +108,7 @@ function App() {
       )}
       
       {/* Kamera-Vorschau */}
-      {!capturedImage ? (
+      {!capturedImage || !showResultView ? (
         <CameraPreview onCapture={handleCapture} />
       ) : (
         <ResultView
@@ -115,6 +117,12 @@ function App() {
           error={error}
           analysis={analysis}
           showToleranceQuestion={showToleranceQuestion}
+          onClose={() => {
+            setShowResultView(false);
+            setCapturedImage(null);
+            setAnalysis(null);
+            setError(null);
+          }}
         />
       )}
     </div>

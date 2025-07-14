@@ -8,6 +8,7 @@ interface ResultViewProps {
   error: string | null;
   analysis: IngredientAnalysis | null;
   showToleranceQuestion: boolean;
+  onClose: () => void;
 }
 
 const getErrorIcon = (errorMessage: string) => {
@@ -48,8 +49,14 @@ const ResultView: React.FC<ResultViewProps> = ({
   error,
   analysis,
   showToleranceQuestion,
+  onClose,
 }) => {
   const [showAnalysis, setShowAnalysis] = React.useState(true);
+
+  const handleClose = () => {
+    setShowAnalysis(false);
+    onClose();
+  };
 
   if (!showAnalysis) return null;
 
@@ -79,7 +86,7 @@ const ResultView: React.FC<ResultViewProps> = ({
             <strong>Vorschlag:</strong> {getErrorSuggestion(error)}
           </div>
           <div className="error-actions">
-            <button onClick={() => setShowAnalysis(false)} className="action-button">
+            <button onClick={handleClose} className="action-button">
               ✖️ Schließen
             </button>
           </div>
@@ -88,9 +95,9 @@ const ResultView: React.FC<ResultViewProps> = ({
 
       {analysis && !isAnalyzing && !showToleranceQuestion && (
         <>
-          <AnalysisResult analysis={analysis} onNewScan={() => setShowAnalysis(false)} />
+          <AnalysisResult analysis={analysis} onNewScan={handleClose} />
           <div className="result-actions">
-            <button onClick={() => setShowAnalysis(false)} className="action-button">
+            <button onClick={handleClose} className="action-button">
               ✖️ Schließen
             </button>
           </div>

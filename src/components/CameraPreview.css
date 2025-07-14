@@ -125,9 +125,9 @@
 
 .camera-controls {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   gap: 0.7rem;
-  align-items: center;
+  align-items: stretch;
   justify-content: center;
   width: 100%;
 }

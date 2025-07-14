@@ -3,7 +3,6 @@ body, html, #root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif !important;
   color: #f3f3f3;
   min-height: 100vh;
-  overflow: hidden !important;
 }
 
 button {

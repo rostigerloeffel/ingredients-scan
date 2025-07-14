@@ -1,4 +1,5 @@
 import OpenAI from 'openai';
+import Tesseract from 'tesseract.js';
 
 export interface IngredientAnalysis {
   ingredients: string[];
@@ -101,19 +102,24 @@ export class OpenAIService {
       throw new Error('Ungültiges Bild. Bitte stellen Sie sicher, dass das Bild klar und gut lesbar ist.');
     }
 
-    // OpenAI Client mit aktuellem API-Schlüssel initialisieren
-    const openai = new OpenAI({
-      apiKey: this.apiKey || this.loadApiKeyFromStorage()!,
-      dangerouslyAllowBrowser: true // Für Client-seitige Nutzung
-    });
+    // OCR-Analyse parallel starten
+    const ocrPromise = this.ocrIngredients(imageBase64);
 
-    try {
-      const response = await openai.chat.completions.create({
-        model: "gpt-4o-mini",
-        messages: [
-          {
-            role: "system",
-            content: `Du bist ein Experte für die Analyse von Inhaltsstoffen in Lebensmitteln und kosmetischen Produkten (z.B. Shampoos, Conditioner, Duschgel, Cremes, Seifen usw.). Deine Aufgabe ist es, ausschließlich die Inhaltsstoffe auf dem Bild zu erkennen und zu extrahieren.
+    // OpenAI-Analyse starten
+    const openAIPromise = (async () => {
+      // OpenAI Client mit aktuellem API-Schlüssel initialisieren
+      const openai = new OpenAI({
+        apiKey: this.apiKey || this.loadApiKeyFromStorage()!,
+        dangerouslyAllowBrowser: true // Für Client-seitige Nutzung
+      });
+
+      try {
+        const response = await openai.chat.completions.create({
+          model: "gpt-4o-mini",
+          messages: [
+            {
+              role: "system",
+              content: `Du bist ein Experte für die Analyse von Inhaltsstoffen in Lebensmitteln und kosmetischen Produkten (z.B. Shampoos, Conditioner, Duschgel, Cremes, Seifen usw.). Deine Aufgabe ist es, ausschließlich die Inhaltsstoffe auf dem Bild zu erkennen und zu extrahieren.
 
             Antworte im folgenden JSON-Format:
             {
@@ -131,68 +137,101 @@ export class OpenAIService {
             - Die JSON-Liste allergens enthält nur erkannte Allergene (z.B. gluten, lactose, nuts, soy, egg, etc.), ebenfalls normalisiert und auf englisch
             - Die summary ist eine sehr kurze Zusammenfassung auf englisch
             - Gib ausschließlich das JSON-Objekt als Antwort zurück, ohne weitere Erklärungen oder Text`
-          },
-          {
-            role: "user",
-            content: [
-              {
-                type: "text",
-                text: "Analysiere diese Inhaltsstoffe und gib mir eine strukturierte Analyse zurück."
-              },
-              {
-                type: "image_url",
-                image_url: {
-                  url: `data:image/jpeg;base64,${imageBase64}`
+            },
+            {
+              role: "user",
+              content: [
+                {
+                  type: "text",
+                  text: "Analysiere diese Inhaltsstoffe und gib mir eine strukturierte Analyse zurück."
+                },
+                {
+                  type: "image_url",
+                  image_url: {
+                    url: `data:image/jpeg;base64,${imageBase64}`
+                  }
                 }
-              }
-            ]
-          }
-        ],
-        max_tokens: 1000,
-        temperature: 0.3
-      });
+              ]
+            }
+          ],
+          max_tokens: 1000,
+          temperature: 0.3
+        });
 
-      const content = response.choices[0]?.message?.content;
-      if (!content) {
-        throw new Error('Keine Antwort von der KI erhalten. Bitte versuchen Sie es erneut.');
-      }
-
-      // Versuche JSON zu parsen
-      try {
-        const analysis = JSON.parse(content);
-        
-        // Validierung der Analyse-Struktur
-        if (!analysis.ingredients || !Array.isArray(analysis.ingredients)) {
-          throw new Error('Ungültige Analyse-Struktur: Inhaltsstoffe fehlen');
+        const content = response.choices[0]?.message?.content;
+        if (!content) {
+          throw new Error('Keine Antwort von der KI erhalten. Bitte versuchen Sie es erneut.');
         }
-        
-        return analysis as IngredientAnalysis;
-      } catch (parseError) {
-        console.warn('JSON-Parsing fehlgeschlagen, verwende Fallback-Parser:', parseError);
-        // Fallback: Strukturierte Antwort parsen
-        return this.parseStructuredResponse(content);
-      }
 
-    } catch (error: any) {
-      console.error('Fehler bei der OpenAI-Analyse:', error);
-      
-      // Spezifische Fehlermeldungen basierend auf dem Fehlertyp
-      if (error?.status === 401) {
-        throw new Error('Ungültiger API-Schlüssel. Bitte überprüfen Sie Ihren OpenAI API-Schlüssel.');
-      } else if (error?.status === 429) {
-        throw new Error('API-Limit erreicht. Bitte warten Sie einen Moment und versuchen Sie es erneut.');
-      } else if (error?.status === 400) {
-        throw new Error('Ungültige Anfrage. Das Bild könnte zu groß oder in einem nicht unterstützten Format sein.');
-      } else if (error?.status === 500 || error?.status === 502 || error?.status === 503) {
-        throw new Error('OpenAI-Server temporär nicht verfügbar. Bitte versuchen Sie es in einigen Minuten erneut.');
-      } else if (error?.code === 'NETWORK_ERROR' || error?.message?.includes('fetch')) {
-        throw new Error('Netzwerkfehler. Bitte überprüfen Sie Ihre Internetverbindung und versuchen Sie es erneut.');
-      } else if (error?.message?.includes('timeout')) {
-        throw new Error('Zeitüberschreitung bei der Analyse. Bitte versuchen Sie es erneut.');
-      } else {
-        throw new Error(`Analyse fehlgeschlagen: ${error?.message || 'Unbekannter Fehler'}. Bitte versuchen Sie es erneut.`);
+        // Versuche JSON zu parsen
+        try {
+          const analysis = JSON.parse(content);
+          
+          // Validierung der Analyse-Struktur
+          if (!analysis.ingredients || !Array.isArray(analysis.ingredients)) {
+            throw new Error('Ungültige Analyse-Struktur: Inhaltsstoffe fehlen');
+          }
+          
+          return analysis as IngredientAnalysis;
+        } catch (parseError) {
+          console.warn('JSON-Parsing fehlgeschlagen, verwende Fallback-Parser:', parseError);
+          // Fallback: Strukturierte Antwort parsen
+          return this.parseStructuredResponse(content);
+        }
+
+      } catch (error: any) {
+        console.error('Fehler bei der OpenAI-Analyse:', error);
+        
+        // Spezifische Fehlermeldungen basierend auf dem Fehlertyp
+        if (error?.status === 401) {
+          throw new Error('Ungültiger API-Schlüssel. Bitte überprüfen Sie Ihren OpenAI API-Schlüssel.');
+        } else if (error?.status === 429) {
+          throw new Error('API-Limit erreicht. Bitte warten Sie einen Moment und versuchen Sie es erneut.');
+        } else if (error?.status === 400) {
+          throw new Error('Ungültige Anfrage. Das Bild könnte zu groß oder in einem nicht unterstützten Format sein.');
+        } else if (error?.status === 500 || error?.status === 502 || error?.status === 503) {
+          throw new Error('OpenAI-Server temporär nicht verfügbar. Bitte versuchen Sie es in einigen Minuten erneut.');
+        } else if (error?.code === 'NETWORK_ERROR' || error?.message?.includes('fetch')) {
+          throw new Error('Netzwerkfehler. Bitte überprüfen Sie Ihre Internetverbindung und versuchen Sie es erneut.');
+        } else if (error?.message?.includes('timeout')) {
+          throw new Error('Zeitüberschreitung bei der Analyse. Bitte versuchen Sie es erneut.');
+        } else {
+          throw new Error(`Analyse fehlgeschlagen: ${error?.message || 'Unbekannter Fehler'}. Bitte versuchen Sie es erneut.`);
+        }
       }
+    })();
+
+    // Beide Ergebnisse abwarten
+    const [ocrResult, openAIResult] = await Promise.allSettled([ocrPromise, openAIPromise]);
+
+    // Ergebnis-Verrechnung
+    let aiResult: IngredientAnalysis | null = null;
+    if (openAIResult.status === 'fulfilled') {
+      aiResult = openAIResult.value;
     }
+    let ocrIngredients: string[] = [];
+    if (ocrResult.status === 'fulfilled') {
+      ocrIngredients = ocrResult.value;
+    }
+
+    // Wenn AI keine oder zu wenige Inhaltsstoffe liefert, ergänze mit OCR
+    if (!aiResult || !aiResult.ingredients || aiResult.ingredients.length < 2) {
+      return {
+        ingredients: ocrIngredients,
+        allergens: [],
+        nutrition: '',
+        summary: 'OCR fallback: Ingredients extracted from image text.'
+      };
+    }
+    // Kombiniere AI- und OCR-Inhaltsstoffe, entferne Duplikate
+    const combinedIngredients = Array.from(new Set([
+      ...aiResult.ingredients,
+      ...ocrIngredients
+    ]));
+    return {
+      ...aiResult,
+      ingredients: combinedIngredients
+    };
   }
 
   /**
@@ -242,5 +281,32 @@ export class OpenAIService {
       nutrition,
       summary
     };
+  }
+
+  // OCR-Extraktion von Inhaltsstoffen
+  private static async ocrIngredients(imageBase64: string): Promise<string[]> {
+    // Bild als Data-URL für Tesseract
+    const imageUrl = `data:image/jpeg;base64,${imageBase64}`;
+    const { data: { text } } = await Tesseract.recognize(imageUrl, 'eng');
+    // Heuristik: Zeilen mit "ingredients", "inc", ":", ";", ","
+    const lines = text.split(/\r?\n/).map(l => l.trim().toLowerCase());
+    let ingredientLine = lines.find(l => /ingredients|inc|bestandteile/.test(l));
+    if (!ingredientLine) {
+      // Fallback: erste Zeile mit vielen Kommas oder Doppelpunkten
+      ingredientLine = lines.find(l => l.split(',').length > 2 || l.includes(':'));
+    }
+    if (!ingredientLine) return [];
+    // Extrahiere nach Doppelpunkt oder nach Schlüsselwort
+    let raw = ingredientLine;
+    if (/:/.test(raw)) raw = raw.split(':').slice(1).join(':');
+    if (/ingredients|inc|bestandteile/.test(raw)) raw = raw.replace(/.*(ingredients|inc|bestandteile)/, '');
+    // Splitte an Kommas, Semikolons
+    let items = raw.split(/[;,]/).map(s => s.trim());
+    // Filtere leere und zu kurze Einträge, normalisiere (nur Kleinbuchstaben, keine Sonderzeichen, keine Steuerzeichen, keine Kommas)
+    items = items
+      .map(s => s.replace(/[^a-z0-9 ]/gi, '').replace(/\s+/g, ' ').toLowerCase())
+      .filter(s => s.length > 2 && !/\d{3,}/.test(s));
+    // Entferne Duplikate
+    return Array.from(new Set(items));
   }
 } 

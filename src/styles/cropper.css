@@ -248,13 +248,18 @@
   }
 
 .cropper-point.point-se {
-    bottom: -3px;
-    cursor: nwse-resize;
-    height: 20px;
-    opacity: 1;
-    right: -3px;
-    width: 20px;
+  height: 16px;
+  width: 16px;
+}
+
+@media (max-width: 600px) {
+  .cropper-point.point-se {
+    height: 32px;
+    width: 32px;
+    min-width: 32px;
+    min-height: 32px;
   }
+}
 
 @media (min-width: 768px) {
 

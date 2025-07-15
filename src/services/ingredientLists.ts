@@ -44,8 +44,9 @@ export class IngredientListService {
    */
   static savePositiveList(ingredients: string[]): void {
     try {
+      const filtered = ingredients.map(i => i.trim()).filter(i => i.length > 0);
       const data: IngredientList = {
-        ingredients,
+        ingredients: filtered,
         lastUpdated: new Date()
       };
       localStorage.setItem(this.POSITIVE_LIST_KEY, JSON.stringify(data));
@@ -59,8 +60,9 @@ export class IngredientListService {
    */
   static saveNegativeList(ingredients: string[]): void {
     try {
+      const filtered = ingredients.map(i => i.trim()).filter(i => i.length > 0);
       const data: IngredientList = {
-        ingredients,
+        ingredients: filtered,
         lastUpdated: new Date()
       };
       localStorage.setItem(this.NEGATIVE_LIST_KEY, JSON.stringify(data));

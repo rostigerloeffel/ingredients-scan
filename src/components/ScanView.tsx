@@ -39,10 +39,38 @@ const ScanView: React.FC<ScanViewProps> = ({ onCapture, onShowLists }) => {
     localStorage.setItem('selected_camera', event.target.value);
   };
 
-  const handleScan = () => {
+  // Cropping-Logik: Schneide Screenshot auf scan-window-Bereich
+  const cropToScanWindow = async (imageSrc: string): Promise<string> => {
+    return new Promise((resolve) => {
+      const img = new window.Image();
+      img.onload = () => {
+        // Das Kamera-Video ist 4:3 (width:height), scan-window ist 80% Breite, max 50vh Höhe, mittig
+        const videoW = img.width;
+        const videoH = img.height;
+        // scan-window Werte aus CameraPreview.css:
+        // width: 80%, max-height: 50vh, mittig
+        const cropW = videoW * 0.8;
+        let cropH = videoH * 0.5; // 50% der Höhe
+        // Falls das Video nicht hoch genug ist, nimm maximal mögliche Höhe
+        if (cropH > videoH) cropH = videoH;
+        const cropX = (videoW - cropW) / 2;
+        const cropY = (videoH - cropH) / 2;
+        const canvas = document.createElement('canvas');
+        canvas.width = cropW;
+        canvas.height = cropH;
+        const ctx = canvas.getContext('2d')!;
+        ctx.drawImage(img, cropX, cropY, cropW, cropH, 0, 0, cropW, cropH);
+        resolve(canvas.toDataURL('image/jpeg', 0.95));
+      };
+      img.src = imageSrc;
+    });
+  };
+
+  const handleScan = async () => {
     const imageSrc = cameraRef.current?.getScreenshot();
     if (imageSrc) {
-      onCapture(imageSrc);
+      const cropped = await cropToScanWindow(imageSrc);
+      onCapture(cropped);
     }
   };
 

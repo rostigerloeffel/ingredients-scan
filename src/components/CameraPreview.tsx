@@ -72,14 +72,7 @@ const CameraPreview = forwardRef<CameraPreviewHandle, CameraPreviewProps>(({ cam
           className="camera-video"
         />
         <div className="scan-overlay">
-          <div className="scan-window">
-            <div className="scan-corners">
-              <div className="scan-corner top-left"></div>
-              <div className="scan-corner top-right"></div>
-              <div className="scan-corner bottom-left"></div>
-              <div className="scan-corner bottom-right"></div>
-            </div>
-          </div>
+          <div className="scan-window"></div>
           <div className="scan-instructions">
             Inhaltsstoffe im Rahmen positionieren
           </div>

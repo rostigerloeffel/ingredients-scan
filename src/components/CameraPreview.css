@@ -65,7 +65,6 @@
   width: 80%;
   height: auto;
   max-height: 50vh;
-  border: 2px solid #4a9eff;
   border-radius: 10px;
   position: relative;
   box-shadow: none;
@@ -79,37 +78,40 @@
 
 .scan-corner {
   position: absolute;
-  width: 16px;
-  height: 16px;
-  border: 2px solid #4a9eff;
+  width: 24px;
+  height: 24px;
 }
 
 .scan-corner.top-left {
-  top: -2px;
-  left: -2px;
-  border-right: none;
-  border-bottom: none;
+  top: 0;
+  left: 0;
+  border-top: 3px solid #4a9eff;
+  border-left: 3px solid #4a9eff;
+  border-radius: 10px 0 0 0;
 }
 
 .scan-corner.top-right {
-  top: -2px;
-  right: -2px;
-  border-left: none;
-  border-bottom: none;
+  top: 0;
+  right: 0;
+  border-top: 3px solid #4a9eff;
+  border-right: 3px solid #4a9eff;
+  border-radius: 0 10px 0 0;
 }
 
 .scan-corner.bottom-left {
-  bottom: -2px;
-  left: -2px;
-  border-right: none;
-  border-top: none;
+  bottom: 0;
+  left: 0;
+  border-bottom: 3px solid #4a9eff;
+  border-left: 3px solid #4a9eff;
+  border-radius: 0 0 0 10px;
 }
 
 .scan-corner.bottom-right {
-  bottom: -2px;
-  right: -2px;
-  border-left: none;
-  border-top: none;
+  bottom: 0;
+  right: 0;
+  border-bottom: 3px solid #4a9eff;
+  border-right: 3px solid #4a9eff;
+  border-radius: 0 0 10px 0;
 }
 
 .scan-instructions {

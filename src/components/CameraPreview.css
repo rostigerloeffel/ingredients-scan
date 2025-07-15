@@ -63,7 +63,8 @@
 
 .scan-window {
   width: 80%;
-  height: 60%;
+  height: auto;
+  max-height: 50vh;
   border: 2px solid #4a9eff;
   border-radius: 10px;
   position: relative;
@@ -336,6 +337,14 @@
   }
   .camera-loading p {
     font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .scan-window {
+    width: 92%;
+    height: auto;
+    max-height: 50vh;
   }
 }
 

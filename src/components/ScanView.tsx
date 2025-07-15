@@ -3,7 +3,7 @@ import CameraPreview from './CameraPreview';
 import type { CameraPreviewHandle } from './CameraPreview';
 import ListsButtons from './ListsButtons';
 import VerticalMainLayout from './VerticalMainLayout';
-import type { DebugInfo } from './DebugOverlay';
+import type { DebugInfo } from '../debug/DebugOverlay';
 
 interface ScanViewProps {
   onCapture: (imageSrc: string) => void;

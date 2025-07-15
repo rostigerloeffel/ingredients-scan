@@ -38,7 +38,7 @@ export class TesseractService {
         }
         
         ctx.putImageData(imageData, 0, 0);
-        resolve(canvas.toDataURL('image/jpeg', 0.95));
+        resolve(canvas.toDataURL('image/png'));
       };
       img.src = `data:image/jpeg;base64,${imageBase64}`;
     });

@@ -39,22 +39,29 @@ const ScanView: React.FC<ScanViewProps> = ({ onCapture, onShowLists }) => {
     localStorage.setItem('selected_camera', event.target.value);
   };
 
-  // Cropping-Logik: Schneide Screenshot auf scan-window-Bereich
-  const cropToScanWindow = async (imageSrc: string): Promise<string> => {
+  // Cropping-Logik: Schneide Screenshot auf exakt den sichtbaren Bereich (wie im Kamera-Container angezeigt)
+  const cropToVisibleCameraArea = async (imageSrc: string): Promise<string> => {
     return new Promise((resolve) => {
       const img = new window.Image();
       img.onload = () => {
-        // Das Kamera-Video ist 4:3 (width:height), scan-window ist 80% Breite, max 50vh Höhe, mittig
         const videoW = img.width;
         const videoH = img.height;
-        // scan-window Werte aus CameraPreview.css:
-        // width: 80%, max-height: 50vh, mittig
-        const cropW = videoW * 0.8;
-        let cropH = videoH * 0.5; // 50% der Höhe
-        // Falls das Video nicht hoch genug ist, nimm maximal mögliche Höhe
-        if (cropH > videoH) cropH = videoH;
-        const cropX = (videoW - cropW) / 2;
-        const cropY = (videoH - cropH) / 2;
+        // Container-Aspect-Ratio (wie in CameraPreview.css): 4:3
+        const containerAspect = 4 / 3;
+        const imageAspect = videoW / videoH;
+        let cropW = videoW;
+        let cropH = videoH;
+        let cropX = 0;
+        let cropY = 0;
+        if (imageAspect > containerAspect) {
+          // Bild ist breiter als Container: links/rechts wird beschnitten
+          cropW = videoH * containerAspect;
+          cropX = (videoW - cropW) / 2;
+        } else if (imageAspect < containerAspect) {
+          // Bild ist höher als Container: oben/unten wird beschnitten
+          cropH = videoW / containerAspect;
+          cropY = (videoH - cropH) / 2;
+        }
         const canvas = document.createElement('canvas');
         canvas.width = cropW;
         canvas.height = cropH;
@@ -69,7 +76,7 @@ const ScanView: React.FC<ScanViewProps> = ({ onCapture, onShowLists }) => {
   const handleScan = async () => {
     const imageSrc = cameraRef.current?.getScreenshot();
     if (imageSrc) {
-      const cropped = await cropToScanWindow(imageSrc);
+      const cropped = await cropToVisibleCameraArea(imageSrc);
       onCapture(cropped);
     }
   };

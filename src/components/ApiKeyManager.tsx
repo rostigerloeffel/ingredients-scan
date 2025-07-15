@@ -57,7 +57,6 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({ isVisible, onClose, onApi
           <button 
             className="close-button" 
             onClick={handleClose}
-            disabled={!OpenAIService.hasApiKey()}
           >
             ×
           </button>

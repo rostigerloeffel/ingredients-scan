@@ -42,9 +42,13 @@ export default function AnalysisResult({ analysis }: AnalysisResultProps) {
     setHasWarnings(warnings.length > 0);
   };
 
+  // Buttons sind immer aktiv, außer nach Klick (dann disabled)
+  const [positiveClicked, setPositiveClicked] = useState(false);
+  const [negativeClicked, setNegativeClicked] = useState(false);
+
   const handleAddAllToPositiveList = () => {
+    setPositiveClicked(true);
     const positiveList = IngredientListService.getPositiveList();
-    // Nur neue Zutaten hinzufügen
     const newIngredients = displayedIngredients.filter(ing => !positiveList.includes(ing));
     if (newIngredients.length > 0) {
       IngredientListService.savePositiveList([...positiveList, ...newIngredients]);
@@ -52,17 +56,13 @@ export default function AnalysisResult({ analysis }: AnalysisResultProps) {
   };
 
   const handleAddAllToNegativeList = () => {
+    setNegativeClicked(true);
     const negativeList = IngredientListService.getNegativeList();
-    // Nur neue Zutaten hinzufügen
     const newIngredients = displayedIngredients.filter(ing => !negativeList.includes(ing));
     if (newIngredients.length > 0) {
       IngredientListService.saveNegativeList([...negativeList, ...newIngredients]);
     }
   };
-
-  // Für die Anzeige/Deaktivierung der Buttons:
-  const allInPositive = displayedIngredients.every(ing => IngredientListService.getPositiveList().includes(ing));
-  const allInNegative = displayedIngredients.every(ing => IngredientListService.getNegativeList().includes(ing));
 
   const handleRemoveIngredient = (ingredientToRemove: string) => {
     setDisplayedIngredients(prev => prev.filter(ingredient => ingredient !== ingredientToRemove));
@@ -166,10 +166,10 @@ export default function AnalysisResult({ analysis }: AnalysisResultProps) {
           
           {/* Buttons zum Hinzufügen aller Inhaltsstoffe */}
           <div className="ingredients-actions">
-            <button onClick={handleAddAllToPositiveList} className="add-all-button positive" disabled={allInPositive}>
+            <button onClick={handleAddAllToPositiveList} className="add-all-button positive" disabled={positiveClicked}>
               ✅ Gut verträglich
             </button>
-            <button onClick={handleAddAllToNegativeList} className="add-all-button negative" disabled={allInNegative}>
+            <button onClick={handleAddAllToNegativeList} className="add-all-button negative" disabled={negativeClicked}>
               ❌ Nicht verträglich
             </button>
           </div>

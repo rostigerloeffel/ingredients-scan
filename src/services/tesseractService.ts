@@ -15,12 +15,12 @@ export class TesseractService {
         ctx.drawImage(img, 0, 0);
         
         const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        const data = imageData.data;
+        //const data = imageData.data;
         // Schritt 1: Graustufen
-        for (let i = 0; i < data.length; i += 4) {
-          const avg = 0.299 * data[i] + 0.587 * data[i+1] + 0.114 * data[i+2];
-          data[i] = data[i+1] = data[i+2] = avg;
-        }
+        // for (let i = 0; i < data.length; i += 4) {
+        //  const avg = 0.299 * data[i] + 0.587 * data[i+1] + 0.114 * data[i+2];
+        //  data[i] = data[i+1] = data[i+2] = avg;
+        // }
         // Keine Nachschärfung mehr, nur Graustufen
         ctx.putImageData(imageData, 0, 0);
         const resultUrl = canvas.toDataURL('image/png');
@@ -57,8 +57,8 @@ export class TesseractService {
           'SINGLE_BLOCK', 'AUTO', 'SPARSE_TEXT', 'SINGLE_LINE', 'SINGLE_WORD'
         ],
         confidenceThreshold: 60,
-        dpi: 300,
-        charWhitelist: 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789,;:.()[]-+/%&@#$',
+        dpi: 1000,
+        charWhitelist: '',
         params: {
           'preserve_interword_spaces': '1',
           'tessedit_do_invert': '0',
@@ -103,7 +103,7 @@ export class TesseractService {
           // Erweiterte Tesseract-Parameter
           await worker.setParameters({
             tessedit_pageseg_mode: psm,
-            tessedit_char_whitelist: 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789,;:.()[]-+/%&@#$',
+            tessedit_char_whitelist: '',
             preserve_interword_spaces: '1',
             tessedit_do_invert: '0',           // Keine Invertierung
             textord_min_linesize: '2.0',       // Minimale Zeilengröße

@@ -3,17 +3,18 @@ import CameraPreview from './CameraPreview';
 import type { CameraPreviewHandle } from './CameraPreview';
 import ListsButtons from './ListsButtons';
 import VerticalMainLayout from './VerticalMainLayout';
+import type { DebugInfo } from './DebugOverlay';
 
 interface ScanViewProps {
   onCapture: (imageSrc: string) => void;
   onShowLists: () => void;
+  setDebugInfo: (info: DebugInfo) => void;
 }
 
-const ScanView: React.FC<ScanViewProps> = ({ onCapture, onShowLists }) => {
+const ScanView: React.FC<ScanViewProps> = ({ onCapture, onShowLists, setDebugInfo }) => {
   const [cameras, setCameras] = useState<MediaDeviceInfo[]>([]);
   const [selectedCamera, setSelectedCamera] = useState<string>('');
   const cameraRef = useRef<CameraPreviewHandle>(null);
-  const [debugInfo, setDebugInfo] = useState<{origW:number,origH:number,cropW:number,cropH:number} | null>(null);
 
   React.useEffect(() => {
     const getCameras = async () => {
@@ -63,23 +64,23 @@ const ScanView: React.FC<ScanViewProps> = ({ onCapture, onShowLists }) => {
           cropH = videoW / containerAspect;
           cropY = (videoH - cropH) / 2;
         }
-        // Debug-Overlay: Auflösungen merken
-        if (import.meta.env.DEV) {
-          setDebugInfo({origW: videoW, origH: videoH, cropW: Math.round(cropW), cropH: Math.round(cropH)});
-        }
         const canvas = document.createElement('canvas');
         canvas.width = cropW;
         canvas.height = cropH;
         const ctx = canvas.getContext('2d')!;
         ctx.drawImage(img, cropX, cropY, cropW, cropH, 0, 0, cropW, cropH);
-        resolve(canvas.toDataURL('image/png'));
+        const dataUrl = canvas.toDataURL('image/png');
+        if (import.meta.env.DEV) {
+          setDebugInfo({origW: videoW, origH: videoH, cropW: Math.round(cropW), cropH: Math.round(cropH), cropUrl: dataUrl});
+        }
+        resolve(dataUrl);
       };
       img.src = imageSrc;
     });
   };
 
   const handleScan = async () => {
-    const imageSrc = cameraRef.current?.getScreenshot();
+    const imageSrc = await cameraRef.current?.getFullResScreenshot();
     if (imageSrc) {
       const cropped = await cropToVisibleCameraArea(imageSrc);
       onCapture(cropped);
@@ -92,13 +93,6 @@ const ScanView: React.FC<ScanViewProps> = ({ onCapture, onShowLists }) => {
       middle={
         <>
           <CameraPreview ref={cameraRef} cameraId={selectedCamera} />
-          {import.meta.env.DEV && debugInfo && (
-            <div style={{position:'absolute',top:10,right:10,zIndex:1000,background:'rgba(0,0,0,0.7)',color:'#fff',padding:'8px 14px',borderRadius:8,fontSize:14}}>
-              <div><b>Debug:</b></div>
-              <div>Original: {debugInfo.origW} x {debugInfo.origH}</div>
-              <div>Cropped: {debugInfo.cropW} x {debugInfo.cropH}</div>
-            </div>
-          )}
         </>
       }
       bottom={

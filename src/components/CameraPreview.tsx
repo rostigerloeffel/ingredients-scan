@@ -5,6 +5,7 @@ import '../styles/cropper.css';
 
 export interface CameraPreviewHandle {
   getScreenshot: () => string | null;
+  getFullResScreenshot: () => Promise<string | null>;
 }
 
 interface CameraPreviewProps {
@@ -50,6 +51,25 @@ const CameraPreview = forwardRef<CameraPreviewHandle, CameraPreviewProps>(({ cam
     getScreenshot: () => {
       if (webcamRef.current) {
         return webcamRef.current.getScreenshot();
+      }
+      return null;
+    },
+    getFullResScreenshot: async () => {
+      if (webcamRef.current && webcamRef.current.video) {
+        const video = webcamRef.current.video as HTMLVideoElement;
+        // Versuche, ein Canvas in voller Videoauflösung zu erzeugen
+        const width = video.videoWidth;
+        const height = video.videoHeight;
+        if (width && height) {
+          const canvas = document.createElement('canvas');
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          if (ctx) {
+            ctx.drawImage(video, 0, 0, width, height);
+            return canvas.toDataURL('image/jpeg', 0.98);
+          }
+        }
       }
       return null;
     }

@@ -16,29 +16,23 @@ export class TesseractService {
         
         const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
         const data = imageData.data;
-        
-        // Schritt 1: Rauschreduzierung (Gaussian Blur Simulation)
-        const smoothed = this.gaussianBlur(data, canvas.width, canvas.height, 1);
-        
-        // Schritt 2: Kontrastverbesserung mit adaptiver Histogramm-Equalisierung
-        const contrasted = this.adaptiveContrast(smoothed, canvas.width, canvas.height);
-        
-        // Schritt 3: Kantenverstärkung
-        const sharpened = this.sharpen(contrasted, canvas.width, canvas.height);
-        
-        // Schritt 4: Binärisierung mit adaptivem Schwellenwert
-        const binarized = this.adaptiveThreshold(sharpened, canvas.width, canvas.height);
-        
-        // Schritt 5: Morphologische Operationen (Rauschreduzierung)
-        const cleaned = this.morphologicalCleanup(binarized, canvas.width, canvas.height);
-        
-        // Anwenden der verarbeiteten Daten
+        // Schritt 1: Graustufen
         for (let i = 0; i < data.length; i += 4) {
-          data[i] = data[i+1] = data[i+2] = cleaned[i];
+          const avg = 0.299 * data[i] + 0.587 * data[i+1] + 0.114 * data[i+2];
+          data[i] = data[i+1] = data[i+2] = avg;
         }
-        
+        // Keine Nachschärfung mehr, nur Graustufen
         ctx.putImageData(imageData, 0, 0);
-        resolve(canvas.toDataURL('image/png'));
+        const resultUrl = canvas.toDataURL('image/png');
+        if (import.meta.env && import.meta.env.DEV) {
+          // Debug-Log: Auflösung und Base64-Preview
+          console.log('[OCR-DEBUG] Preprocess:', {
+            width: canvas.width,
+            height: canvas.height,
+            base64Preview: resultUrl.substring(0, 100) + '...'
+          });
+        }
+        resolve(resultUrl);
       };
       img.src = `data:image/jpeg;base64,${imageBase64}`;
     });
@@ -269,8 +263,38 @@ export class TesseractService {
   /**
    * OCR-Extraktion von Inhaltsstoffen (erweiterte Version)
    */
-  static async extractIngredients(imageBase64: string): Promise<string[]> {
+  static async extractIngredients(
+    imageBase64: string,
+    onDebugInfo?: (info: { preprocessedUrl: string, languages: string[], psmModes: string[], confidenceThreshold: number, dpi: number, charWhitelist: string, params: Record<string, string> }) => void
+  ): Promise<string[]> {
     const preprocessed = await this.preprocessImage(imageBase64);
+    if (onDebugInfo) {
+      onDebugInfo({
+        preprocessedUrl: preprocessed,
+        languages: [
+          'deu', 'eng', 'fra', 'spa', 'ita',
+          'nld', 'pol', 'rus', 'por', 'tur'
+        ],
+        psmModes: [
+          'SINGLE_BLOCK', 'AUTO', 'SPARSE_TEXT', 'SINGLE_LINE', 'SINGLE_WORD'
+        ],
+        confidenceThreshold: 60,
+        dpi: 300,
+        charWhitelist: 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789,;:.()[]-+/%&@#$',
+        params: {
+          'preserve_interword_spaces': '1',
+          'tessedit_do_invert': '0',
+          'textord_min_linesize': '2.0',
+          'textord_old_baselines': '0',
+          'textord_min_xheight': '8',
+          'textord_heavy_nr': '1',
+          'tessedit_ocr_engine_mode': '3',
+          'lstm_use_matrix': '1',
+          'lstm_choice_mode': '2',
+          'user_defined_dpi': '1000'
+        }
+      });
+    }
     
     // Erweiterte PSM-Modi für verschiedene Textlayouts
     const psmModes = [
@@ -315,6 +339,12 @@ export class TesseractService {
           });
           
           const { data: { text, confidence } } = await worker.recognize(preprocessed);
+          if (import.meta.env && import.meta.env.DEV) {
+            console.log('[OCR-DEBUG] Output:', {
+              lang, psm, confidence,
+              textPreview: text?.substring(0, 300) + (text && text.length > 300 ? '...' : '')
+            });
+          }
           
           // Nur Ergebnisse mit ausreichender Konfidenz verwenden
           if (text && text.trim().length > 0 && confidence > confidenceThreshold) {

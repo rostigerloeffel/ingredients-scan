@@ -10,6 +10,8 @@ import './App.css'
 import './components/ListsButtons.css'
 import './components/CameraPreview.css'
 import './components/ApiKeyManager.css'
+import DebugOverlay from './debug/DebugOverlay';
+import type { DebugInfo, TesseractDebugInfo } from './debug/DebugOverlay';
 
 type AppView = 'scan' | 'prepare' | 'result';
 
@@ -21,6 +23,8 @@ function App() {
   const [error, setError] = useState<string | null>(null);
   const [showApiKeyManager, setShowApiKeyManager] = useState(false);
   const [showIngredientLists, setShowIngredientLists] = useState(false);
+  const [debugInfo, setDebugInfo] = useState<DebugInfo>();
+  const [tesseractDebugInfo, setTesseractDebugInfo] = useState<TesseractDebugInfo>();
 
   // Prüfe beim Start, ob ein API-Schlüssel vorhanden ist
   useEffect(() => {
@@ -50,9 +54,8 @@ function App() {
       // Base64-String ohne Präfix extrahieren
       const base64Data = croppedImage.split(',')[1];
       
-      // OCR und OpenAI-Analyse parallel ausführen
       const [ocrIngredients, aiResult] = await Promise.allSettled([
-        TesseractService.extractIngredients(base64Data),
+        TesseractService.extractIngredients(base64Data, info => { setTesseractDebugInfo(info); }),
         OpenAIService.analyzeIngredients(base64Data)
       ]);
 
@@ -132,6 +135,7 @@ function App() {
           <ScanView
             onCapture={handleCapture}
             onShowLists={() => setShowIngredientLists(true)}
+            setDebugInfo={setDebugInfo}
           />
         )}
         {view === 'prepare' && capturedImage && (
@@ -152,6 +156,7 @@ function App() {
           />
         )}
       </main>
+      <DebugOverlay debugInfo={debugInfo} tesseractInfo={tesseractDebugInfo} />
     </div>
   )
 }

@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { IngredientListService } from '../services/ingredientLists';
 import type { NegativeIngredient } from '../services/ingredientLists';
 import './IngredientLists.css';
+import Fuse from 'fuse.js';
+import inciNames from '../inci_names.normalized.json';
 
 interface IngredientListsProps {
   isVisible: boolean;
@@ -15,6 +17,11 @@ export default function IngredientLists({ isVisible, onClose, initialTab = 'posi
   const [negativeList, setNegativeList] = useState<NegativeIngredient[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedIngredients, setSelectedIngredients] = useState<string[]>([]);
+  const [autocompleteInput, setAutocompleteInput] = useState('');
+  const [autocompleteResults, setAutocompleteResults] = useState<string[]>([]);
+  const [autocompleteActive, setAutocompleteActive] = useState(false);
+  const [autocompleteIndex, setAutocompleteIndex] = useState(-1);
+  const fuse = new Fuse(inciNames, { threshold: 0.3 });
 
   useEffect(() => {
     if (isVisible) {
@@ -99,6 +106,54 @@ export default function IngredientLists({ isVisible, onClose, initialTab = 'posi
       : 'Inhaltsstoffe, die Sie schlecht vertragen';
   };
 
+  // Autocomplete-Logik
+  useEffect(() => {
+    if (autocompleteInput.trim().length === 0) {
+      setAutocompleteResults([]);
+      setAutocompleteIndex(-1);
+      return;
+    }
+    // Bereits vorhandene Namen ausfiltern
+    const existing = negativeList.map(e => e.name.toLowerCase());
+    const results = fuse.search(autocompleteInput).map(r => r.item).filter(name => !existing.includes(name.toLowerCase()));
+    setAutocompleteResults(results.slice(0, 8));
+    setAutocompleteIndex(-1);
+  }, [autocompleteInput, negativeList]);
+
+  const handleAutocompleteChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setAutocompleteInput(e.target.value);
+    setAutocompleteActive(true);
+  };
+
+  const handleAutocompleteSelect = (name: string) => {
+    if (!name) return;
+    IngredientListService.addToNegativeList([name]);
+    setNegativeList(IngredientListService.getNegativeList());
+    setAutocompleteInput('');
+    setAutocompleteResults([]);
+    setAutocompleteActive(false);
+  };
+
+  const handleAutocompleteKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (!autocompleteActive || autocompleteResults.length === 0) return;
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      setAutocompleteIndex(i => Math.min(i + 1, autocompleteResults.length - 1));
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      setAutocompleteIndex(i => Math.max(i - 1, 0));
+    } else if (e.key === 'Enter') {
+      e.preventDefault();
+      if (autocompleteIndex >= 0 && autocompleteIndex < autocompleteResults.length) {
+        handleAutocompleteSelect(autocompleteResults[autocompleteIndex]);
+      } else if (autocompleteInput.trim().length > 0) {
+        handleAutocompleteSelect(autocompleteInput.trim());
+      }
+    } else if (e.key === 'Escape') {
+      setAutocompleteActive(false);
+    }
+  };
+
   if (!isVisible) return null;
 
   return (
@@ -132,6 +187,60 @@ export default function IngredientLists({ isVisible, onClose, initialTab = 'posi
           <div className="tab-description">
             <p>{getTabDescription(activeTab)}</p>
           </div>
+
+          {/* Nur im Unverträglich-Tab: Autocomplete-Eingabe */}
+          {activeTab === 'negative' && (
+            <div className="autocomplete-section">
+              <label htmlFor="add-negative-autocomplete" className="visually-hidden">Unverträglichen Inhaltsstoff hinzufügen</label>
+              <input
+                id="add-negative-autocomplete"
+                type="text"
+                className="autocomplete-input"
+                placeholder="Unverträglichen Inhaltsstoff hinzufügen..."
+                value={autocompleteInput}
+                onChange={handleAutocompleteChange}
+                onKeyDown={handleAutocompleteKeyDown}
+                autoComplete="off"
+                aria-autocomplete="list"
+                aria-controls="autocomplete-listbox"
+                aria-activedescendant={autocompleteIndex >= 0 ? `autocomplete-item-${autocompleteIndex}` : undefined}
+                aria-expanded={autocompleteActive && autocompleteResults.length > 0}
+                aria-haspopup="listbox"
+                onFocus={() => setAutocompleteActive(true)}
+                onBlur={() => setTimeout(() => setAutocompleteActive(false), 100)}
+              />
+              {autocompleteActive && autocompleteResults.length > 0 && (
+                <ul
+                  id="autocomplete-listbox"
+                  role="listbox"
+                  className="autocomplete-listbox"
+                  style={{ maxHeight: 180, overflowY: 'auto', margin: 0, padding: 0, border: '1px solid #ccc', background: '#fff', position: 'absolute', zIndex: 10, width: '100%' }}
+                >
+                  {autocompleteResults.map((name, idx) => (
+                    <li
+                      key={name}
+                      id={`autocomplete-item-${idx}`}
+                      role="option"
+                      aria-selected={autocompleteIndex === idx}
+                      className={autocompleteIndex === idx ? 'autocomplete-item active' : 'autocomplete-item'}
+                      style={{ padding: '4px 8px', cursor: 'pointer', background: autocompleteIndex === idx ? '#eee' : '#fff' }}
+                      onMouseDown={() => handleAutocompleteSelect(name)}
+                    >
+                      {name}
+                    </li>
+                  ))}
+                </ul>
+              )}
+              <button
+                type="button"
+                className="add-negative-button"
+                onClick={() => handleAutocompleteSelect(autocompleteInput.trim())}
+                disabled={autocompleteInput.trim().length === 0}
+              >
+                Hinzufügen
+              </button>
+            </div>
+          )}
 
           <div className="search-section">
             <input

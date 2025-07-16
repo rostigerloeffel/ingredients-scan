@@ -68,17 +68,13 @@
 }
 
 .ingredient-tag {
-  background: #f0f2f5;
-  color: #22314a;
-  padding: 0.5rem 0.75rem;
+  background: #f0f2f5 !important;
+  color: #22314a !important;
+  font-weight: 600;
   border-radius: 6px;
-  font-size: 0.9rem;
-  font-weight: 500;
-  border: 1px solid #e3e6eb;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 200px;
+  padding: 0.2em 0.5em;
+  font-size: 1em;
+  letter-spacing: 0.01em;
 }
 
 .tolerance-options {

@@ -266,14 +266,13 @@
 }
 
 .ingredient-name {
-  font-size: 0.95rem;
-  color: #22314a;
-  font-weight: 500;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  flex: 1;
-  min-width: 0;
+  color: #22314a !important;
+  background: #f0f2f5 !important;
+  font-weight: 600;
+  border-radius: 6px;
+  padding: 0.2em 0.5em;
+  font-size: 1em;
+  letter-spacing: 0.01em;
 }
 
 .delete-single-button {

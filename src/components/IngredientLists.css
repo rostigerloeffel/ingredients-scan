@@ -266,8 +266,8 @@
 }
 
 .ingredient-name {
-  color: #22314a !important;
-  background: #f0f2f5 !important;
+  color: #22314a;
+  background: #f0f2f5;
   font-weight: 600;
   border-radius: 6px;
   padding: 0.2em 0.5em;

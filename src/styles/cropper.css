@@ -248,6 +248,9 @@
   }
 
 .cropper-point.point-se {
+  bottom: -3px;
+  right: -3px;
+  cursor: nwse-resize;
   height: 16px;
   width: 16px;
 }

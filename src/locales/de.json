@@ -1,0 +1,16 @@
+{
+  "scan_button": "📷 Inhaltsstoffe scannen",
+  "camera": "Kamera:",
+  "error_unknown": "Unbekannter Fehler",
+  "error_no_camera": "Keine Kamera gefunden",
+  "error_api": "Fehler bei der Kommunikation mit dem Server",
+  "no_ingredients": "⚠️ Es konnten keine Inhaltsstoffe erkannt werden.",
+  "good_tolerance": "Gut vertragen",
+  "bad_tolerance": "Schlecht vertragen",
+  "save": "Speichern",
+  "delete": "Löschen",
+  "cancel": "Abbrechen",
+  "analyzing_ingredients": "Analysiere Inhaltsstoffe...",
+  "analyzing_hint": "Dies kann einige Sekunden dauern",
+  "openai_key_not_configured": "OpenAI-Key nicht konfiguriert"
+} 

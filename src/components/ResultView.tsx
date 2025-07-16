@@ -3,6 +3,7 @@ import type { IngredientAnalysis } from '../services/openaiService';
 import React from 'react';
 import VerticalMainLayout from './VerticalMainLayout';
 import ListsButtons from './ListsButtons';
+import { t } from '../i18n';
 
 interface ResultViewProps {
   capturedImage: string;
@@ -37,15 +38,15 @@ const ResultView: React.FC<ResultViewProps> = ({
           {isAnalyzing && (
             <div className="analyzing">
               <div className="loading-spinner"></div>
-              <p>Analysiere Inhaltsstoffe...</p>
-              <p className="analyzing-hint">Dies kann einige Sekunden dauern</p>
+              <p>{t('analyzing_ingredients')}</p>
+              <p className="analyzing-hint">{t('analyzing_hint')}</p>
             </div>
           )}
           {error && !isAnalyzing && error !== 'NO_OPENAI_KEY' && (
             <div className="error-message">
               <div className="error-header">
                 <span className="error-icon">❌</span>
-                <h3>Analyse fehlgeschlagen</h3>
+                <h3>{t('error_api')}</h3>
               </div>
               <p className="error-text">{error}</p>
             </div>
@@ -54,7 +55,7 @@ const ResultView: React.FC<ResultViewProps> = ({
             <div className="info-message">
               <div className="info-header">
                 <span className="info-icon">ℹ️</span>
-                <h3>OpenAI-Key nicht konfiguriert</h3>
+                <h3>{t('openai_key_not_configured')}</h3>
               </div>
               <p className="info-text">Die automatische KI-Analyse ist aktuell nicht verfügbar, weil kein OpenAI-Key hinterlegt ist. Die Texterkennung funktioniert trotzdem – du kannst die Zutatenliste wie gewohnt scannen.</p>
             </div>
@@ -67,7 +68,7 @@ const ResultView: React.FC<ResultViewProps> = ({
       bottom={
         <div className="result-actions">
           <button onClick={handleClose} className="scan-button">
-            ✖️ Schließen
+            ✖️ {t('cancel')}
           </button>
         </div>
       }

@@ -4,6 +4,7 @@ import type { CameraPreviewHandle } from './CameraPreview';
 import ListsButtons from './ListsButtons';
 import VerticalMainLayout from './VerticalMainLayout';
 import type { DebugInfo } from '../debug/DebugOverlay';
+import { t } from '../i18n';
 
 interface ScanViewProps {
   onCapture: (imageSrc: string) => void;
@@ -99,7 +100,7 @@ const ScanView: React.FC<ScanViewProps> = ({ onCapture, onShowLists, setDebugInf
         <div className="camera-controls">
           {cameras.length > 1 && (
             <div className="camera-selector">
-              <label htmlFor="camera-select">Kamera:</label>
+              <label htmlFor="camera-select">{t('camera')}</label>
               <select
                 id="camera-select"
                 value={selectedCamera}
@@ -115,7 +116,7 @@ const ScanView: React.FC<ScanViewProps> = ({ onCapture, onShowLists, setDebugInf
             </div>
           )}
           <button onClick={handleScan} className="scan-button">
-            📷 Inhaltsstoffe scannen
+            {t('scan_button')}
           </button>
         </div>
       }

@@ -1,0 +1,16 @@
+{
+  "scan_button": "📷 Scan ingredients",
+  "camera": "Camera:",
+  "error_unknown": "Unknown error",
+  "error_no_camera": "No camera found",
+  "error_api": "Error communicating with server",
+  "no_ingredients": "⚠️ No ingredients could be detected.",
+  "good_tolerance": "Well tolerated",
+  "bad_tolerance": "Not tolerated",
+  "save": "Save",
+  "delete": "Delete",
+  "cancel": "Cancel",
+  "analyzing_ingredients": "Analyzing ingredients...",
+  "analyzing_hint": "This may take a few seconds",
+  "openai_key_not_configured": "OpenAI key not configured"
+} 

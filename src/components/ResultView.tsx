@@ -60,7 +60,7 @@ const ResultView: React.FC<ResultViewProps> = ({
             </div>
           )}
           {!isAnalyzing && !error && analysis && (
-            <AnalysisResult analysis={analysis} />
+            <AnalysisResult analysis={analysis} onActionDone={handleClose} />
           )}
         </>
       }

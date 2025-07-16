@@ -5,6 +5,7 @@ import './AnalysisResult.css';
 
 interface AnalysisResultProps {
   analysis: IngredientAnalysis;
+  onActionDone?: () => void;
 }
 
 interface IntoleranceWarning {
@@ -12,7 +13,7 @@ interface IntoleranceWarning {
   severity: 'high' | 'medium' | 'low';
 }
 
-export default function AnalysisResult({ analysis }: AnalysisResultProps) {
+export default function AnalysisResult({ analysis, onActionDone }: AnalysisResultProps) {
   const [intoleranceWarnings, setIntoleranceWarnings] = useState<IntoleranceWarning[]>([]);
   const [hasWarnings, setHasWarnings] = useState(false);
   const [displayedIngredients, setDisplayedIngredients] = useState<string[]>(analysis.ingredients);
@@ -53,6 +54,7 @@ export default function AnalysisResult({ analysis }: AnalysisResultProps) {
     if (newIngredients.length > 0) {
       IngredientListService.savePositiveList([...positiveList, ...newIngredients]);
     }
+    if (onActionDone) onActionDone();
   };
 
   const handleAddAllToNegativeList = () => {
@@ -62,6 +64,7 @@ export default function AnalysisResult({ analysis }: AnalysisResultProps) {
     if (newIngredients.length > 0) {
       IngredientListService.saveNegativeList([...negativeList, ...newIngredients]);
     }
+    if (onActionDone) onActionDone();
   };
 
   const handleRemoveIngredient = (ingredientToRemove: string) => {

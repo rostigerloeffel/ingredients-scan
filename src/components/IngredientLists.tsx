@@ -94,7 +94,7 @@ export default function IngredientLists({ isVisible, onClose }: IngredientListsP
   if (!isVisible) return null;
 
   return (
-    <div className="ingredient-lists-overlay" onClick={onClose}>
+    <div className="ingredient-lists-overlay" onClick={onClose} aria-modal="true" role="dialog">
       <div className="ingredient-lists-modal" onClick={(e) => e.stopPropagation()}>
         <div className="lists-header">
           <h2>📋 Meine Verträglichkeitslisten</h2>

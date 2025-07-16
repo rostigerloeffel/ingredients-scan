@@ -55,7 +55,7 @@ export default function ToleranceQuestion({ analysis, onComplete, onCancel }: To
   };
 
   return (
-    <div className="tolerance-question-overlay">
+    <div className="tolerance-question-overlay" aria-modal="true" role="dialog">
       <div className="tolerance-question-modal">
         <div className="question-header">
           <h2>🤔 Wie vertragen Sie dieses Produkt?</h2>

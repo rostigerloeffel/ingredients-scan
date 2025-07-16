@@ -50,7 +50,7 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({ isVisible, onClose, onApi
   if (!isVisible) return null;
 
   return (
-    <div className="api-key-manager-overlay" onClick={handleClose}>
+    <div className="api-key-manager-overlay" onClick={handleClose} aria-modal="true" role="dialog">
       <div className="api-key-manager-dialog" onClick={(e) => e.stopPropagation()}>
         <div className="dialog-header">
           <h2>OpenAI API-Schlüssel</h2>

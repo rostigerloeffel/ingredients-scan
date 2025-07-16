@@ -97,8 +97,7 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({ isVisible, onClose, onApi
               </button>
             </div>
           </div>
-          
-          <div className="form-actions">
+          <div className="form-actions-row">
             <button
               type="submit"
               disabled={!isValid}
@@ -114,6 +113,8 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({ isVisible, onClose, onApi
             >
               Löschen
             </button>
+          </div>
+          <div className="form-actions-bottom">
             <button
               type="button"
               onClick={handleClose}

@@ -237,6 +237,27 @@
   color: #b23c3c !important;
 }
 
+.form-actions-row {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: nowrap;
+  min-width: 0;
+  overflow: hidden;
+  justify-content: center;
+  margin-bottom: 0.5rem;
+}
+
+.form-actions-bottom {
+  display: flex;
+  justify-content: center;
+}
+
+.form-actions-bottom .cancel-button {
+  width: 60%;
+  max-width: 220px;
+  margin: 0 auto;
+}
+
 @media (max-width: 768px) {
   .api-key-manager-dialog {
     max-width: 100%;

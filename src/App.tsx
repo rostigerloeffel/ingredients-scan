@@ -29,14 +29,20 @@ function App() {
   // Prüfe beim Start, ob ein API-Schlüssel vorhanden ist
   useEffect(() => {
     const apiKeyExists = OpenAIService.hasApiKey();
-    // Zeige Dialog beim Start, wenn kein API-Key vorhanden ist
-    if (!apiKeyExists) {
+    const dialogShown = localStorage.getItem('apiKeyDialogShown');
+    // Zeige Dialog beim Start, wenn kein API-Key vorhanden ist und noch nie gezeigt
+    if (!apiKeyExists && !dialogShown) {
       setShowApiKeyManager(true);
     }
   }, []);
 
   const handleApiKeyChange = () => {
     OpenAIService.hasApiKey();
+  };
+
+  const handleApiKeyDialogClose = () => {
+    setShowApiKeyManager(false);
+    localStorage.setItem('apiKeyDialogShown', 'true');
   };
 
   // Handler für die Übergänge
@@ -109,7 +115,7 @@ function App() {
       {/* API-Schlüssel-Manager */}
       <ApiKeyManager
         isVisible={showApiKeyManager}
-        onClose={() => setShowApiKeyManager(false)}
+        onClose={handleApiKeyDialogClose}
         onApiKeyChange={handleApiKeyChange}
       />
       

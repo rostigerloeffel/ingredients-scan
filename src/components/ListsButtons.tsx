@@ -3,7 +3,7 @@ import { IngredientListService } from '../services/ingredientLists';
 import './ListsButtons.css';
 
 interface ListsButtonsProps {
-  onShowLists: () => void;
+  onShowLists: (tab?: 'positive' | 'negative') => void;
   disabled?: boolean;
 }
 
@@ -14,14 +14,14 @@ const ListsButtons: React.FC<ListsButtonsProps> = ({ onShowLists, disabled }) =>
   return (
     <div className="lists-buttons">
       <button 
-        onClick={onShowLists}
+        onClick={() => onShowLists('positive')}
         className="lists-button positive"
         disabled={disabled}
       >
         ✅ Verträglich ({positiveCount})
       </button>
       <button 
-        onClick={onShowLists}
+        onClick={() => onShowLists('negative')}
         className="lists-button negative"
         disabled={disabled}
       >

@@ -25,6 +25,7 @@ function App() {
   const [showIngredientLists, setShowIngredientLists] = useState(false);
   const [debugInfo, setDebugInfo] = useState<DebugInfo>();
   const [tesseractDebugInfo, setTesseractDebugInfo] = useState<TesseractDebugInfo>();
+  const [ingredientListsTab, setIngredientListsTab] = useState<'positive' | 'negative'>('positive');
 
   // Prüfe beim Start, ob ein API-Schlüssel vorhanden ist
   useEffect(() => {
@@ -123,6 +124,7 @@ function App() {
       <IngredientLists
         isVisible={showIngredientLists}
         onClose={() => setShowIngredientLists(false)}
+        initialTab={ingredientListsTab}
       />
       
       {/* Dezenter API-Schlüssel-Hinweis */}
@@ -140,7 +142,7 @@ function App() {
         {view === 'scan' && (
           <ScanView
             onCapture={handleCapture}
-            onShowLists={() => setShowIngredientLists(true)}
+            onShowLists={(tab: 'positive' | 'negative' = 'positive') => { setIngredientListsTab(tab); setShowIngredientLists(true); }}
             setDebugInfo={setDebugInfo}
           />
         )}
@@ -148,7 +150,7 @@ function App() {
           <PrepareView
             image={capturedImage}
             onCropDone={handleCropDone}
-            onShowLists={() => setShowIngredientLists(true)}
+            onShowLists={(tab: 'positive' | 'negative' = 'positive') => { setIngredientListsTab(tab); setShowIngredientLists(true); }}
           />
         )}
         {view === 'result' && capturedImage && (
@@ -158,7 +160,7 @@ function App() {
             isAnalyzing={isAnalyzing}
             error={error}
             onClose={handleResultClose}
-            onShowLists={() => setShowIngredientLists(true)}
+            onShowLists={(tab: 'positive' | 'negative' = 'positive') => { setIngredientListsTab(tab); setShowIngredientLists(true); }}
           />
         )}
       </main>

@@ -6,10 +6,11 @@ import './IngredientLists.css';
 interface IngredientListsProps {
   isVisible: boolean;
   onClose: () => void;
+  initialTab?: 'positive' | 'negative';
 }
 
-export default function IngredientLists({ isVisible, onClose }: IngredientListsProps) {
-  const [activeTab, setActiveTab] = useState<'positive' | 'negative'>('positive');
+export default function IngredientLists({ isVisible, onClose, initialTab = 'positive' }: IngredientListsProps) {
+  const [activeTab, setActiveTab] = useState<'positive' | 'negative'>(initialTab);
   const [positiveList, setPositiveList] = useState<string[]>([]);
   const [negativeList, setNegativeList] = useState<NegativeIngredient[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -18,8 +19,9 @@ export default function IngredientLists({ isVisible, onClose }: IngredientListsP
   useEffect(() => {
     if (isVisible) {
       loadLists();
+      setActiveTab(initialTab);
     }
-  }, [isVisible]);
+  }, [isVisible, initialTab]);
 
   const loadLists = () => {
     setPositiveList(IngredientListService.getPositiveList());

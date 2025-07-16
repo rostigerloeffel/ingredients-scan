@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { type IngredientAnalysis } from '../services/openaiService';
 import { IngredientListService } from '../services/ingredientLists';
 import './AnalysisResult.css';
+import type { NegativeIngredient } from '../services/ingredientLists';
 
 interface AnalysisResultProps {
   analysis: IngredientAnalysis;
@@ -24,8 +25,9 @@ export default function AnalysisResult({ analysis, onActionDone }: AnalysisResul
   }, [analysis]);
 
   const checkIntolerances = () => {
-    const negativeList = IngredientListService.getNegativeList();
-    const normalizedNegativeList = IngredientListService.normalizeIngredients(negativeList);
+    const negativeList: NegativeIngredient[] = IngredientListService.getNegativeList();
+    const negativeNames = negativeList.map(e => e.name);
+    const normalizedNegativeList = IngredientListService.normalizeIngredients(negativeNames);
     const normalizedAnalysisIngredients = IngredientListService.normalizeIngredients(analysis.ingredients);
     
     const warnings: IntoleranceWarning[] = [];

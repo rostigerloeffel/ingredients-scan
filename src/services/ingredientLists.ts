@@ -3,6 +3,11 @@ export interface IngredientList {
   lastUpdated: Date;
 }
 
+export interface NegativeIngredient {
+  name: string;
+  count: number;
+}
+
 export class IngredientListService {
   private static readonly POSITIVE_LIST_KEY = 'ingredient_scanner_positive_list';
   private static readonly NEGATIVE_LIST_KEY = 'ingredient_scanner_negative_list';
@@ -24,14 +29,23 @@ export class IngredientListService {
   }
 
   /**
-   * Lädt die Negativliste aus dem localStorage
+   * Lädt die Negativliste aus dem localStorage (jetzt als Array von Objekten)
    */
-  static getNegativeList(): string[] {
+  static getNegativeList(): NegativeIngredient[] {
     try {
       const stored = localStorage.getItem(this.NEGATIVE_LIST_KEY);
       if (stored) {
-        const data: IngredientList = JSON.parse(stored);
-        return data.ingredients || [];
+        const data = JSON.parse(stored);
+        if (Array.isArray(data)) {
+          // Migration: Altes Format (reine Strings)
+          return data.map((name: string) => ({ name, count: 1 }));
+        } else if (Array.isArray(data.ingredients)) {
+          // Migration: IngredientList-Format
+          return data.ingredients.map((name: string) => ({ name, count: 1 }));
+        } else if (Array.isArray(data.negativeIngredients)) {
+          // Neues Format
+          return data.negativeIngredients;
+        }
       }
     } catch (error) {
       console.warn('Fehler beim Laden der Negativliste:', error);
@@ -56,13 +70,13 @@ export class IngredientListService {
   }
 
   /**
-   * Speichert die Negativliste im localStorage
+   * Speichert die Negativliste im localStorage (als Array von Objekten)
    */
-  static saveNegativeList(ingredients: string[]): void {
+  static saveNegativeList(ingredients: NegativeIngredient[]): void {
     try {
-      const filtered = ingredients.map(i => i.trim()).filter(i => i.length > 0);
-      const data: IngredientList = {
-        ingredients: filtered,
+      const filtered = ingredients.filter(i => i.name && i.name.trim().length > 0 && i.count > 0);
+      const data = {
+        negativeIngredients: filtered,
         lastUpdated: new Date()
       };
       localStorage.setItem(this.NEGATIVE_LIST_KEY, JSON.stringify(data));
@@ -83,7 +97,7 @@ export class IngredientListService {
     
     // Entferne diese Inhaltsstoffe von der Negativliste
     const updatedNegativeList = negativeList.filter(
-      ingredient => !ingredients.includes(ingredient)
+      ingredient => !ingredients.includes(ingredient.name)
     );
     
     this.savePositiveList(updatedPositiveList);
@@ -91,19 +105,21 @@ export class IngredientListService {
   }
 
   /**
-   * Fügt Inhaltsstoffe zur Negativliste hinzu (nur wenn sie nicht in der Positivliste stehen)
+   * Fügt Inhaltsstoffe zur Negativliste hinzu (Zähler erhöhen)
    */
   static addToNegativeList(ingredients: string[]): void {
     const positiveList = this.getPositiveList();
-    const negativeList = this.getNegativeList();
-    
-    // Füge nur Inhaltsstoffe zur Negativliste hinzu, die nicht in der Positivliste stehen
-    const ingredientsToAdd = ingredients.filter(
-      ingredient => !positiveList.includes(ingredient)
-    );
-    
-    const updatedNegativeList = [...new Set([...negativeList, ...ingredientsToAdd])];
-    this.saveNegativeList(updatedNegativeList);
+    let negativeList = this.getNegativeList();
+    for (const ing of ingredients) {
+      if (positiveList.includes(ing)) continue;
+      const idx = negativeList.findIndex(e => e.name === ing);
+      if (idx >= 0) {
+        negativeList[idx].count += 1;
+      } else {
+        negativeList.push({ name: ing, count: 1 });
+      }
+    }
+    this.saveNegativeList(negativeList);
   }
 
   /**
@@ -118,14 +134,14 @@ export class IngredientListService {
   }
 
   /**
-   * Entfernt Inhaltsstoffe aus der Negativliste
+   * Entfernt Inhaltsstoffe aus der Negativliste (Zähler dekrementieren oder löschen)
    */
   static removeFromNegativeList(ingredients: string[]): void {
-    const negativeList = this.getNegativeList();
-    const updatedNegativeList = negativeList.filter(
-      ingredient => !ingredients.includes(ingredient)
-    );
-    this.saveNegativeList(updatedNegativeList);
+    let negativeList = this.getNegativeList();
+    negativeList = negativeList.map(e =>
+      ingredients.includes(e.name) ? { ...e, count: e.count - 1 } : e
+    ).filter(e => e.count > 0);
+    this.saveNegativeList(negativeList);
   }
 
   /**
@@ -153,7 +169,16 @@ export class IngredientListService {
    */
   static isInNegativeList(ingredient: string): boolean {
     const negativeList = this.getNegativeList();
-    return negativeList.includes(ingredient);
+    return negativeList.some(e => e.name === ingredient);
+  }
+
+  /**
+   * Gibt die Anzahl der Markierungen für einen Inhaltsstoff zurück
+   */
+  static getNegativeCount(ingredient: string): number {
+    const negativeList = this.getNegativeList();
+    const entry = negativeList.find(e => e.name === ingredient);
+    return entry ? entry.count : 0;
   }
 
   /**

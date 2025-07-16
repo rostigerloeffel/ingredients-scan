@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "cropperjs": "^2.0.0",
+    "fuse.js": "^7.1.0",
     "openai": "^5.9.0",
     "react": "^19.1.0",
     "react-cropper": "^2.3.3",

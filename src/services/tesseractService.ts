@@ -1,4 +1,17 @@
 import { createWorker, PSM } from 'tesseract.js';
+import Fuse from 'fuse.js';
+import inciNames from '../inci_names.normalized.json';
+
+let fuseInstance: Fuse<string> | null = null;
+function getFuseInstance(): Fuse<string> {
+  if (!fuseInstance) {
+    fuseInstance = new Fuse(inciNames, {
+      includeScore: true,
+      threshold: 0.35, // anpassen je nach gewünschter Toleranz
+    });
+  }
+  return fuseInstance;
+}
 
 export class TesseractService {
   /**
@@ -220,7 +233,19 @@ export class TesseractService {
     }
     
     // Entferne Duplikate und leere Einträge
-    return Array.from(new Set(allIngredients)).filter(ing => ing.length > 2);
+    const uniqueIngredients = Array.from(new Set(allIngredients)).filter(ing => ing.length > 2);
+
+    // Fuzzy-Matching gegen INCI-Liste
+    const fuse = getFuseInstance();
+    const bestMatches: string[] = [];
+    for (const ing of uniqueIngredients) {
+      const result = fuse.search(ing);
+      if (result.length > 0) {
+        bestMatches.push(result[0].item);
+      }
+    }
+    // Nur eindeutige Treffer zurückgeben
+    return Array.from(new Set(bestMatches));
   }
   
   /**

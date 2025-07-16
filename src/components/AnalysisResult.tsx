@@ -49,21 +49,17 @@ export default function AnalysisResult({ analysis, onActionDone }: AnalysisResul
 
   const handleAddAllToPositiveList = () => {
     setPositiveClicked(true);
-    const positiveList = IngredientListService.getPositiveList();
-    const newIngredients = displayedIngredients.filter(ing => !positiveList.includes(ing));
-    if (newIngredients.length > 0) {
-      IngredientListService.savePositiveList([...positiveList, ...newIngredients]);
-    }
+    // Alle angezeigten Inhaltsstoffe exklusiv auf die Positivliste setzen
+    IngredientListService.addToPositiveList(displayedIngredients);
     if (onActionDone) onActionDone();
   };
 
   const handleAddAllToNegativeList = () => {
     setNegativeClicked(true);
-    const negativeList = IngredientListService.getNegativeList();
-    const newIngredients = displayedIngredients.filter(ing => !negativeList.includes(ing));
-    if (newIngredients.length > 0) {
-      IngredientListService.saveNegativeList([...negativeList, ...newIngredients]);
-    }
+    // Nur Inhaltsstoffe, die nicht auf der Positivliste stehen, auf die Negativliste setzen
+    const positiveList = IngredientListService.getPositiveList();
+    const toNegative = displayedIngredients.filter(ing => !positiveList.includes(ing));
+    IngredientListService.addToNegativeList(toNegative);
     if (onActionDone) onActionDone();
   };
 

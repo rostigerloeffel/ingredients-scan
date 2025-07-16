@@ -21,11 +21,13 @@ export default function ToleranceQuestion({ analysis, onComplete, onCancel }: To
       const normalizedIngredients = IngredientListService.normalizeIngredients(analysis.ingredients);
 
       if (tolerance === 'good') {
-        // Füge zur Positivliste hinzu und entferne von Negativliste
+        // Füge alle erkannten Inhaltsstoffe zur Positivliste hinzu und entferne sie von der Negativliste
         IngredientListService.addToPositiveList(normalizedIngredients);
       } else {
-        // Füge zur Negativliste hinzu (nur wenn nicht in Positivliste)
-        IngredientListService.addToNegativeList(normalizedIngredients);
+        // Füge alle erkannten Inhaltsstoffe, die NICHT auf der Positivliste stehen, zur Negativliste hinzu
+        const positiveList = IngredientListService.getPositiveList();
+        const toNegative = normalizedIngredients.filter(ing => !positiveList.includes(ing));
+        IngredientListService.addToNegativeList(toNegative);
       }
 
       // Kurze Verzögerung für visuelles Feedback

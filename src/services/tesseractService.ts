@@ -62,10 +62,7 @@ export class TesseractService {
     if (onDebugInfo) {
       onDebugInfo({
         preprocessedUrl: preprocessed,
-        languages: [
-          'deu', 'eng', 'fra', 'spa', 'ita',
-          'nld', 'pol', 'rus', 'por', 'tur'
-        ],
+        languages: ['eng'],
         psmModes: [
           'SINGLE_BLOCK', 'AUTO', 'SPARSE_TEXT', 'SINGLE_LINE', 'SINGLE_WORD'
         ],
@@ -98,8 +95,7 @@ export class TesseractService {
     
     // Erweiterte Sprachunterstützung
     const languages = [
-      'deu', 'eng', 'fra', 'spa', 'ita',  // Hauptsprachen
-      'nld', 'pol', 'rus', 'por', 'tur'   // Zusätzliche Sprachen
+      'eng' // Only English
     ];
     
     const ocrResults: string[] = [];

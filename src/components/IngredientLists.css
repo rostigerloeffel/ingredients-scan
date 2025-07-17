@@ -103,6 +103,7 @@
 }
 
 .close-button {
+  background: #f8f9fa;
   font-size: 1.5rem;
   color: #7a8599;
   cursor: pointer;
@@ -111,6 +112,7 @@
 
 .close-button:hover {
   color: #22314a;
+  background: #f8f9fa;
 }
 
 .lists-tabs-header {

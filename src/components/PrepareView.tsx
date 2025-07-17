@@ -1,4 +1,4 @@
-import React, { useMemo, useCallback } from 'react';
+import React, { useCallback } from 'react';
 import { Cropper } from 'react-cropper';
 import '../styles/cropper.css';
 import ListsButtons from './ListsButtons';

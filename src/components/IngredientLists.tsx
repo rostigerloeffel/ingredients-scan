@@ -137,17 +137,13 @@ const IngredientLists: React.FC<IngredientListsProps> = React.memo(function Ingr
                 className={`tab-button ${activeTab === 'positive' ? 'active' : ''}`}
                 onClick={() => setActiveTab('positive')}
               >
-                <span className="tab-icon">{getTabIcon('positive')}</span>
                 <span className="tab-text">{getTabTitle('positive')}</span>
-                <span className="tab-count">({positiveList.length})</span>
               </button>
               <button
                 className={`tab-button ${activeTab === 'negative' ? 'active' : ''}`}
                 onClick={() => setActiveTab('negative')}
               >
-                <span className="tab-icon">{getTabIcon('negative')}</span>
                 <span className="tab-text">{getTabTitle('negative')}</span>
-                <span className="tab-count">({negativeList.length})</span>
               </button>
             </div>
           </div>

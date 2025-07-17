@@ -200,10 +200,14 @@
 
 .search-section {
   margin-bottom: 1.5rem;
+  display: flex;
+  min-width: 0;
 }
 
 .search-input {
   width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
   padding: 0.75rem 1rem;
   border: 1px solid #d6dbe2;
   border-radius: 8px;
@@ -489,6 +493,13 @@
   .ingredient-name {
     font-size: 0.9rem;
   }
+  .search-section {
+    padding: 0;
+  }
+  .search-input {
+    font-size: 0.95rem;
+    padding: 0.6rem 0.7rem;
+  }
 }
 
 @media (max-width: 480px) {
@@ -522,5 +533,12 @@
   }
   .ingredient-name {
     font-size: 0.95rem;
+  }
+  .search-section {
+    padding: 0;
+  }
+  .search-input {
+    font-size: 0.93rem;
+    padding: 0.5rem 0.5rem;
   }
 } 

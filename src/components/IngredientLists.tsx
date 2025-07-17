@@ -231,13 +231,6 @@ export default function IngredientLists({ isVisible, onClose, initialTab = 'posi
               </div>
             ) : (
               <>
-                <div className="ingredients-header">
-                  <h3>
-                    {filteredIngredients.length} von {(activeTab === 'positive' ? positiveList : negativeList).length} Einträgen
-                    {searchTerm && ` (gefiltert)`}
-                  </h3>
-                </div>
-
                 <div className="ingredients-list">
                   {filteredIngredients.map((ingredient) => {
                     // If ingredient is an object (Negativliste), show count

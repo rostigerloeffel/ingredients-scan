@@ -76,12 +76,6 @@ export default function IngredientLists({ isVisible, onClose, initialTab = 'posi
     return tab === 'positive' ? 'Verträglich' : 'Unverträglich';
   };
 
-  const getTabDescription = (tab: 'positive' | 'negative') => {
-    return tab === 'positive' 
-      ? 'Inhaltsstoffe, die Sie gut vertragen'
-      : 'Inhaltsstoffe, die Sie schlecht vertragen';
-  };
-
   // Autocomplete-Logik
   useEffect(() => {
     if (autocompleteInput.trim().length === 0) {
@@ -161,7 +155,7 @@ export default function IngredientLists({ isVisible, onClose, initialTab = 'posi
 
         <div className="lists-content">
           <div className="tab-description">
-            <p>{getTabDescription(activeTab)}</p>
+            {/* Beschreibung entfernt */}
           </div>
 
           {/* Nur im Unverträglich-Tab: Autocomplete-Eingabe */}

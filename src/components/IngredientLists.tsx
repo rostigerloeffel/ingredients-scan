@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { IngredientListService } from '../services/ingredientLists';
 import type { NegativeIngredient } from '../services/ingredientLists';
 import './IngredientLists.css';

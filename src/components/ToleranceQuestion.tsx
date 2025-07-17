@@ -1,4 +1,4 @@
-import React, { useMemo, useCallback } from 'react';
+import React, { useCallback } from 'react';
 import { IngredientListService } from '../services/ingredientLists';
 import { type IngredientAnalysis } from '../services/openaiService';
 import './ToleranceQuestion.css';
@@ -21,16 +21,13 @@ const ToleranceQuestion: React.FC<ToleranceQuestionProps> = React.memo((props) =
       const normalizedIngredients = IngredientListService.normalizeIngredients(props.analysis.ingredients);
 
       if (tolerance === 'good') {
-        // Füge alle erkannten Inhaltsstoffe zur Positivliste hinzu und entferne sie von der Negativliste
         IngredientListService.addToPositiveList(normalizedIngredients);
       } else {
-        // Füge alle erkannten Inhaltsstoffe, die NICHT auf der Positivliste stehen, zur Negativliste hinzu
         const positiveList = IngredientListService.getPositiveList();
         const toNegative = normalizedIngredients.filter(ing => !positiveList.includes(ing));
         IngredientListService.addToNegativeList(toNegative);
       }
 
-      // Kurze Verzögerung für visuelles Feedback
       setTimeout(() => {
         props.onComplete();
       }, 1000);
@@ -133,4 +130,4 @@ const ToleranceQuestion: React.FC<ToleranceQuestionProps> = React.memo((props) =
   );
 });
 
-export default ToleranceQuestion; 
+export default ToleranceQuestion;

@@ -1,4 +1,4 @@
-import React, { useState, useRef, useMemo, useCallback } from 'react';
+import React, { useState, useRef, useCallback } from 'react';
 import CameraPreview from './CameraPreview';
 import type { CameraPreviewHandle } from './CameraPreview';
 import ListsButtons from './ListsButtons';

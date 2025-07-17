@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo, useCallback } from 'react';
+import React, { useEffect, useState } from 'react';
 import { type IngredientAnalysis } from '../services/openaiService';
 import { IngredientListService } from '../services/ingredientLists';
 import './AnalysisResult.css';
@@ -24,7 +24,7 @@ const AnalysisResult = React.memo(function AnalysisResult({ analysis, onActionDo
     setDisplayedIngredients(analysis.ingredients);
   }, [analysis]);
 
-  const checkIntolerances = useCallback(() => {
+  const checkIntolerances = () => {
     const negativeList: NegativeIngredient[] = IngredientListService.getNegativeList();
     const negativeNames = negativeList.map(e => e.name);
     const normalizedNegativeList = IngredientListService.normalizeIngredients(negativeNames);
@@ -40,47 +40,47 @@ const AnalysisResult = React.memo(function AnalysisResult({ analysis, onActionDo
     });
     setIntoleranceWarnings(warnings);
     setHasWarnings(warnings.length > 0);
-  }, [analysis]);
+  };
 
   // Buttons sind immer aktiv, außer nach Klick (dann disabled)
   const [positiveClicked, setPositiveClicked] = useState(false);
   const [negativeClicked, setNegativeClicked] = useState(false);
 
-  const handleAddAllToPositiveList = useCallback(() => {
+  const handleAddAllToPositiveList = () => {
     setPositiveClicked(true);
     IngredientListService.addToPositiveList(displayedIngredients);
     if (onActionDone) onActionDone();
-  }, [displayedIngredients, onActionDone]);
+  };
 
-  const handleAddAllToNegativeList = useCallback(() => {
+  const handleAddAllToNegativeList = () => {
     setNegativeClicked(true);
     const positiveList = IngredientListService.getPositiveList();
     const toNegative = displayedIngredients.filter(ing => !positiveList.includes(ing));
     IngredientListService.addToNegativeList(toNegative);
     if (onActionDone) onActionDone();
-  }, [displayedIngredients, onActionDone]);
+  };
 
-  const handleRemoveIngredient = useCallback((ingredientToRemove: string) => {
+  const handleRemoveIngredient = (ingredientToRemove: string) => {
     setDisplayedIngredients(prev => prev.filter(ingredient => ingredient !== ingredientToRemove));
-  }, []);
+  };
 
-  const getWarningIcon = useCallback((severity: 'high' | 'medium' | 'low') => {
+  const getWarningIcon = (severity: 'high' | 'medium' | 'low') => {
     switch (severity) {
       case 'high': return '🚨';
       case 'medium': return '⚠️';
       case 'low': return '💡';
       default: return '⚠️';
     }
-  }, []);
+  };
 
-  const getWarningColor = useCallback((severity: 'high' | 'medium' | 'low') => {
+  const getWarningColor = (severity: 'high' | 'medium' | 'low') => {
     switch (severity) {
       case 'high': return '#ff6b6b';
       case 'medium': return '#ffa726';
       case 'low': return '#4ecdc4';
       default: return '#ffa726';
     }
-  }, []);
+  };
 
   return (
     <div className="analysis-result">

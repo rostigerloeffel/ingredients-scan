@@ -107,29 +107,48 @@ export class TesseractService {
 
     if (!text || text.trim().length === 0) return [];
 
-    // Suche den längsten Block mit Kommas (vermutlich INCI-Liste)
-    const blocks = text.split(/\n+/);
-    let inciBlock = '';
-    let maxCommas = 0;
-    for (const block of blocks) {
-      const commaCount = (block.match(/,/g) || []).length;
-      if (commaCount > maxCommas) {
-        maxCommas = commaCount;
-        inciBlock = block;
+    // Suche nach dem Block, der mit 'ingredients:' oder ähnlichem beginnt
+    const lines = text.split(/\r?\n/);
+    const headerRegex = /\b(ingredients?|inc|zutaten|bestandteile|composition|composizione|composición|ingrédients|ingrediënten)\b\s*[:：]/i;
+    let inciLines: string[] = [];
+    let inInciBlock = false;
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i].trim();
+      if (!inInciBlock && headerRegex.test(line)) {
+        // Starte neuen INCI-Block ab dem Header (entferne Header selbst)
+        const afterHeader = line.replace(headerRegex, '').trim();
+        if (afterHeader.length > 0) inciLines.push(afterHeader);
+        inInciBlock = true;
+        continue;
+      }
+      if (inInciBlock) {
+        // Block-Ende: Leere Zeile oder Zeile ohne Komma (und nicht sehr lang)
+        if (line === '' || (line.indexOf(',') === -1 && line.length < 20)) break;
+        inciLines.push(line);
       }
     }
-    // Falls kein Block gefunden, alles zusammenfassen
-    if (!inciBlock && text.includes(',')) {
-      inciBlock = text;
+    // Fallback: wie bisher, längster Komma-Block
+    if (inciLines.length === 0) {
+      const blocks = text.split(/\n+/);
+      let inciBlock = '';
+      let maxCommas = 0;
+      for (const block of blocks) {
+        const commaCount = (block.match(/,/g) || []).length;
+        if (commaCount > maxCommas) {
+          maxCommas = commaCount;
+          inciBlock = block;
+        }
+      }
+      if (!inciBlock && text.includes(',')) {
+        inciBlock = text;
+      }
+      if (!inciBlock) return [];
+      inciLines = [inciBlock];
     }
-    // Falls immer noch nichts, abbrechen
-    if (!inciBlock) return [];
-
+    // Zeilen zu einem Block zusammenfügen
+    let inciBlock = inciLines.join(' ');
     // Entferne alles vor dem ersten Doppelpunkt (z.B. "Ingredients:")
     inciBlock = inciBlock.replace(/^.*?:\s*/, '');
-    // Entferne Zeilenumbrüche innerhalb des Blocks
-    inciBlock = inciBlock.replace(/\n+/g, ' ');
-
     // Splitte an Kommas und normalisiere
     const rawIngredients = inciBlock.split(',').map(s => s.trim()).filter(Boolean);
 

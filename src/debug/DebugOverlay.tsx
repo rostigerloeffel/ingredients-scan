@@ -1,4 +1,4 @@
-import React, { useMemo, useCallback } from 'react';
+import React from 'react';
 
 export type DebugInfo = {
   origW: number;

@@ -1,6 +1,6 @@
 import AnalysisResult from './AnalysisResult';
 import type { IngredientAnalysis } from '../services/openaiService';
-import React, { useMemo, useCallback } from 'react';
+import React from 'react';
 import VerticalMainLayout from './VerticalMainLayout';
 import ListsButtons from './ListsButtons';
 import { t } from '../i18n';
@@ -14,7 +14,7 @@ interface ResultViewProps {
   onShowLists: () => void;
 }
 
-const ResultView: React.FC<ResultViewProps> = React.memo(({ capturedImage, analysis, isAnalyzing, error, onClose, onShowLists }) => {
+const ResultView: React.FC<ResultViewProps> = React.memo(({ analysis, isAnalyzing, error, onClose, onShowLists }) => {
   const [showAnalysis, setShowAnalysis] = React.useState(true);
 
   const handleClose = () => {

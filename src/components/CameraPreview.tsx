@@ -1,4 +1,4 @@
-import React, { useRef, useImperativeHandle, forwardRef, useEffect, useMemo, useCallback } from 'react';
+import React, { useRef, useImperativeHandle, forwardRef, useEffect, useCallback } from 'react';
 import Webcam from 'react-webcam';
 import './CameraPreview.css';
 import '../styles/cropper.css';

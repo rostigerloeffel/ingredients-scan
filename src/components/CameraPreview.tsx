@@ -1,4 +1,4 @@
-import { useRef, useImperativeHandle, forwardRef, useEffect } from 'react';
+import React, { useRef, useImperativeHandle, forwardRef, useEffect, useMemo, useCallback } from 'react';
 import Webcam from 'react-webcam';
 import './CameraPreview.css';
 import '../styles/cropper.css';
@@ -12,23 +12,19 @@ interface CameraPreviewProps {
   cameraId?: string;
 }
 
-const CameraPreview = forwardRef<CameraPreviewHandle, CameraPreviewProps>(({ cameraId }, ref) => {
+const CameraPreview = React.memo(forwardRef<CameraPreviewHandle, CameraPreviewProps>(({ cameraId }, ref) => {
   const webcamRef = useRef<Webcam>(null);
 
-  // Optimierte Kamera-Einstellungen für bessere Qualität
   useEffect(() => {
     const optimizeCameraSettings = async () => {
       if (webcamRef.current && webcamRef.current.video) {
         const video = webcamRef.current.video;
-        
-        // Warten bis das Video geladen ist
         if (video.readyState >= 2) {
           try {
             const stream = video.srcObject as MediaStream;
             if (stream) {
               const videoTrack = stream.getVideoTracks()[0];
               if (videoTrack) {
-                // Versuche höhere Auflösung zu setzen
                 await videoTrack.applyConstraints({
                   width: { ideal: 1920, min: 1280 },
                   height: { ideal: 1080, min: 720 }
@@ -41,23 +37,20 @@ const CameraPreview = forwardRef<CameraPreviewHandle, CameraPreviewProps>(({ cam
         }
       }
     };
-
-    // Verzögerung um sicherzustellen, dass die Kamera vollständig geladen ist
     const timer = setTimeout(optimizeCameraSettings, 1000);
     return () => clearTimeout(timer);
   }, [cameraId]);
 
   useImperativeHandle(ref, () => ({
-    getScreenshot: () => {
+    getScreenshot: useCallback(() => {
       if (webcamRef.current) {
         return webcamRef.current.getScreenshot();
       }
       return null;
-    },
-    getFullResScreenshot: async () => {
+    }, []),
+    getFullResScreenshot: useCallback(async () => {
       if (webcamRef.current && webcamRef.current.video) {
         const video = webcamRef.current.video as HTMLVideoElement;
-        // Versuche, ein Canvas in voller Videoauflösung zu erzeugen
         const width = video.videoWidth;
         const height = video.videoHeight;
         if (width && height) {
@@ -72,8 +65,8 @@ const CameraPreview = forwardRef<CameraPreviewHandle, CameraPreviewProps>(({ cam
         }
       }
       return null;
-    }
-  }));
+    }, [])
+  }), []);
 
   return (
     <div className="camera-preview">
@@ -100,6 +93,6 @@ const CameraPreview = forwardRef<CameraPreviewHandle, CameraPreviewProps>(({ cam
       </div>
     </div>
   );
-});
+}));
 
 export default CameraPreview; 

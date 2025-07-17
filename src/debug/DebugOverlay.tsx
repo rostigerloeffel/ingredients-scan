@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo, useCallback } from 'react';
 
 export type DebugInfo = {
   origW: number;
@@ -18,46 +18,48 @@ export type TesseractDebugInfo = {
   params: Record<string, string>;
 };
 
-const DebugOverlay: React.FC<{ debugInfo?: DebugInfo|null, tesseractInfo?: TesseractDebugInfo }> = ({ debugInfo, tesseractInfo }) => {
+type DebugOverlayProps = { debugInfo?: DebugInfo|null, tesseractInfo?: TesseractDebugInfo };
+
+const DebugOverlay: React.FC<DebugOverlayProps> = React.memo((props) => {
   if (!import.meta.env.DEV) return null;
   return (
     <div style={{position:'fixed',bottom:16,right:16,zIndex:10000,background:'rgba(0,0,0,0.8)',color:'#fff',padding:'12px 18px',borderRadius:10,fontSize:15,maxWidth:380,boxShadow:'0 2px 12px #0008',overflowY:'auto',maxHeight:'90vh'}}>
       <div><b>Debug:</b></div>
-      <div>Original: {debugInfo ? `${debugInfo.origW} x ${debugInfo.origH}` : '-'}</div>
-      <div>Cropped: {debugInfo ? `${debugInfo.cropW} x ${debugInfo.cropH}` : '-'}</div>
-      {debugInfo && debugInfo.cropUrl ? (
+      <div>Original: {props.debugInfo ? `${props.debugInfo.origW} x ${props.debugInfo.origH}` : '-'}</div>
+      <div>Cropped: {props.debugInfo ? `${props.debugInfo.cropW} x ${props.debugInfo.cropH}` : '-'}</div>
+      {props.debugInfo && props.debugInfo.cropUrl ? (
         <>
           <div style={{margin:'10px 0'}}>
-            <img src={debugInfo.cropUrl} alt="Cropped" style={{maxWidth:120,maxHeight:80,border:'1px solid #444',background:'#222'}} />
+            <img src={props.debugInfo.cropUrl} alt="Cropped" style={{maxWidth:120,maxHeight:80,border:'1px solid #444',background:'#222'}} />
           </div>
-          <div>PNG: {(debugInfo.cropUrl.length * 3 / 4 / 1024).toFixed(1)} KB</div>
-          <a href={debugInfo.cropUrl} download="debug-crop.png" style={{color:'#4ecdc4',fontSize:13}}>Download</a>
+          <div>PNG: {(props.debugInfo.cropUrl.length * 3 / 4 / 1024).toFixed(1)} KB</div>
+          <a href={props.debugInfo.cropUrl} download="debug-crop.png" style={{color:'#4ecdc4',fontSize:13}}>Download</a>
         </>
       ) : (
         <div style={{margin:'10px 0',color:'#aaa',fontSize:13}}>(Noch kein Scan)</div>
       )}
-      {tesseractInfo && (
+      {props.tesseractInfo && (
         <>
           <hr style={{margin:'12px 0',border:'none',borderTop:'1px solid #333'}} />
           <div><b>Tesseract-Parameter</b></div>
-          <div>Sprachen: {tesseractInfo.languages.join(', ')}</div>
-          <div>PSM-Modi: {tesseractInfo.psmModes.join(', ')}</div>
-          <div>Confidence-Threshold: {tesseractInfo.confidenceThreshold}</div>
-          <div>DPI: {tesseractInfo.dpi}</div>
-          <div>Whitelist: <span style={{fontSize:13}}>{tesseractInfo.charWhitelist}</span></div>
+          <div>Sprachen: {props.tesseractInfo.languages.join(', ')}</div>
+          <div>PSM-Modi: {props.tesseractInfo.psmModes.join(', ')}</div>
+          <div>Confidence-Threshold: {props.tesseractInfo.confidenceThreshold}</div>
+          <div>DPI: {props.tesseractInfo.dpi}</div>
+          <div>Whitelist: <span style={{fontSize:13}}>{props.tesseractInfo.charWhitelist}</span></div>
           <div>Weitere Parameter:</div>
           <ul style={{fontSize:13,paddingLeft:18}}>
-            {Object.entries(tesseractInfo.params).map(([k,v]) => (
+            {Object.entries(props.tesseractInfo.params).map(([k,v]) => (
               <li key={k}><b>{k}:</b> {v}</li>
             ))}
           </ul>
           <div style={{marginTop:10}}>
             <b>Preprocessed für Tesseract:</b><br/>
-            {tesseractInfo.preprocessedUrl ? (
+            {props.tesseractInfo.preprocessedUrl ? (
               <>
-                <img src={tesseractInfo.preprocessedUrl} alt="Preprocessed" style={{maxWidth:120,maxHeight:80,border:'1px solid #444',background:'#222',margin:'6px 0'}} />
-                <div>PNG: {(tesseractInfo.preprocessedUrl.length * 3 / 4 / 1024).toFixed(1)} KB</div>
-                <a href={tesseractInfo.preprocessedUrl} download="debug-preprocessed.png" style={{color:'#4ecdc4',fontSize:13}}>Download</a>
+                <img src={props.tesseractInfo.preprocessedUrl} alt="Preprocessed" style={{maxWidth:120,maxHeight:80,border:'1px solid #444',background:'#222',margin:'6px 0'}} />
+                <div>PNG: {(props.tesseractInfo.preprocessedUrl.length * 3 / 4 / 1024).toFixed(1)} KB</div>
+                <a href={props.tesseractInfo.preprocessedUrl} download="debug-preprocessed.png" style={{color:'#4ecdc4',fontSize:13}}>Download</a>
               </>
             ) : <span style={{color:'#aaa',fontSize:13}}>(Noch kein Preprocessing)</span>}
           </div>
@@ -65,6 +67,6 @@ const DebugOverlay: React.FC<{ debugInfo?: DebugInfo|null, tesseractInfo?: Tesse
       )}
     </div>
   );
-};
+});
 
 export default DebugOverlay; 

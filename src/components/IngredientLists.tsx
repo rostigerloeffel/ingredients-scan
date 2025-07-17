@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { IngredientListService } from '../services/ingredientLists';
 import type { NegativeIngredient } from '../services/ingredientLists';
 import './IngredientLists.css';
@@ -11,7 +11,7 @@ interface IngredientListsProps {
   initialTab?: 'positive' | 'negative';
 }
 
-export default function IngredientLists({ isVisible, onClose, initialTab = 'positive' }: IngredientListsProps) {
+const IngredientLists: React.FC<IngredientListsProps> = React.memo(function IngredientLists({ isVisible, onClose, initialTab = 'positive' }) {
   const [activeTab, setActiveTab] = useState<'positive' | 'negative'>(initialTab);
   const [positiveList, setPositiveList] = useState<string[]>([]);
   const [negativeList, setNegativeList] = useState<NegativeIngredient[]>([]);
@@ -265,4 +265,6 @@ export default function IngredientLists({ isVisible, onClose, initialTab = 'posi
       </div>
     </div>
   );
-} 
+});
+
+export default IngredientLists; 

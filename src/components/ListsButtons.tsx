@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo, useCallback } from 'react';
 import { IngredientListService } from '../services/ingredientLists';
 import './ListsButtons.css';
 
@@ -7,7 +7,7 @@ interface ListsButtonsProps {
   disabled?: boolean;
 }
 
-const ListsButtons: React.FC<ListsButtonsProps> = ({ onShowLists, disabled }) => {
+const ListsButtons: React.FC<ListsButtonsProps> = React.memo(({ onShowLists, disabled }) => {
   const positiveCount = IngredientListService.getPositiveList().length;
   const negativeCount = IngredientListService.getNegativeList().length;
 
@@ -29,6 +29,6 @@ const ListsButtons: React.FC<ListsButtonsProps> = ({ onShowLists, disabled }) =>
       </button>
     </div>
   );
-};
+});
 
 export default ListsButtons; 

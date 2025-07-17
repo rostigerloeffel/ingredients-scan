@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 
 interface VerticalMainLayoutProps {
   top: React.ReactNode;
@@ -6,7 +6,7 @@ interface VerticalMainLayoutProps {
   bottom: React.ReactNode;
 }
 
-const VerticalMainLayout: React.FC<VerticalMainLayoutProps> = ({ top, middle, bottom }) => {
+const VerticalMainLayout: React.FC<VerticalMainLayoutProps> = React.memo(({ top, middle, bottom }) => {
   return (
     <div className="vertical-main-layout">
       <div className="layout-top">{top}</div>
@@ -14,6 +14,6 @@ const VerticalMainLayout: React.FC<VerticalMainLayoutProps> = ({ top, middle, bo
       <div className="layout-bottom">{bottom}</div>
     </div>
   );
-};
+});
 
 export default VerticalMainLayout; 

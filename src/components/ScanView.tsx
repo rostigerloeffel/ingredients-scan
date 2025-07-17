@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useMemo, useCallback } from 'react';
 import CameraPreview from './CameraPreview';
 import type { CameraPreviewHandle } from './CameraPreview';
 import ListsButtons from './ListsButtons';
@@ -13,7 +13,7 @@ interface ScanViewProps {
   cameraPermission: 'unknown' | 'granted' | 'denied';
 }
 
-const ScanView: React.FC<ScanViewProps> = ({ onCapture, onShowLists, setDebugInfo, cameraPermission }) => {
+const ScanView: React.FC<ScanViewProps> = React.memo(({ onCapture, onShowLists, setDebugInfo, cameraPermission }) => {
   const [cameras, setCameras] = useState<MediaDeviceInfo[]>([]);
   const [selectedCamera, setSelectedCamera] = useState<string>('');
   const cameraRef = useRef<CameraPreviewHandle>(null);
@@ -38,13 +38,13 @@ const ScanView: React.FC<ScanViewProps> = ({ onCapture, onShowLists, setDebugInf
     getCameras();
   }, [cameraPermission]);
 
-  const handleCameraChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+  const handleCameraChange = useCallback((event: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedCamera(event.target.value);
     localStorage.setItem('selected_camera', event.target.value);
-  };
+  }, []);
 
   // Cropping-Logik: Schneide Screenshot auf exakt den sichtbaren Bereich (wie im Kamera-Container angezeigt)
-  const cropToVisibleCameraArea = async (imageSrc: string): Promise<string> => {
+  const cropToVisibleCameraArea = useCallback(async (imageSrc: string): Promise<string> => {
     return new Promise((resolve) => {
       const img = new window.Image();
       img.onload = () => {
@@ -79,15 +79,15 @@ const ScanView: React.FC<ScanViewProps> = ({ onCapture, onShowLists, setDebugInf
       };
       img.src = imageSrc;
     });
-  };
+  }, [setDebugInfo]);
 
-  const handleScan = async () => {
+  const handleScan = useCallback(async () => {
     const imageSrc = await cameraRef.current?.getFullResScreenshot();
     if (imageSrc) {
       const cropped = await cropToVisibleCameraArea(imageSrc);
       onCapture(cropped);
     }
-  };
+  }, [cropToVisibleCameraArea, onCapture]);
 
   return (
     <VerticalMainLayout
@@ -123,6 +123,6 @@ const ScanView: React.FC<ScanViewProps> = ({ onCapture, onShowLists, setDebugInf
       }
     />
   );
-};
+});
 
 export default ScanView; 

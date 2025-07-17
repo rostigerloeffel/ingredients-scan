@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import { type IngredientAnalysis } from '../services/openaiService';
 import { IngredientListService } from '../services/ingredientLists';
 import './AnalysisResult.css';
@@ -14,7 +14,7 @@ interface IntoleranceWarning {
   severity: 'high' | 'medium' | 'low';
 }
 
-export default function AnalysisResult({ analysis, onActionDone }: AnalysisResultProps) {
+const AnalysisResult = React.memo(function AnalysisResult({ analysis, onActionDone }: AnalysisResultProps) {
   const [intoleranceWarnings, setIntoleranceWarnings] = useState<IntoleranceWarning[]>([]);
   const [hasWarnings, setHasWarnings] = useState(false);
   const [displayedIngredients, setDisplayedIngredients] = useState<string[]>(analysis.ingredients);
@@ -24,68 +24,63 @@ export default function AnalysisResult({ analysis, onActionDone }: AnalysisResul
     setDisplayedIngredients(analysis.ingredients);
   }, [analysis]);
 
-  const checkIntolerances = () => {
+  const checkIntolerances = useCallback(() => {
     const negativeList: NegativeIngredient[] = IngredientListService.getNegativeList();
     const negativeNames = negativeList.map(e => e.name);
     const normalizedNegativeList = IngredientListService.normalizeIngredients(negativeNames);
     const normalizedAnalysisIngredients = IngredientListService.normalizeIngredients(analysis.ingredients);
-    
     const warnings: IntoleranceWarning[] = [];
-    
     normalizedAnalysisIngredients.forEach(ingredient => {
       if (normalizedNegativeList.includes(ingredient)) {
         warnings.push({
           ingredient: ingredient,
-          severity: 'high' // Alle Unverträglichkeiten sind als hoch eingestuft
+          severity: 'high'
         });
       }
     });
-    
     setIntoleranceWarnings(warnings);
     setHasWarnings(warnings.length > 0);
-  };
+  }, [analysis]);
 
   // Buttons sind immer aktiv, außer nach Klick (dann disabled)
   const [positiveClicked, setPositiveClicked] = useState(false);
   const [negativeClicked, setNegativeClicked] = useState(false);
 
-  const handleAddAllToPositiveList = () => {
+  const handleAddAllToPositiveList = useCallback(() => {
     setPositiveClicked(true);
-    // Alle angezeigten Inhaltsstoffe exklusiv auf die Positivliste setzen
     IngredientListService.addToPositiveList(displayedIngredients);
     if (onActionDone) onActionDone();
-  };
+  }, [displayedIngredients, onActionDone]);
 
-  const handleAddAllToNegativeList = () => {
+  const handleAddAllToNegativeList = useCallback(() => {
     setNegativeClicked(true);
-    // Nur Inhaltsstoffe, die nicht auf der Positivliste stehen, auf die Negativliste setzen
     const positiveList = IngredientListService.getPositiveList();
     const toNegative = displayedIngredients.filter(ing => !positiveList.includes(ing));
     IngredientListService.addToNegativeList(toNegative);
     if (onActionDone) onActionDone();
-  };
+  }, [displayedIngredients, onActionDone]);
 
-  const handleRemoveIngredient = (ingredientToRemove: string) => {
+  const handleRemoveIngredient = useCallback((ingredientToRemove: string) => {
     setDisplayedIngredients(prev => prev.filter(ingredient => ingredient !== ingredientToRemove));
-  };
+  }, []);
 
-  const getWarningIcon = (severity: 'high' | 'medium' | 'low') => {
+  const getWarningIcon = useCallback((severity: 'high' | 'medium' | 'low') => {
     switch (severity) {
       case 'high': return '🚨';
       case 'medium': return '⚠️';
       case 'low': return '💡';
       default: return '⚠️';
     }
-  };
+  }, []);
 
-  const getWarningColor = (severity: 'high' | 'medium' | 'low') => {
+  const getWarningColor = useCallback((severity: 'high' | 'medium' | 'low') => {
     switch (severity) {
       case 'high': return '#ff6b6b';
       case 'medium': return '#ffa726';
       case 'low': return '#4ecdc4';
       default: return '#ffa726';
     }
-  };
+  }, []);
 
   return (
     <div className="analysis-result">
@@ -206,4 +201,6 @@ export default function AnalysisResult({ analysis, onActionDone }: AnalysisResul
       {/* Button für neuen Scan entfernt */}
     </div>
   );
-} 
+});
+
+export default AnalysisResult; 

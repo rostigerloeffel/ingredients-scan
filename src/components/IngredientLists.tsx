@@ -129,28 +129,29 @@ export default function IngredientLists({ isVisible, onClose, initialTab = 'posi
   return (
     <div className="ingredient-lists-overlay" onClick={onClose} aria-modal="true" role="dialog">
       <div className="ingredient-lists-modal" onClick={(e) => e.stopPropagation()}>
-        <div className="lists-header">
-          <h2>📋 Meine Verträglichkeitslisten</h2>
+        {/* Überschrift entfernt, Tabs werden direkt oben gerendert */}
+        <div className="lists-tabs-header" style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid #e3e6eb', background: '#f8f9fa', padding: '0 1.5rem'}}>
+          <div style={{flex: 1}}>
+            <div className="lists-tabs">
+              <button
+                className={`tab-button ${activeTab === 'positive' ? 'active' : ''}`}
+                onClick={() => setActiveTab('positive')}
+              >
+                <span className="tab-icon">{getTabIcon('positive')}</span>
+                <span className="tab-text">{getTabTitle('positive')}</span>
+                <span className="tab-count">({positiveList.length})</span>
+              </button>
+              <button
+                className={`tab-button ${activeTab === 'negative' ? 'active' : ''}`}
+                onClick={() => setActiveTab('negative')}
+              >
+                <span className="tab-icon">{getTabIcon('negative')}</span>
+                <span className="tab-text">{getTabTitle('negative')}</span>
+                <span className="tab-count">({negativeList.length})</span>
+              </button>
+            </div>
+          </div>
           <button onClick={onClose} className="close-button">×</button>
-        </div>
-
-        <div className="lists-tabs">
-          <button
-            className={`tab-button ${activeTab === 'positive' ? 'active' : ''}`}
-            onClick={() => setActiveTab('positive')}
-          >
-            <span className="tab-icon">{getTabIcon('positive')}</span>
-            <span className="tab-text">{getTabTitle('positive')}</span>
-            <span className="tab-count">({positiveList.length})</span>
-          </button>
-          <button
-            className={`tab-button ${activeTab === 'negative' ? 'active' : ''}`}
-            onClick={() => setActiveTab('negative')}
-          >
-            <span className="tab-icon">{getTabIcon('negative')}</span>
-            <span className="tab-text">{getTabTitle('negative')}</span>
-            <span className="tab-count">({negativeList.length})</span>
-          </button>
         </div>
 
         <div className="lists-content">

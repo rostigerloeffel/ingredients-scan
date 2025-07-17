@@ -83,155 +83,60 @@ export class TesseractService {
         }
       });
     }
-    
-    // Erweiterte PSM-Modi für verschiedene Textlayouts
-    const psmModes = [
-      PSM.SINGLE_BLOCK,    // Einzelner Textblock
-      PSM.AUTO           // Automatische Erkennung
-    ];
-    
-    // Erweiterte Sprachunterstützung
-    const languages = [
-      'eng' // Only English
-    ];
-    
-    const ocrResults: string[] = [];
-    const confidenceThreshold = 60; // Mindest-Konfidenz
-    
-    // Führe OCR mit verschiedenen Konfigurationen durch
-    for (const psm of psmModes) {
-      for (const lang of languages) {
-        try {
-          const worker = await createWorker();
-          await worker.load();
-          await worker.reinitialize(lang);
-          
-          // Erweiterte Tesseract-Parameter
-          await worker.setParameters({
-            tessedit_pageseg_mode: psm,
-            tessedit_char_whitelist: '',
-            preserve_interword_spaces: '1',
-            tessedit_do_invert: '0',           // Keine Invertierung
-            textord_min_linesize: '2.0',       // Minimale Zeilengröße
-            textord_old_baselines: '0',        // Moderne Baseline-Erkennung
-            textord_min_xheight: '8',          // Minimale Zeichenhöhe
-            textord_heavy_nr: '1',             // Schwere Rauschreduzierung
-            tessedit_ocr_engine_mode: '3',     // LSTM OCR Engine
-            lstm_use_matrix: '1',              // LSTM Matrix verwenden
-            lstm_choice_mode: '2',             // Erweiterte LSTM-Auswahl
-            user_defined_dpi: '300'            // Hohe DPI für bessere Qualität
-          });
-          
-          const { data: { text, confidence } } = await worker.recognize(preprocessed);
-          if (import.meta.env && import.meta.env.DEV) {
-            console.log('[OCR-DEBUG] Output:', {
-              lang, psm, confidence,
-              textPreview: text?.substring(0, 300) + (text && text.length > 300 ? '...' : '')
-            });
-          }
-          
-          // Nur Ergebnisse mit ausreichender Konfidenz verwenden
-          if (text && text.trim().length > 0 && confidence > confidenceThreshold) {
-            ocrResults.push(text);
-          }
-          
-          await worker.terminate();
-        } catch (error) {
-          console.warn(`OCR failed for PSM ${psm}, lang ${lang}:`, error);
-        }
+
+    // OCR mit Tesseract
+    const worker = await createWorker();
+    await worker.load();
+    await worker.reinitialize('eng');
+    await worker.setParameters({
+      tessedit_pageseg_mode: PSM.SINGLE_BLOCK,
+      tessedit_char_whitelist: '',
+      preserve_interword_spaces: '1',
+      tessedit_do_invert: '0',
+      textord_min_linesize: '2.0',
+      textord_old_baselines: '0',
+      textord_min_xheight: '8',
+      textord_heavy_nr: '1',
+      tessedit_ocr_engine_mode: '3',
+      lstm_use_matrix: '1',
+      lstm_choice_mode: '2',
+      user_defined_dpi: '300'
+    });
+    const { data: { text } } = await worker.recognize(preprocessed);
+    await worker.terminate();
+
+    if (!text || text.trim().length === 0) return [];
+
+    // Suche den längsten Block mit Kommas (vermutlich INCI-Liste)
+    const blocks = text.split(/\n+/);
+    let inciBlock = '';
+    let maxCommas = 0;
+    for (const block of blocks) {
+      const commaCount = (block.match(/,/g) || []).length;
+      if (commaCount > maxCommas) {
+        maxCommas = commaCount;
+        inciBlock = block;
       }
     }
-    
-    // Merge aller OCR-Texte
-    const fullText = ocrResults.join('\n');
-    
-    // Erweiterte Heuristik für Inhaltsstoff-Erkennung
-    const lines = fullText.split(/\r?\n/).map(l => l.trim());
-    let ingredientLines: string[] = [];
-    
-    // Erweiterte Schlüsselwörter für verschiedene Sprachen
-    const ingredientKeywords = [
-      // Deutsch
-      'ingredients', 'ingrediencs', 'inc', 'bestandteile', 'bestandteil', 
-      'inhaltstoffe', 'inhaltstoffe', 'zutaten', 'zutat', 'zusammensetzung',
-      // Englisch
-      'ingredients', 'ingrediencs', 'inc', 'contains', 'composition',
-      // Französisch
-      'composants', 'ingrédients', 'composition', 'contient',
-      // Spanisch
-      'ingredientes', 'composición', 'contiene',
-      // Italienisch
-      'ingredienti', 'composizione', 'contiene',
-      // Niederländisch
-      'bestanddelen', 'ingrediënten', 'samenstelling',
-      // Polnisch
-      'składniki', 'skład',
-      // Russisch
-      'ингредиенты', 'состав',
-      // Portugiesisch
-      'ingredientes', 'composição',
-      // Türkisch
-      'içindekiler', 'bileşenler'
-    ];
-    
-    // Erweiterte Muster-Erkennung
-    for (const line of lines) {
-      const lowerLine = line.toLowerCase();
-      
-      // Prüfe auf Schlüsselwörter
-      if (ingredientKeywords.some(keyword => lowerLine.includes(keyword))) {
-        ingredientLines.push(line);
-        continue;
-      }
-      
-      // Prüfe auf typische Inhaltsstoff-Muster
-      if (this.isIngredientLine(line)) {
-        ingredientLines.push(line);
-        continue;
-      }
-      
-      // Prüfe auf numerische Listen (1., 2., etc.)
-      if (/^\d+\.\s*[a-z]/i.test(line)) {
-        ingredientLines.push(line);
-        continue;
-      }
-      
-      // Prüfe auf Prozentangaben
-      if (/\d+%/.test(line) && /[a-z]/i.test(line)) {
-        ingredientLines.push(line);
-        continue;
-      }
+    // Falls kein Block gefunden, alles zusammenfassen
+    if (!inciBlock && text.includes(',')) {
+      inciBlock = text;
     }
-    
-    // Fallback: Verwende alle Zeilen mit Trennzeichen oder spezifischen Mustern
-    if (ingredientLines.length === 0) {
-      ingredientLines = lines.filter(line => 
-        line.split(',').length > 2 || 
-        line.split(';').length > 2 ||
-        line.includes(':') || 
-        line.includes('•') ||
-        line.includes('–') ||
-        line.includes('-') ||
-        this.isIngredientLine(line) ||
-        /[a-z]{3,}/i.test(line) // Mindestens 3 Buchstaben
-      );
-    }
-    
-    // Extrahiere und normalisiere Inhaltsstoffe
-    const allIngredients: string[] = [];
-    
-    for (const line of ingredientLines) {
-      const ingredients = this.extractIngredientsFromLine(line);
-      allIngredients.push(...ingredients);
-    }
-    
-    // Entferne Duplikate und leere Einträge
-    const uniqueIngredients = Array.from(new Set(allIngredients)).filter(ing => ing.length > 2);
+    // Falls immer noch nichts, abbrechen
+    if (!inciBlock) return [];
+
+    // Entferne alles vor dem ersten Doppelpunkt (z.B. "Ingredients:")
+    inciBlock = inciBlock.replace(/^.*?:\s*/, '');
+    // Entferne Zeilenumbrüche innerhalb des Blocks
+    inciBlock = inciBlock.replace(/\n+/g, ' ');
+
+    // Splitte an Kommas und normalisiere
+    const rawIngredients = inciBlock.split(',').map(s => s.trim()).filter(Boolean);
 
     // Fuzzy-Matching gegen INCI-Liste
     const fuse = getFuseInstance();
     const bestMatches: string[] = [];
-    for (const ing of uniqueIngredients) {
+    for (const ing of rawIngredients) {
       const result = fuse.search(ing);
       if (result.length > 0) {
         bestMatches.push(result[0].item);
@@ -239,142 +144,5 @@ export class TesseractService {
     }
     // Nur eindeutige Treffer zurückgeben
     return Array.from(new Set(bestMatches));
-  }
-  
-  /**
-   * Hilfsmethode: Prüft ob eine Zeile Inhaltsstoffe enthält
-   */
-  private static isIngredientLine(line: string): boolean {
-    const lowerLine = line.toLowerCase();
-    
-    // Erweiterte Inhaltsstoff-Muster
-    const patterns = [
-      // Trennzeichen-Muster
-      /[a-z]+\s*,\s*[a-z]+/, // Komma-getrennte Wörter
-      /[a-z]+\s*;\s*[a-z]+/, // Semikolon-getrennte Wörter
-      /[a-z]+\s*\.\s*[a-z]+/, // Punkt-getrennte Wörter
-      /[a-z]+\s*•\s*[a-z]+/, // Bullet-getrennte Wörter
-      
-      // Chemische Muster
-      /\d+%/, // Prozentangaben
-      /e\d{3,}/, // E-Nummern
-      /[a-z]+ate$/, // -ate Endungen (typisch für Inhaltsstoffe)
-      /[a-z]+ol$/, // -ol Endungen
-      /[a-z]+ic$/, // -ic Endungen
-      /[a-z]+ide$/, // -ide Endungen
-      /[a-z]+ene$/, // -ene Endungen
-      /[a-z]+one$/, // -one Endungen
-      /[a-z]+ose$/, // -ose Endungen (Zucker)
-      /[a-z]+in$/, // -in Endungen
-      /[a-z]+ium$/, // -ium Endungen
-      
-      // Spezielle Inhaltsstoff-Muster
-      /vitamin\s+[a-z]/, // Vitamine
-      /mineral\s+[a-z]/, // Mineralien
-      /acid\s+[a-z]/, // Säuren
-      /salt\s+[a-z]/, // Salze
-      /oil\s+[a-z]/, // Öle
-      /extract\s+[a-z]/, // Extrakte
-      /powder\s+[a-z]/, // Pulver
-      
-      // Deutsche Muster
-      /säure\s+[a-z]/, // Säuren
-      /salz\s+[a-z]/, // Salze
-      /öl\s+[a-z]/, // Öle
-      /extrakt\s+[a-z]/, // Extrakte
-      /pulver\s+[a-z]/, // Pulver
-      
-      // Französische Muster
-      /acide\s+[a-z]/, // Säuren
-      /sel\s+[a-z]/, // Salze
-      /huile\s+[a-z]/, // Öle
-      /extrait\s+[a-z]/, // Extrakte
-      /poudre\s+[a-z]/, // Pulver
-      
-      // Spanische Muster
-      /ácido\s+[a-z]/, // Säuren
-      /sal\s+[a-z]/, // Salze
-      /aceite\s+[a-z]/, // Öle
-      /extracto\s+[a-z]/, // Extrakte
-      /polvo\s+[a-z]/, // Pulver
-      
-      // Italienische Muster
-      /acido\s+[a-z]/, // Säuren
-      /sale\s+[a-z]/, // Salze
-      /olio\s+[a-z]/, // Öle
-      /estratto\s+[a-z]/, // Extrakte
-      /polvere\s+[a-z]/, // Pulver
-    ];
-    
-    return patterns.some(pattern => pattern.test(lowerLine));
-  }
-  
-  /**
-   * Hilfsmethode: Extrahiert Inhaltsstoffe aus einer Zeile
-   */
-  private static extractIngredientsFromLine(line: string): string[] {
-    let raw = line;
-    
-    // Erweiterte Schlüsselwörter für verschiedene Sprachen
-    const ingredientKeywords = [
-      // Deutsch
-      'ingredients', 'ingrediencs', 'inc', 'bestandteile', 'bestandteil', 
-      'inhaltstoffe', 'inhaltstoffe', 'zutaten', 'zutat', 'zusammensetzung',
-      // Englisch
-      'ingredients', 'ingrediencs', 'inc', 'contains', 'composition',
-      // Französisch
-      'composants', 'ingrédients', 'composition', 'contient',
-      // Spanisch
-      'ingredientes', 'composición', 'contiene',
-      // Italienisch
-      'ingredienti', 'composizione', 'contiene',
-      // Niederländisch
-      'bestanddelen', 'ingrediënten', 'samenstelling',
-      // Polnisch
-      'składniki', 'skład',
-      // Russisch
-      'ингредиенты', 'состав',
-      // Portugiesisch
-      'ingredientes', 'composição',
-      // Türkisch
-      'içindekiler', 'bileşenler'
-    ];
-    
-    // Entferne Schlüsselwörter am Anfang
-    for (const keyword of ingredientKeywords) {
-      const regex = new RegExp(`.*${keyword}\\s*:?\\s*`, 'i');
-      raw = raw.replace(regex, '');
-    }
-    
-    // Entferne Doppelpunkte, Bullets und andere Trennzeichen am Anfang
-    raw = raw.replace(/^[:•\-]\s*/, '');
-    
-    // Entferne numerische Präfixe (1., 2., etc.)
-    raw = raw.replace(/^\d+\.\s*/, '');
-    
-    // Splitte an verschiedenen Trennzeichen
-    const items = raw.split(/[;,.:•\-\n]/).map(s => s.trim());
-    
-    // Erweiterte Normalisierung und Filterung
-    return items
-      .map(s => {
-        // Entferne unerwünschte Zeichen, aber behalte wichtige chemische Zeichen
-        s = s.replace(/[^a-z0-9\s\-()]/gi, '').replace(/\s+/g, ' ').trim();
-        
-        // Normalisiere zu Kleinbuchstaben, aber behalte wichtige Großbuchstaben für chemische Formeln
-        if (/^[A-Z][a-z]+\d*$/.test(s)) {
-          // Chemische Elemente wie "Na", "Ca", etc. beibehalten
-          return s;
-        }
-        return s.toLowerCase();
-      })
-      .filter(s => {
-        // Erweiterte Filterung
-        return s.length > 2 && 
-               !/\d{3,}/.test(s) && // Keine langen Zahlen
-               !/^[0-9\s]*$/.test(s) && // Keine reinen Zahlen
-               !/^[a-z]\s*$/.test(s) && // Keine einzelnen Buchstaben
-               !/^(und|and|et|y|e|oder|or|ou)$/i.test(s); // Keine Konjunktionen
-      });
   }
 } 

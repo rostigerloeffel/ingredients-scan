@@ -16,7 +16,6 @@ export default function IngredientLists({ isVisible, onClose, initialTab = 'posi
   const [positiveList, setPositiveList] = useState<string[]>([]);
   const [negativeList, setNegativeList] = useState<NegativeIngredient[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedIngredients, setSelectedIngredients] = useState<string[]>([]);
   const [autocompleteInput, setAutocompleteInput] = useState('');
   const [autocompleteResults, setAutocompleteResults] = useState<string[]>([]);
   const [autocompleteActive, setAutocompleteActive] = useState(false);
@@ -33,21 +32,7 @@ export default function IngredientLists({ isVisible, onClose, initialTab = 'posi
   const loadLists = () => {
     setPositiveList(IngredientListService.getPositiveList());
     setNegativeList(IngredientListService.getNegativeList());
-    setSelectedIngredients([]);
     setSearchTerm('');
-  };
-
-  const handleDeleteSelected = () => {
-    if (selectedIngredients.length === 0) return;
-
-    if (activeTab === 'positive') {
-      IngredientListService.removeFromPositiveList(selectedIngredients);
-      setPositiveList(IngredientListService.getPositiveList());
-    } else {
-      IngredientListService.removeFromNegativeList(selectedIngredients);
-      setNegativeList(IngredientListService.getNegativeList());
-    }
-    setSelectedIngredients([]);
   };
 
   const handleDeleteSingle = (ingredient: string) => {
@@ -70,7 +55,6 @@ export default function IngredientLists({ isVisible, onClose, initialTab = 'posi
         IngredientListService.saveNegativeList([]);
         setNegativeList([]);
       }
-      setSelectedIngredients([]);
     }
   };
 
@@ -260,11 +244,6 @@ export default function IngredientLists({ isVisible, onClose, initialTab = 'posi
                     {filteredIngredients.length} von {(activeTab === 'positive' ? positiveList : negativeList).length} Einträgen
                     {searchTerm && ` (gefiltert)`}
                   </h3>
-                  {selectedIngredients.length > 0 && (
-                    <button onClick={handleDeleteSelected} className="delete-selected-button">
-                      🗑️ Ausgewählte löschen ({selectedIngredients.length})
-                    </button>
-                  )}
                 </div>
 
                 <div className="ingredients-list">

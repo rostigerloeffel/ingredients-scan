@@ -241,23 +241,6 @@
   color: #7a8599;
 }
 
-.delete-selected-button {
-  background: #ff4757;
-  color: white;
-  border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
-  font-size: 0.85rem;
-  cursor: pointer;
-  transition: background 0.2s;
-  white-space: nowrap;
-  flex-shrink: 0;
-}
-
-.delete-selected-button:hover {
-  background: #ff3742;
-}
-
 .ingredients-list {
   margin-bottom: 1.5rem;
 }
@@ -281,11 +264,6 @@
   background: #f8fff9;
 }
 
-.ingredient-item.selected {
-  border-color: #00ff88;
-  background: #f0fff4;
-}
-
 .ingredient-content {
   display: flex;
   align-items: center;
@@ -294,13 +272,6 @@
   cursor: pointer;
   min-width: 0;
   overflow: hidden;
-}
-
-.ingredient-checkbox {
-  width: 18px;
-  height: 18px;
-  accent-color: #00ff88;
-  cursor: pointer;
 }
 
 .ingredient-name {

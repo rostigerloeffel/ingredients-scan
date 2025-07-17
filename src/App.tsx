@@ -12,6 +12,7 @@ import './components/CameraPreview.css'
 import './components/ApiKeyManager.css'
 import DebugOverlay from './debug/DebugOverlay';
 import type { DebugInfo, TesseractDebugInfo } from './debug/DebugOverlay';
+import CameraPermissionInfo from './components/CameraPermissionInfo';
 
 type AppView = 'scan' | 'prepare' | 'result';
 
@@ -26,6 +27,7 @@ function App() {
   const [debugInfo, setDebugInfo] = useState<DebugInfo>();
   const [tesseractDebugInfo, setTesseractDebugInfo] = useState<TesseractDebugInfo>();
   const [ingredientListsTab, setIngredientListsTab] = useState<'positive' | 'negative'>('positive');
+  const [cameraPermission, setCameraPermission] = useState<'unknown' | 'granted' | 'denied'>('unknown');
 
   // Prüfe beim Start, ob ein API-Schlüssel vorhanden ist
   useEffect(() => {
@@ -35,6 +37,19 @@ function App() {
     if (!apiKeyExists && !dialogShown) {
       setShowApiKeyManager(true);
     }
+  }, []);
+
+  // Kamera-Berechtigung nur einmal beim App-Start abfragen
+  useEffect(() => {
+    async function checkCameraPermission() {
+      try {
+        await navigator.mediaDevices.getUserMedia({ video: true });
+        setCameraPermission('granted');
+      } catch (e) {
+        setCameraPermission('denied');
+      }
+    }
+    checkCameraPermission();
   }, []);
 
   const handleApiKeyChange = () => {
@@ -109,6 +124,11 @@ function App() {
     setView('scan');
   };
 
+  const handleShowLists = (tab: 'positive' | 'negative' = 'positive') => {
+    setIngredientListsTab(tab);
+    setShowIngredientLists(true);
+  };
+
   return (
     <div className="app">
       <h1>Ingredient Scanner</h1>
@@ -140,11 +160,20 @@ function App() {
       
       <main className="main-view">
         {view === 'scan' && (
-          <ScanView
-            onCapture={handleCapture}
-            onShowLists={(tab: 'positive' | 'negative' = 'positive') => { setIngredientListsTab(tab); setShowIngredientLists(true); }}
-            setDebugInfo={setDebugInfo}
-          />
+          cameraPermission === 'granted' ? (
+            <ScanView
+              onCapture={handleCapture}
+              onShowLists={handleShowLists}
+              setDebugInfo={setDebugInfo}
+              cameraPermission={cameraPermission}
+            />
+          ) : cameraPermission === 'denied' ? (
+            <CameraPermissionInfo />
+          ) : (
+            <div className="camera-permission-waiting">
+              <p>⏳ Kamera-Berechtigung wird angefragt...</p>
+            </div>
+          )
         )}
         {view === 'prepare' && capturedImage && (
           <PrepareView

@@ -10,17 +10,18 @@ interface ScanViewProps {
   onCapture: (imageSrc: string) => void;
   onShowLists: () => void;
   setDebugInfo: (info: DebugInfo) => void;
+  cameraPermission: 'unknown' | 'granted' | 'denied';
 }
 
-const ScanView: React.FC<ScanViewProps> = ({ onCapture, onShowLists, setDebugInfo }) => {
+const ScanView: React.FC<ScanViewProps> = ({ onCapture, onShowLists, setDebugInfo, cameraPermission }) => {
   const [cameras, setCameras] = useState<MediaDeviceInfo[]>([]);
   const [selectedCamera, setSelectedCamera] = useState<string>('');
   const cameraRef = useRef<CameraPreviewHandle>(null);
 
   React.useEffect(() => {
+    if (cameraPermission !== 'granted') return;
     const getCameras = async () => {
       try {
-        await navigator.mediaDevices.getUserMedia({ video: true });
         const devices = await navigator.mediaDevices.enumerateDevices();
         const videoDevices = devices.filter(device => device.kind === 'videoinput');
         setCameras(videoDevices);
@@ -35,7 +36,7 @@ const ScanView: React.FC<ScanViewProps> = ({ onCapture, onShowLists, setDebugInf
       }
     };
     getCameras();
-  }, []);
+  }, [cameraPermission]);
 
   const handleCameraChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedCamera(event.target.value);

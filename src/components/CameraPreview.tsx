@@ -12,7 +12,7 @@ interface CameraPreviewProps {
   cameraId?: string;
 }
 
-const CameraPreview = React.memo(forwardRef<CameraPreviewHandle, CameraPreviewProps>(({ cameraId }, ref) => {
+const CameraPreviewInner = forwardRef<CameraPreviewHandle, CameraPreviewProps>(({ cameraId }, ref) => {
   const webcamRef = useRef<Webcam>(null);
 
   useEffect(() => {
@@ -41,32 +41,36 @@ const CameraPreview = React.memo(forwardRef<CameraPreviewHandle, CameraPreviewPr
     return () => clearTimeout(timer);
   }, [cameraId]);
 
-  useImperativeHandle(ref, () => ({
-    getScreenshot: useCallback(() => {
-      if (webcamRef.current) {
-        return webcamRef.current.getScreenshot();
-      }
-      return null;
-    }, []),
-    getFullResScreenshot: useCallback(async () => {
-      if (webcamRef.current && webcamRef.current.video) {
-        const video = webcamRef.current.video as HTMLVideoElement;
-        const width = video.videoWidth;
-        const height = video.videoHeight;
-        if (width && height) {
-          const canvas = document.createElement('canvas');
-          canvas.width = width;
-          canvas.height = height;
-          const ctx = canvas.getContext('2d');
-          if (ctx) {
-            ctx.drawImage(video, 0, 0, width, height);
-            return canvas.toDataURL('image/jpeg', 0.98);
-          }
+  const getScreenshot = useCallback(() => {
+    if (webcamRef.current) {
+      return webcamRef.current.getScreenshot();
+    }
+    return null;
+  }, []);
+
+  const getFullResScreenshot = useCallback(async () => {
+    if (webcamRef.current && webcamRef.current.video) {
+      const video = webcamRef.current.video as HTMLVideoElement;
+      const width = video.videoWidth;
+      const height = video.videoHeight;
+      if (width && height) {
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        if (ctx) {
+          ctx.drawImage(video, 0, 0, width, height);
+          return canvas.toDataURL('image/jpeg', 0.98);
         }
       }
-      return null;
-    }, [])
-  }), []);
+    }
+    return null;
+  }, []);
+
+  useImperativeHandle(ref, () => ({
+    getScreenshot,
+    getFullResScreenshot
+  }), [getScreenshot, getFullResScreenshot]);
 
   return (
     <div className="camera-preview">
@@ -93,6 +97,8 @@ const CameraPreview = React.memo(forwardRef<CameraPreviewHandle, CameraPreviewPr
       </div>
     </div>
   );
-}));
+});
+
+const CameraPreview = React.memo(CameraPreviewInner);
 
 export default CameraPreview; 

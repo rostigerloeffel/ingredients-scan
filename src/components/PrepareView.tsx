@@ -12,7 +12,7 @@ interface PrepareViewProps {
 }
 
 const PrepareView: React.FC<PrepareViewProps> = React.memo(({ image, onCropDone, onShowLists }) => {
-  const cropperRef = useMemo(() => React.useRef<HTMLImageElement>(null), []);
+  const cropperRef = React.useRef<HTMLImageElement>(null);
 
   const handleCrop = useCallback(() => {
     if (cropperRef.current) {

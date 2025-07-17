@@ -154,9 +154,7 @@ export default function IngredientLists({ isVisible, onClose, initialTab = 'posi
         </div>
 
         <div className="lists-content">
-          <div className="tab-description">
-            {/* Beschreibung entfernt */}
-          </div>
+          {/* Tab-Description entfernt */}
 
           {/* Nur im Unverträglich-Tab: Autocomplete-Eingabe */}
           {activeTab === 'negative' && (

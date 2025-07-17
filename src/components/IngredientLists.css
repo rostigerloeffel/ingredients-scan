@@ -110,17 +110,18 @@
   cursor: pointer;
   padding: 0.25rem;
   border-radius: 4px;
-  transition: color 0.2s;
   width: 32px;
   height: 32px;
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: color 0.2s;
 }
 
 .close-button:hover {
   color: #22314a;
-  background: #f0f2f5;
+  background: none;
+  border: none;
 }
 
 .lists-tabs-header {

@@ -103,7 +103,6 @@
 }
 
 .close-button {
-  background: transparent !important;
   border: none !important;
   font-size: 1.5rem;
   color: #7a8599;
@@ -113,7 +112,6 @@
 
 .close-button:hover {
   color: #22314a;
-  background: transparent !important;
   border: none !important;
 }
 

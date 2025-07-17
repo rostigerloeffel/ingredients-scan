@@ -27,6 +27,43 @@
   box-sizing: border-box;
 }
 
+.ingredients-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 0;
+  margin: 0;
+}
+
+.ingredient-chip {
+  display: flex;
+  align-items: center;
+  background: #f0f0f0;
+  color: #222;
+  border-radius: 16px;
+  padding: 0.25em 0.75em;
+  font-size: 1em;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.2s;
+  outline: none;
+  border: none;
+}
+
+.ingredient-chip:focus,
+.ingredient-chip:hover {
+  background: #e0e0e0;
+}
+
+.ingredient-count {
+  background: #bbb;
+  color: #fff;
+  border-radius: 10px;
+  padding: 0 0.5em;
+  margin-left: 0.5em;
+  font-size: 0.9em;
+}
+
 .lists-header {
   display: flex;
   justify-content: space-between;

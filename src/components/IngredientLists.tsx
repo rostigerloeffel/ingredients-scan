@@ -37,14 +37,6 @@ export default function IngredientLists({ isVisible, onClose, initialTab = 'posi
     setSearchTerm('');
   };
 
-  const handleIngredientSelect = (ingredient: string) => {
-    setSelectedIngredients(prev => 
-      prev.includes(ingredient) 
-        ? prev.filter(i => i !== ingredient)
-        : [...prev, ingredient]
-    );
-  };
-
   const handleDeleteSelected = () => {
     if (selectedIngredients.length === 0) return;
 
@@ -86,7 +78,7 @@ export default function IngredientLists({ isVisible, onClose, initialTab = 'posi
   const sortedNegativeList = [...negativeList].sort((a, b) => b.count - a.count);
 
   const filteredIngredients = (activeTab === 'positive' ? positiveList : sortedNegativeList)
-    .filter(ingredient =>
+    .filter(ingredient => 
       typeof ingredient === 'string'
         ? ingredient.toLowerCase().includes(searchTerm.toLowerCase())
         : ingredient.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -276,32 +268,24 @@ export default function IngredientLists({ isVisible, onClose, initialTab = 'posi
                 </div>
 
                 <div className="ingredients-list">
-                  {filteredIngredients.map((ingredient) => (
-                    <div
-                      key={typeof ingredient === 'string' ? ingredient : ingredient.name}
-                      className={`ingredient-item ${selectedIngredients.includes(typeof ingredient === 'string' ? ingredient : ingredient.name) ? 'selected' : ''}`}
-                    >
-                      <div className="ingredient-content" onClick={() => handleIngredientSelect(typeof ingredient === 'string' ? ingredient : ingredient.name)}>
-                        <input
-                          type="checkbox"
-                          checked={selectedIngredients.includes(typeof ingredient === 'string' ? ingredient : ingredient.name)}
-                          onChange={() => handleIngredientSelect(typeof ingredient === 'string' ? ingredient : ingredient.name)}
-                          className="ingredient-checkbox"
-                        />
-                        <span className="ingredient-name">{typeof ingredient === 'string' ? ingredient : ingredient.name}</span>
-                        {activeTab === 'negative' && typeof ingredient !== 'string' && (
-                          <span className="ingredient-count">({ingredient.count})</span>
-                        )}
-                      </div>
-                      <button
-                        className="delete-single-button"
-                        onClick={() => handleDeleteSingle(typeof ingredient === 'string' ? ingredient : ingredient.name)}
-                        title={`${typeof ingredient === 'string' ? ingredient : ingredient.name} löschen`}
+                  {filteredIngredients.map((ingredient) => {
+                    // If ingredient is an object (Negativliste), show count
+                    const name = typeof ingredient === 'string' ? ingredient : ingredient.name;
+                    const count = typeof ingredient === 'object' && ingredient.count ? ingredient.count : null;
+                    return (
+                      <div
+                        key={name}
+                        className="ingredient-chip"
+                        onClick={() => handleDeleteSingle(name)}
+                        tabIndex={0}
+                        role="button"
+                        aria-label={`Entferne ${name}`}
                       >
-                        🗑️
-                      </button>
-                    </div>
-                  ))}
+                        {name}
+                        {count !== null && <span className="ingredient-count">{count}</span>}
+                      </div>
+                    );
+                  })}
                 </div>
 
                 <div className="list-actions">

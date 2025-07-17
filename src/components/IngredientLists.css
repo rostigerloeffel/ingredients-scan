@@ -108,11 +108,13 @@
   color: #7a8599;
   cursor: pointer;
   transition: color 0.2s;
+  box-shadow: none;
 }
 
 .close-button:hover {
   color: #22314a;
   background: #f8f9fa;
+  box-shadow: none;
 }
 
 .lists-tabs-header {

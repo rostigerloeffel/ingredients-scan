@@ -3,7 +3,6 @@ import OpenAI from 'openai';
 export interface IngredientAnalysis {
   ingredients: string[];
   allergens: string[];
-  nutrition: string;
   summary: string;
 }
 
@@ -201,7 +200,6 @@ export class OpenAIService {
   private static parseStructuredResponse(content: string): IngredientAnalysis {
     const ingredients: string[] = [];
     const allergens: string[] = [];
-    let nutrition = '';
     let summary = '';
 
     // Einfache Text-Parsing-Logik
@@ -214,8 +212,6 @@ export class OpenAIService {
         currentSection = 'ingredients';
       } else if (trimmedLine.toLowerCase().includes('allergen')) {
         currentSection = 'allergens';
-      } else if (trimmedLine.toLowerCase().includes('nährwert')) {
-        currentSection = 'nutrition';
       } else if (trimmedLine.toLowerCase().includes('zusammenfassung')) {
         currentSection = 'summary';
       } else if (trimmedLine && currentSection) {
@@ -223,8 +219,6 @@ export class OpenAIService {
           ingredients.push(trimmedLine);
         } else if (currentSection === 'allergens') {
           allergens.push(trimmedLine);
-        } else if (currentSection === 'nutrition') {
-          nutrition = trimmedLine;
         } else if (currentSection === 'summary') {
           summary = trimmedLine;
         }
@@ -239,7 +233,6 @@ export class OpenAIService {
     return {
       ingredients,
       allergens,
-      nutrition,
       summary
     };
   }

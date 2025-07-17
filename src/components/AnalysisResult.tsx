@@ -193,13 +193,7 @@ export default function AnalysisResult({ analysis, onActionDone }: AnalysisResul
         </div>
       )}
 
-      {/* Nährwert */}
-      {analysis.nutrition && (
-        <div className="nutrition-section">
-          <h3>🍎 Nährwert</h3>
-          <p className="nutrition-text">{analysis.nutrition}</p>
-        </div>
-      )}
+      {/* Nährwert entfernt */}
 
       {/* Zusammenfassung */}
       {analysis.summary && (

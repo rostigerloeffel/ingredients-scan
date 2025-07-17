@@ -128,6 +128,7 @@ export default function AnalysisResult({ analysis, onActionDone }: AnalysisResul
                 </div>
               ))}
             </div>
+            {/* Hinweis entfernt: Keine weiteren Hinweise zu verträglichen Inhaltsstoffen */}
             <div className="warning-advice">
               <p>
                 <strong>💡 Empfehlung:</strong> 

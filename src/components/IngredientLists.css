@@ -108,13 +108,6 @@
   font-size: 1.5rem;
   color: #7a8599;
   cursor: pointer;
-  padding: 0.25rem;
-  border-radius: 4px;
-  width: 32px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   transition: color 0.2s;
 }
 

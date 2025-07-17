@@ -102,7 +102,7 @@ function App() {
         finalResult = {
           ingredients: ocrResult,
           allergens: [],
-          summary: 'OCR fallback: Ingredients extracted from image text.'
+          summary: 'Inhaltsstoffe durch Texterkennung erkannt'
         };
       }
       

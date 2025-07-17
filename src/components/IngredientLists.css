@@ -142,6 +142,8 @@
   flex: 1 1 auto;
   border: none;
   border-radius: 0;
+  background: none;
+  box-shadow: none;
   padding: 0.3rem 0.7rem 0.2rem 0.7rem;
   cursor: pointer;
   display: flex;
@@ -161,10 +163,12 @@
 .tab-button.active {
   color: #22314a;
   border-bottom: 2px solid #00ff88;
+  background: none;
 }
 
 .tab-button:hover:not(.active) {
   color: #22314a;
+  background: none;
 }
 
 .tab-icon {

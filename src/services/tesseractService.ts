@@ -87,10 +87,7 @@ export class TesseractService {
     // Erweiterte PSM-Modi für verschiedene Textlayouts
     const psmModes = [
       PSM.SINGLE_BLOCK,    // Einzelner Textblock
-      PSM.AUTO,            // Automatische Erkennung
-      PSM.SPARSE_TEXT,     // Verstreuter Text
-      PSM.SINGLE_LINE,     // Einzelne Zeile
-      PSM.SINGLE_WORD      // Einzelne Wörter
+      PSM.AUTO           // Automatische Erkennung
     ];
     
     // Erweiterte Sprachunterstützung

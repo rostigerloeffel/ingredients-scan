@@ -98,42 +98,7 @@ const AnalysisResult = React.memo(function AnalysisResult({ analysis, onActionDo
         </div>
       )}
 
-      {/* Unverträglichkeits-Warnungen */}
-      {hasWarnings && (
-        <div className="intolerance-warnings">
-          <div className="warnings-header">
-            <span className="warning-icon">🚨</span>
-            <h3>Unverträglichkeiten erkannt</h3>
-          </div>
-          <div className="warnings-content">
-            <p className="warning-description">
-              Folgende Inhaltsstoffe stehen auf Ihrer Unverträglichkeitsliste:
-            </p>
-            <div className="warning-items">
-              {intoleranceWarnings.map((warning, index) => (
-                <div 
-                  key={index} 
-                  className="warning-item"
-                  style={{ borderColor: getWarningColor(warning.severity) }}
-                >
-                  <span className="warning-item-icon">
-                    {getWarningIcon(warning.severity)}
-                  </span>
-                  <span className="warning-item-text">{warning.ingredient}</span>
-                </div>
-              ))}
-            </div>
-            {/* Hinweis entfernt: Keine weiteren Hinweise zu verträglichen Inhaltsstoffen */}
-            <div className="warning-advice">
-              <p>
-                <strong>💡 Empfehlung:</strong> 
-                Vermeiden Sie dieses Produkt oder konsultieren Sie einen Arzt, 
-                bevor Sie es verwenden.
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Unverträglichkeits-Warnungen entfernt */}
 
       {/* Normale Analyseergebnisse */}
       {displayedIngredients.length > 0 && (

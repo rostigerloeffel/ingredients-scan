@@ -1,22 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { type IngredientAnalysis } from '../services/openaiService';
 import { IngredientListService } from '../services/ingredientLists';
-import './AnalysisResult.css';
 import type { NegativeIngredient } from '../services/ingredientLists';
+import './AnalysisResult.css';
 
 interface AnalysisResultProps {
   analysis: IngredientAnalysis;
   onActionDone?: () => void;
 }
 
-interface IntoleranceWarning {
-  ingredient: string;
-  severity: 'high' | 'medium' | 'low';
-}
-
 const AnalysisResult = React.memo(function AnalysisResult({ analysis, onActionDone }: AnalysisResultProps) {
-  const [intoleranceWarnings, setIntoleranceWarnings] = useState<IntoleranceWarning[]>([]);
-  const [hasWarnings, setHasWarnings] = useState(false);
   const [displayedIngredients, setDisplayedIngredients] = useState<string[]>(analysis.ingredients);
 
   useEffect(() => {
@@ -29,17 +22,10 @@ const AnalysisResult = React.memo(function AnalysisResult({ analysis, onActionDo
     const negativeNames = negativeList.map(e => e.name);
     const normalizedNegativeList = IngredientListService.normalizeIngredients(negativeNames);
     const normalizedAnalysisIngredients = IngredientListService.normalizeIngredients(analysis.ingredients);
-    const warnings: IntoleranceWarning[] = [];
     normalizedAnalysisIngredients.forEach(ingredient => {
       if (normalizedNegativeList.includes(ingredient)) {
-        warnings.push({
-          ingredient: ingredient,
-          severity: 'high'
-        });
       }
     });
-    setIntoleranceWarnings(warnings);
-    setHasWarnings(warnings.length > 0);
   };
 
   // Buttons sind immer aktiv, außer nach Klick (dann disabled)
@@ -62,24 +48,6 @@ const AnalysisResult = React.memo(function AnalysisResult({ analysis, onActionDo
 
   const handleRemoveIngredient = (ingredientToRemove: string) => {
     setDisplayedIngredients(prev => prev.filter(ingredient => ingredient !== ingredientToRemove));
-  };
-
-  const getWarningIcon = (severity: 'high' | 'medium' | 'low') => {
-    switch (severity) {
-      case 'high': return '🚨';
-      case 'medium': return '⚠️';
-      case 'low': return '💡';
-      default: return '⚠️';
-    }
-  };
-
-  const getWarningColor = (severity: 'high' | 'medium' | 'low') => {
-    switch (severity) {
-      case 'high': return '#ff6b6b';
-      case 'medium': return '#ffa726';
-      case 'low': return '#4ecdc4';
-      default: return '#ffa726';
-    }
   };
 
   // Zutaten sortieren: Unverträgliche zuerst, absteigend nach count

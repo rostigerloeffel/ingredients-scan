@@ -82,6 +82,19 @@ const AnalysisResult = React.memo(function AnalysisResult({ analysis, onActionDo
     }
   };
 
+  // Zutaten sortieren: Unverträgliche zuerst, absteigend nach count
+  const negativeList: NegativeIngredient[] = IngredientListService.getNegativeList();
+  const normalizedNegativeList = IngredientListService.normalizeIngredients(negativeList.map(e => e.name));
+  const intolerantIngredients = displayedIngredients.filter(ingredient => normalizedNegativeList.includes(IngredientListService.normalizeIngredient(ingredient)));
+  const tolerantIngredients = displayedIngredients.filter(ingredient => !normalizedNegativeList.includes(IngredientListService.normalizeIngredient(ingredient)));
+  // Sortiere die unverträglichen Zutaten nach count absteigend
+  const intolerantIngredientsSorted = [...intolerantIngredients].sort((a, b) => {
+    const countA = IngredientListService.getNegativeCount(a);
+    const countB = IngredientListService.getNegativeCount(b);
+    return countB - countA;
+  });
+  const sortedIngredients = [...intolerantIngredientsSorted, ...tolerantIngredients];
+
   return (
     <div className="analysis-result">
       <div className="result-header">
@@ -105,22 +118,25 @@ const AnalysisResult = React.memo(function AnalysisResult({ analysis, onActionDo
         <div className="ingredients-section">
           <h3>🔍 Erkannte Inhaltsstoffe</h3>
           <div className="ingredients-grid">
-            {displayedIngredients.map((ingredient, index) => {
-              const isIntolerant = intoleranceWarnings.some(
-                warning => warning.ingredient.toLowerCase() === ingredient.toLowerCase()
-              );
-              
-              return (
-                <div 
-                  key={index} 
-                  className={`ingredient-card ${isIntolerant ? 'intolerant' : ''}`}
+            {sortedIngredients.map((ingredient, index) => {
+              const isIntolerant = normalizedNegativeList.includes(IngredientListService.normalizeIngredient(ingredient));
+              return isIntolerant ? (
+                <div
+                  key={index}
+                  className="ingredient-chip intolerant-chip"
+                  title="Unverträglich"
+                  style={{ background: '#ff6b6b', color: '#fff', borderRadius: 16, padding: '6px 14px', margin: 4, display: 'inline-flex', alignItems: 'center', fontWeight: 500, fontSize: 15, cursor: 'default', border: 'none' }}
+                >
+                  <span style={{ marginRight: 6 }}>🚨</span>{ingredient}
+                </div>
+              ) : (
+                <div
+                  key={index}
+                  className="ingredient-card"
                   onClick={() => handleRemoveIngredient(ingredient)}
                   title="Klicken zum Löschen"
                 >
                   <span className="ingredient-name">{ingredient}</span>
-                  {isIntolerant && (
-                    <span className="intolerance-badge">🚨 Unverträglich</span>
-                  )}
                 </div>
               );
             })}
@@ -138,30 +154,8 @@ const AnalysisResult = React.memo(function AnalysisResult({ analysis, onActionDo
         </div>
       )}
 
-      {/* Allergene */}
-      {analysis.allergens.length > 0 && (
-        <div className="allergens-section">
-          <h3>⚠️ Allergene</h3>
-          <div className="allergens-grid">
-            {analysis.allergens.map((allergen, index) => (
-              <div key={index} className="allergen-card">
-                <span className="allergen-icon">⚠️</span>
-                <span className="allergen-name">{allergen}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Nährwert entfernt */}
-
-      {/* Zusammenfassung */}
-      {analysis.summary && (
-        <div className="summary-section">
-          <h3>📝 Zusammenfassung</h3>
-          <p className="summary-text">{analysis.summary}</p>
-        </div>
-      )}
+      {/* Allergene entfernt */}
+      {/* Zusammenfassung entfernt */}
 
       {/* Button für neuen Scan entfernt */}
     </div>

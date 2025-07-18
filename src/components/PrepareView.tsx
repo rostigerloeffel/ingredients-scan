@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Cropper } from 'react-cropper';
 import '../styles/cropper.css';
 import ListsButtons from './ListsButtons';
@@ -13,7 +13,9 @@ interface PrepareViewProps {
 }
 
 const PrepareView: React.FC<PrepareViewProps> = React.memo(({ image, onCropDone, onShowLists }) => {
-  const cropperRef = React.useRef<any>(null);
+  const cropperRef = useRef<any>(null);
+  const pendingCropBox = useRef<{ left: number, top: number, width: number, height: number } | null>(null);
+  const [cropperReady, setCropperReady] = useState(false);
 
   // Automatic cropping to INCI block
   useEffect(() => {
@@ -32,7 +34,9 @@ const PrepareView: React.FC<PrepareViewProps> = React.memo(({ image, onCropDone,
       let blockLines: any[] = [];
       for (const psm of psmModes) {
         await worker.setParameters({
-          tessedit_pageseg_mode: psm
+          tessedit_pageseg_mode: psm,
+          tessedit_min_conf: '40',
+          user_defined_dpi: '1000'
         });
         const { data } = await worker.recognize(image);
         // Find the largest contiguous text block (by number of lines)
@@ -52,28 +56,36 @@ const PrepareView: React.FC<PrepareViewProps> = React.memo(({ image, onCropDone,
         }
       }
       await worker.terminate();
-      if (blockLines.length > 0 && cropperRef.current) {
+      if (blockLines.length > 0) {
         // Calculate bounding box
         const minX = Math.min(...blockLines.map(l => l.bbox.x0));
         const minY = Math.min(...blockLines.map(l => l.bbox.y0));
         const maxX = Math.max(...blockLines.map(l => l.bbox.x1));
         const maxY = Math.max(...blockLines.map(l => l.bbox.y1));
-        // Set cropper (timeout to ensure cropper is ready)
-        setTimeout(() => {
-          if (!cancelled && cropperRef.current?.cropper) {
-            cropperRef.current.cropper.setCropBoxData({
-              left: minX,
-              top: minY,
-              width: maxX - minX,
-              height: maxY - minY
-            });
-          }
-        }, 500);
+        // Store bounding box for later use in ready event
+        pendingCropBox.current = {
+          left: minX,
+          top: minY,
+          width: maxX - minX,
+          height: maxY - minY
+        };
+        // If cropper is already ready, set crop box immediately
+        if (cropperReady && cropperRef.current?.cropper) {
+          cropperRef.current.cropper.setCropBoxData(pendingCropBox.current);
+        }
       }
     }
     detectInciBlock();
     return () => { cancelled = true; };
-  }, [image]);
+  }, [image, cropperReady]);
+
+  // Handler for Cropper's ready event
+  const handleCropperReady = useCallback(() => {
+    setCropperReady(true);
+    if (pendingCropBox.current && cropperRef.current?.cropper) {
+      cropperRef.current.cropper.setCropBoxData(pendingCropBox.current);
+    }
+  }, []);
 
   const handleCrop = useCallback(() => {
     if (cropperRef.current) {
@@ -99,6 +111,7 @@ const PrepareView: React.FC<PrepareViewProps> = React.memo(({ image, onCropDone,
               responsive={true}
               autoCropArea={1}
               ref={cropperRef}
+              ready={handleCropperReady}
             />
           </div>
         </div>

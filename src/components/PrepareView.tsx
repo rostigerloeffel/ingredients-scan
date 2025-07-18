@@ -5,6 +5,7 @@ import ListsButtons from './ListsButtons';
 import VerticalMainLayout from './VerticalMainLayout';
 import './CameraPreview.css';
 import { createWorker, PSM } from 'tesseract.js';
+import Fuse from 'fuse.js';
 
 interface PrepareViewProps {
   image: string;
@@ -19,31 +20,54 @@ const PrepareView: React.FC<PrepareViewProps> = React.memo(({ image, onCropDone,
   useEffect(() => {
     let cancelled = false;
     async function detectInciBlock() {
+      const psmModes = [
+        PSM.SINGLE_BLOCK, // 6
+        PSM.AUTO,         // 3
+        PSM.SPARSE_TEXT,  // 11
+        PSM.SINGLE_LINE,  // 7
+        PSM.SINGLE_WORD   // 8
+      ];
       const worker = await createWorker();
       await worker.load();
       await worker.reinitialize('eng+deu');
-      await worker.setParameters({
-        tessedit_pageseg_mode: PSM.SINGLE_BLOCK // entspricht 6
-      });
-      const { data } = await worker.recognize(image);
-      await worker.terminate();
-      // Suche nach Zeile mit "ingredients" o.ä.
-      const headerRegex = /\b(ingredients?|inc|zutaten|bestandteile|composition|composizione|composición|ingrédients|ingrediënten)\b\s*[:：]/i;
       let blockLines: any[] = [];
-      let inBlock = false;
-      const lines = (data.blocks || []).flatMap((block: any) => block.lines || []);
-      for (const line of lines) {
-        if (!inBlock && headerRegex.test(line.text)) {
-          inBlock = true;
-          blockLines.push(line);
-          continue;
+      for (const psm of psmModes) {
+        await worker.setParameters({
+          tessedit_pageseg_mode: psm
+        });
+        const { data } = await worker.recognize(image);
+        // Zielwörter für Ingredients-Header
+        const headerWords = [
+          'ingredients', 'ingredient', 'inc', 'zutaten', 'bestandteile',
+          'composition', 'composizione', 'composición', 'ingrédients', 'ingrediënten'
+        ];
+        const fuse = new Fuse(headerWords, { threshold: 0.4 });
+        blockLines = [];
+        let inBlock = false;
+        const lines = (data.blocks || []).flatMap((block: any) => block.lines || []);
+        for (const line of lines) {
+          // Fuzzy-Suche nach Header
+          const lineText = line.text.toLowerCase();
+          // Prüfe auf Doppelpunkt, entferne ihn für die Suche
+          const textForSearch = lineText.replace(/[:：]/g, '').trim();
+          const fuseResult = fuse.search(textForSearch);
+          if (!inBlock && fuseResult.length > 0) {
+            inBlock = true;
+            blockLines.push(line);
+            continue;
+          }
+          if (inBlock) {
+            // Block-Ende: Leere Zeile oder Zeile ohne Komma (und nicht sehr lang)
+            if (line.text.trim() === '' || (line.text.indexOf(',') === -1 && line.text.length < 20)) break;
+            blockLines.push(line);
+          }
         }
-        if (inBlock) {
-          // Block-Ende: Leere Zeile oder Zeile ohne Komma (und nicht sehr lang)
-          if (line.text.trim() === '' || (line.text.indexOf(',') === -1 && line.text.length < 20)) break;
-          blockLines.push(line);
+        if (blockLines.length > 0) {
+          // Treffer gefunden, breche die Schleife ab
+          break;
         }
       }
+      await worker.terminate();
       if (blockLines.length > 0 && cropperRef.current) {
         // Bounding Box berechnen
         const minX = Math.min(...blockLines.map(l => l.bbox.x0));

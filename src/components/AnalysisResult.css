@@ -286,35 +286,56 @@
 }
 
 .add-all-button {
+  background: #232323;
+  border: 1.5px solid #444;
+  border-radius: 10px;
+  padding: 12px 0;
+  color: #FFFFFFDE;
+  font-size: 1.05rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, border 0.2s, box-shadow 0.2s;
+  min-width: 160px;
+  flex: 1 1 0;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+  text-align: center;
+  white-space: nowrap;
   margin: 0;
-  min-width: 140px;
-  /* Optional: padding, border-radius, etc. */
+  outline: none;
 }
-
-.add-all-button:hover {
+.add-all-button:hover:not(:disabled) {
   background: #353535;
   border-color: #666;
+  color: #fff;
   box-shadow: 0 4px 16px rgba(0,0,0,0.16);
 }
-
+.add-all-button:active {
+  background: #181818;
+}
 .add-all-button.positive {
   border-color: #4ecdc4;
-  background: #232d23;
+  background: #232323;
 }
-
-.add-all-button.positive:hover {
+.add-all-button.positive:hover:not(:disabled) {
   background: #2d3d2d;
   border-color: #5eddd4;
 }
-
 .add-all-button.negative {
   border-color: #ff6b6b;
-  background: #3a2323;
+  background: #232323;
 }
-
-.add-all-button.negative:hover {
-  background: #4a2d2d;
+.add-all-button.negative:hover:not(:disabled) {
+  background: #3a2323;
   border-color: #ff7b7b;
+}
+.add-all-button[disabled], .add-all-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: #232323;
+  color: #888 !important;
+  border-color: #444;
+  box-shadow: none;
+  filter: grayscale(0.5);
 }
 
 .tolerant-chip {

@@ -10,9 +10,10 @@ interface PrepareViewProps {
   image: string;
   onCropDone: (croppedImage: string) => void;
   onShowLists: () => void;
+  onDebugInfo?: (info: { boundingBox?: { left: number, top: number, width: number, height: number }, blockLines?: any[], error?: string }) => void;
 }
 
-const PrepareView: React.FC<PrepareViewProps> = React.memo(({ image, onCropDone, onShowLists }) => {
+const PrepareView: React.FC<PrepareViewProps> = React.memo(({ image, onCropDone, onShowLists, onDebugInfo }) => {
   const cropperRef = useRef<any>(null);
   const pendingCropBox = useRef<{ left: number, top: number, width: number, height: number } | null>(null);
   const [cropperReady, setCropperReady] = useState(false);
@@ -31,6 +32,8 @@ const PrepareView: React.FC<PrepareViewProps> = React.memo(({ image, onCropDone,
       await worker.load();
       await worker.reinitialize('eng+deu');
       let blockLines: any[] = [];
+      let boundingBox: { left: number, top: number, width: number, height: number } | undefined = undefined;
+      let error: string | undefined = undefined;
       for (const psm of psmModes) {
         await worker.setParameters({
           tessedit_pageseg_mode: psm,
@@ -51,32 +54,36 @@ const PrepareView: React.FC<PrepareViewProps> = React.memo(({ image, onCropDone,
         }
         if (largestBlock && ((largestBlock as any).lines || []).length > 0) {
           blockLines = (largestBlock as any).lines;
+          // Calculate bounding box
+          const minX = Math.min(...blockLines.map(l => l.bbox.x0));
+          const minY = Math.min(...blockLines.map(l => l.bbox.y0));
+          const maxX = Math.max(...blockLines.map(l => l.bbox.x1));
+          const maxY = Math.max(...blockLines.map(l => l.bbox.y1));
+          boundingBox = {
+            left: minX,
+            top: minY,
+            width: maxX - minX,
+            height: maxY - minY
+          };
+          pendingCropBox.current = boundingBox;
+          if (cropperReady && cropperRef.current?.cropper) {
+            cropperRef.current.cropper.setCropBoxData(boundingBox);
+          }
           break;
         }
       }
       await worker.terminate();
-      if (blockLines.length > 0) {
-        // Calculate bounding box
-        const minX = Math.min(...blockLines.map(l => l.bbox.x0));
-        const minY = Math.min(...blockLines.map(l => l.bbox.y0));
-        const maxX = Math.max(...blockLines.map(l => l.bbox.x1));
-        const maxY = Math.max(...blockLines.map(l => l.bbox.y1));
-        // Store bounding box for later use in ready event
-        pendingCropBox.current = {
-          left: minX,
-          top: minY,
-          width: maxX - minX,
-          height: maxY - minY
-        };
-        // If cropper is already ready, set crop box immediately
-        if (cropperReady && cropperRef.current?.cropper) {
-          cropperRef.current.cropper.setCropBoxData(pendingCropBox.current);
-        }
+      if (onDebugInfo) {
+        onDebugInfo({
+          boundingBox,
+          blockLines,
+          error: (!blockLines.length ? 'No block found' : undefined)
+        });
       }
     }
     detectInciBlock();
     return () => { };
-  }, [image, cropperReady]);
+  }, [image, cropperReady, onDebugInfo]);
 
   // Handler for Cropper's ready event
   const handleCropperReady = useCallback(() => {

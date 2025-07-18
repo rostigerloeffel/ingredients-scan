@@ -77,7 +77,7 @@ const AnalysisResult = React.memo(function AnalysisResult({ analysis, onActionDo
       {/* Normale Analyseergebnisse */}
       {displayedIngredients.length > 0 && (
         <div className="ingredients-section">
-          <h3>🔍 Erkannte Inhaltsstoffe ({displayedIngredients.length})</h3>
+          <h2>🔍 Erkannte Inhaltsstoffe ({displayedIngredients.length})</h2>
           <div className="ingredients-grid">
             {sortedIngredients.map((ingredient, index) => {
               const isIntolerant = normalizedNegativeList.includes(IngredientListService.normalizeIngredient(ingredient));

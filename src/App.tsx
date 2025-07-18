@@ -14,6 +14,8 @@ import DebugOverlay from './debug/DebugOverlay';
 import type { DebugInfo, TesseractDebugInfo } from './debug/DebugOverlay';
 import CameraPermissionInfo from './components/CameraPermissionInfo';
 
+type CroppingDebugInfo = { boundingBox?: { left: number, top: number, width: number, height: number }, blockLines?: any[], error?: string };
+
 type AppView = 'scan' | 'prepare' | 'result';
 
 function App() {
@@ -28,6 +30,7 @@ function App() {
   const [tesseractDebugInfo, setTesseractDebugInfo] = useState<TesseractDebugInfo>();
   const [ingredientListsTab, setIngredientListsTab] = useState<'positive' | 'negative'>('positive');
   const [cameraPermission, setCameraPermission] = useState<'unknown' | 'granted' | 'denied'>('unknown');
+  const [croppingDebugInfo, setCroppingDebugInfo] = useState<CroppingDebugInfo>();
 
   // Prüfe beim Start, ob ein API-Schlüssel vorhanden ist
   useEffect(() => {
@@ -179,6 +182,7 @@ function App() {
             image={capturedImage}
             onCropDone={handleCropDone}
             onShowLists={(tab: 'positive' | 'negative' = 'positive') => { setIngredientListsTab(tab); setShowIngredientLists(true); }}
+            onDebugInfo={setCroppingDebugInfo}
           />
         )}
         {view === 'result' && capturedImage && (
@@ -193,6 +197,18 @@ function App() {
         )}
       </main>
       <DebugOverlay debugInfo={debugInfo} tesseractInfo={tesseractDebugInfo} />
+      {import.meta.env.DEV && croppingDebugInfo && (
+        <div style={{position:'fixed',bottom:16,left:16,zIndex:10000,background:'rgba(0,0,0,0.8)',color:'#fff',padding:'12px 18px',borderRadius:10,fontSize:15,maxWidth:380,boxShadow:'0 2px 12px #0008',overflowY:'auto',maxHeight:'90vh'}}>
+          <div><b>Cropper Debug:</b></div>
+          {croppingDebugInfo.error && <div style={{color:'#ff6b6b'}}>{croppingDebugInfo.error}</div>}
+          {croppingDebugInfo.boundingBox && (
+            <div>Bounding Box: left={croppingDebugInfo.boundingBox.left}, top={croppingDebugInfo.boundingBox.top}, width={croppingDebugInfo.boundingBox.width}, height={croppingDebugInfo.boundingBox.height}</div>
+          )}
+          {croppingDebugInfo.blockLines && (
+            <div>Block lines: {croppingDebugInfo.blockLines.length}</div>
+          )}
+        </div>
+      )}
     </div>
   )
 }

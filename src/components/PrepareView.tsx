@@ -33,7 +33,6 @@ const PrepareView: React.FC<PrepareViewProps> = React.memo(({ image, onCropDone,
       await worker.reinitialize('eng+deu');
       let blockLines: any[] = [];
       let boundingBox: { left: number, top: number, width: number, height: number } | undefined = undefined;
-      let error: string | undefined = undefined;
       for (const psm of psmModes) {
         await worker.setParameters({
           tessedit_pageseg_mode: psm,

@@ -4,7 +4,7 @@ import '../styles/cropper.css';
 import ListsButtons from './ListsButtons';
 import VerticalMainLayout from './VerticalMainLayout';
 import './CameraPreview.css';
-import Tesseract from 'tesseract.js';
+import { createWorker, PSM } from 'tesseract.js';
 
 interface PrepareViewProps {
   image: string;
@@ -19,7 +19,14 @@ const PrepareView: React.FC<PrepareViewProps> = React.memo(({ image, onCropDone,
   useEffect(() => {
     let cancelled = false;
     async function detectInciBlock() {
-      const { data } = await Tesseract.recognize(image, 'eng+deu', { logger: () => {} });
+      const worker = await createWorker();
+      await worker.load();
+      await worker.reinitialize('eng+deu');
+      await worker.setParameters({
+        tessedit_pageseg_mode: PSM.SINGLE_BLOCK // entspricht 6
+      });
+      const { data } = await worker.recognize(image);
+      await worker.terminate();
       // Suche nach Zeile mit "ingredients" o.ä.
       const headerRegex = /\b(ingredients?|inc|zutaten|bestandteile|composition|composizione|composición|ingrédients|ingrediënten)\b\s*[:：]/i;
       let blockLines: any[] = [];

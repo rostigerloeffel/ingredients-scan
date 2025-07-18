@@ -100,11 +100,11 @@ const AnalysisResult = React.memo(function AnalysisResult({ analysis, onActionDo
               ) : (
                 <div
                   key={index}
-                  className="ingredient-card"
+                  className="ingredient-chip tolerant-chip"
                   onClick={() => handleRemoveIngredient(ingredient)}
                   title="Klicken zum Löschen"
                 >
-                  <span className="ingredient-name">{ingredient}</span>
+                  {ingredient}
                 </div>
               );
             })}

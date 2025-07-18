@@ -317,6 +317,25 @@
   border-color: #ff7b7b;
 }
 
+.tolerant-chip {
+  padding: 6px 14px;
+  border-radius: 16px;
+  margin: 4px;
+  display: inline-flex;
+  align-items: center;
+  font-weight: 500;
+  font-size: 15px;
+  color: #fff;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.tolerant-chip:focus {
+  outline: 2px solid #4ecdc4;
+  outline-offset: 2px;
+}
+
 /* Mobile Optimierung */
 @media (max-width: 600px) {
   .analysis-result {

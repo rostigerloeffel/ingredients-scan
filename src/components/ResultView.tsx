@@ -45,15 +45,6 @@ const ResultView: React.FC<ResultViewProps> = React.memo(({ analysis, isAnalyzin
               <p className="error-text">{error}</p>
             </div>
           )}
-          {error === 'NO_OPENAI_KEY' && !isAnalyzing && (
-            <div className="info-message">
-              <div className="info-header">
-                <span className="info-icon">ℹ️</span>
-                <h3>{t('openai_key_not_configured')}</h3>
-              </div>
-              <p className="info-text">Die automatische KI-Analyse ist aktuell nicht verfügbar, weil kein OpenAI-Key hinterlegt ist. Die Texterkennung funktioniert trotzdem – du kannst die Zutatenliste wie gewohnt scannen.</p>
-            </div>
-          )}
           {!isAnalyzing && !error && analysis && (
             <AnalysisResult analysis={analysis} onActionDone={handleClose} />
           )}

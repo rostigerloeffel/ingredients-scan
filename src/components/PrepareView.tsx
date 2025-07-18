@@ -36,34 +36,19 @@ const PrepareView: React.FC<PrepareViewProps> = React.memo(({ image, onCropDone,
           tessedit_pageseg_mode: psm
         });
         const { data } = await worker.recognize(image);
-        // Target words for ingredients header
-        const headerWords = [
-          'ingredients', 'ingredient', 'inc', 'zutaten', 'bestandteile',
-          'composition', 'composizione', 'composición', 'ingrédients', 'ingrediënten'
-        ];
-        const fuse = new Fuse(headerWords, { threshold: 0.4 });
-        blockLines = [];
-        let inBlock = false;
-        const lines = (data.blocks || []).flatMap((block: any) => block.lines || []);
-        for (const line of lines) {
-          // Fuzzy search for header
-          const lineText = line.text.toLowerCase();
-          // Check for colon, remove it for search
-          const textForSearch = lineText.replace(/[:：]/g, '').trim();
-          const fuseResult = fuse.search(textForSearch);
-          if (!inBlock && fuseResult.length > 0) {
-            inBlock = true;
-            blockLines.push(line);
-            continue;
-          }
-          if (inBlock) {
-            // Block end: empty line or line without comma (and not very long)
-            if (line.text.trim() === '' || (line.text.indexOf(',') === -1 && line.text.length < 20)) break;
-            blockLines.push(line);
+        // Find the largest contiguous text block (by number of lines)
+        const blocks = (data.blocks || []);
+        let largestBlock = null;
+        let maxLines = 0;
+        for (const block of blocks) {
+          const lines = (block as any).lines || [];
+          if (lines.length > maxLines) {
+            maxLines = lines.length;
+            largestBlock = block;
           }
         }
-        if (blockLines.length > 0) {
-          // Match found, break loop
+        if (largestBlock && ((largestBlock as any).lines || []).length > 0) {
+          blockLines = (largestBlock as any).lines;
           break;
         }
       }

@@ -5,7 +5,6 @@ import ListsButtons from './ListsButtons';
 import VerticalMainLayout from './VerticalMainLayout';
 import './CameraPreview.css';
 import { createWorker, PSM } from 'tesseract.js';
-import Fuse from 'fuse.js';
 
 interface PrepareViewProps {
   image: string;

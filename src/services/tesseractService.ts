@@ -7,7 +7,7 @@ function getFuseInstance(): Fuse<string> {
   if (!fuseInstance) {
     fuseInstance = new Fuse(inciNames, {
       includeScore: true,
-      threshold: 0.35, // anpassen je nach gewünschter Toleranz
+      threshold: 0.35, // adjust according to desired tolerance
     });
   }
   return fuseInstance;
@@ -15,7 +15,7 @@ function getFuseInstance(): Fuse<string> {
 
 export class TesseractService {
   /**
-   * Erweiterte Bildvorverarbeitung für bessere OCR-Ergebnisse
+   * Enhanced image preprocessing for better OCR results
    */
   private static preprocessImage(imageBase64: string): Promise<string> {
     return new Promise((resolve) => {
@@ -29,16 +29,16 @@ export class TesseractService {
         
         const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
         //const data = imageData.data;
-        // Schritt 1: Graustufen
+        // Step 1: Grayscale
         // for (let i = 0; i < data.length; i += 4) {
         //  const avg = 0.299 * data[i] + 0.587 * data[i+1] + 0.114 * data[i+2];
         //  data[i] = data[i+1] = data[i+2] = avg;
         // }
-        // Keine Nachschärfung mehr, nur Graustufen
+        // No sharpening, only grayscale
         ctx.putImageData(imageData, 0, 0);
         const resultUrl = canvas.toDataURL('image/png');
         if (import.meta.env && import.meta.env.DEV) {
-          // Debug-Log: Auflösung und Base64-Preview
+          // Debug Log: Resolution and Base64 Preview
           console.log('[OCR-DEBUG] Preprocess:', {
             width: canvas.width,
             height: canvas.height,
@@ -52,7 +52,7 @@ export class TesseractService {
   }
 
   /**
-   * OCR-Extraktion von Inhaltsstoffen (erweiterte Version)
+   * OCR extraction of ingredients (enhanced version)
    */
   static async extractIngredients(
     imageBase64: string,
@@ -84,7 +84,7 @@ export class TesseractService {
       });
     }
 
-    // OCR mit Tesseract
+    // OCR with Tesseract
     const worker = await createWorker();
     await worker.load();
     await worker.reinitialize('eng');
@@ -107,7 +107,7 @@ export class TesseractService {
 
     if (!text || text.trim().length === 0) return [];
 
-    // Suche nach dem Block, der mit 'ingredients:' oder ähnlichem beginnt
+    // Search for the block that starts with 'ingredients:' or similar
     const lines = text.split(/\r?\n/);
     const headerRegex = /\b(ingredients?|inc|zutaten|bestandteile|composition|composizione|composición|ingrédients|ingrediënten)\b\s*[:：]/i;
     let inciLines: string[] = [];
@@ -115,19 +115,19 @@ export class TesseractService {
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i].trim();
       if (!inInciBlock && headerRegex.test(line)) {
-        // Starte neuen INCI-Block ab dem Header (entferne Header selbst)
+        // Start new INCI block after the header (remove header itself)
         const afterHeader = line.replace(headerRegex, '').trim();
         if (afterHeader.length > 0) inciLines.push(afterHeader);
         inInciBlock = true;
         continue;
       }
       if (inInciBlock) {
-        // Block-Ende: Leere Zeile oder Zeile ohne Komma (und nicht sehr lang)
+        // Block end: empty line or line without comma (and not very long)
         if (line === '' || (line.indexOf(',') === -1 && line.length < 20)) break;
         inciLines.push(line);
       }
     }
-    // Fallback: wie bisher, längster Komma-Block
+    // Fallback: as before, longest comma block
     if (inciLines.length === 0) {
       const blocks = text.split(/\n+/);
       let inciBlock = '';
@@ -145,14 +145,14 @@ export class TesseractService {
       if (!inciBlock) return [];
       inciLines = [inciBlock];
     }
-    // Zeilen zu einem Block zusammenfügen
+    // Combine lines into a block
     let inciBlock = inciLines.join(' ');
-    // Entferne alles vor dem ersten Doppelpunkt (z.B. "Ingredients:")
+    // Remove everything before the first colon (e.g., "Ingredients:")
     inciBlock = inciBlock.replace(/^.*?:\s*/, '');
-    // Splitte an Kommas und normalisiere
+    // Split by commas and normalize
     const rawIngredients = inciBlock.split(',').map(s => s.trim()).filter(Boolean);
 
-    // Fuzzy-Matching gegen INCI-Liste
+    // Fuzzy matching against INCI list
     const fuse = getFuseInstance();
     const bestMatches: string[] = [];
     for (const ing of rawIngredients) {
@@ -161,7 +161,7 @@ export class TesseractService {
         bestMatches.push(result[0].item);
       }
     }
-    // Nur eindeutige Treffer zurückgeben
+    // Return only unique hits
     return Array.from(new Set(bestMatches));
   }
 } 

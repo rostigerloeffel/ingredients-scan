@@ -16,7 +16,7 @@ interface PrepareViewProps {
 const PrepareView: React.FC<PrepareViewProps> = React.memo(({ image, onCropDone, onShowLists }) => {
   const cropperRef = React.useRef<any>(null);
 
-  // Automatisches Cropping auf INCI-Block
+  // Automatic cropping to INCI block
   useEffect(() => {
     let cancelled = false;
     async function detectInciBlock() {
@@ -36,7 +36,7 @@ const PrepareView: React.FC<PrepareViewProps> = React.memo(({ image, onCropDone,
           tessedit_pageseg_mode: psm
         });
         const { data } = await worker.recognize(image);
-        // Zielwörter für Ingredients-Header
+        // Target words for ingredients header
         const headerWords = [
           'ingredients', 'ingredient', 'inc', 'zutaten', 'bestandteile',
           'composition', 'composizione', 'composición', 'ingrédients', 'ingrediënten'
@@ -46,9 +46,9 @@ const PrepareView: React.FC<PrepareViewProps> = React.memo(({ image, onCropDone,
         let inBlock = false;
         const lines = (data.blocks || []).flatMap((block: any) => block.lines || []);
         for (const line of lines) {
-          // Fuzzy-Suche nach Header
+          // Fuzzy search for header
           const lineText = line.text.toLowerCase();
-          // Prüfe auf Doppelpunkt, entferne ihn für die Suche
+          // Check for colon, remove it for search
           const textForSearch = lineText.replace(/[:：]/g, '').trim();
           const fuseResult = fuse.search(textForSearch);
           if (!inBlock && fuseResult.length > 0) {
@@ -57,24 +57,24 @@ const PrepareView: React.FC<PrepareViewProps> = React.memo(({ image, onCropDone,
             continue;
           }
           if (inBlock) {
-            // Block-Ende: Leere Zeile oder Zeile ohne Komma (und nicht sehr lang)
+            // Block end: empty line or line without comma (and not very long)
             if (line.text.trim() === '' || (line.text.indexOf(',') === -1 && line.text.length < 20)) break;
             blockLines.push(line);
           }
         }
         if (blockLines.length > 0) {
-          // Treffer gefunden, breche die Schleife ab
+          // Match found, break loop
           break;
         }
       }
       await worker.terminate();
       if (blockLines.length > 0 && cropperRef.current) {
-        // Bounding Box berechnen
+        // Calculate bounding box
         const minX = Math.min(...blockLines.map(l => l.bbox.x0));
         const minY = Math.min(...blockLines.map(l => l.bbox.y0));
         const maxX = Math.max(...blockLines.map(l => l.bbox.x1));
         const maxY = Math.max(...blockLines.map(l => l.bbox.y1));
-        // Cropper setzen (Timeout, damit Cropper bereit ist)
+        // Set cropper (timeout to ensure cropper is ready)
         setTimeout(() => {
           if (!cancelled && cropperRef.current?.cropper) {
             cropperRef.current.cropper.setCropBoxData({

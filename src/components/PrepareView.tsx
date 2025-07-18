@@ -19,7 +19,6 @@ const PrepareView: React.FC<PrepareViewProps> = React.memo(({ image, onCropDone,
 
   // Automatic cropping to INCI block
   useEffect(() => {
-    let cancelled = false;
     async function detectInciBlock() {
       const psmModes = [
         PSM.SINGLE_BLOCK, // 6
@@ -76,7 +75,7 @@ const PrepareView: React.FC<PrepareViewProps> = React.memo(({ image, onCropDone,
       }
     }
     detectInciBlock();
-    return () => { cancelled = true; };
+    return () => { };
   }, [image, cropperReady]);
 
   // Handler for Cropper's ready event

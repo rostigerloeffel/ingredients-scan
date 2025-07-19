@@ -4,7 +4,7 @@ import '../styles/cropper.css';
 import ListsButtons from './ListsButtons';
 import VerticalMainLayout from './VerticalMainLayout';
 import './CameraPreview.css';
-import { createWorker, PSM } from 'tesseract.js';
+import { TesseractService } from '../services/tesseractService';
 
 interface PrepareViewProps {
   image: string;
@@ -21,63 +21,13 @@ const PrepareView: React.FC<PrepareViewProps> = React.memo(({ image, onCropDone,
   // Automatic cropping to INCI block
   useEffect(() => {
     async function detectInciBlock() {
-      const psmModes = [
-        PSM.SINGLE_BLOCK, // 6
-        PSM.AUTO,         // 3
-        PSM.SPARSE_TEXT,  // 11
-        PSM.SINGLE_LINE,  // 7
-        PSM.SINGLE_WORD   // 8
-      ];
-      const worker = await createWorker();
-      await worker.load();
-      await worker.reinitialize('eng+deu');
-      let blockLines: any[] = [];
-      let boundingBox: { left: number, top: number, width: number, height: number } | undefined = undefined;
-      for (const psm of psmModes) {
-        await worker.setParameters({
-          tessedit_pageseg_mode: psm,
-          tessedit_min_conf: '40',
-          user_defined_dpi: '1000'
-        });
-        const { data } = await worker.recognize(image);
-        // Find the largest contiguous text block (by number of lines)
-        const blocks = (data.blocks || []);
-        let largestBlock = null;
-        let maxLines = 0;
-        for (const block of blocks) {
-          const lines = (block as any).lines || [];
-          if (lines.length > maxLines) {
-            maxLines = lines.length;
-            largestBlock = block;
-          }
+      const { boundingBox } = await TesseractService.detectLargestTextBlock(image, onDebugInfo);
+      
+      if (boundingBox) {
+        pendingCropBox.current = boundingBox;
+        if (cropperReady && cropperRef.current?.cropper) {
+          cropperRef.current.cropper.setCropBoxData(boundingBox);
         }
-        if (largestBlock && ((largestBlock as any).lines || []).length > 0) {
-          blockLines = (largestBlock as any).lines;
-          // Calculate bounding box
-          const minX = Math.min(...blockLines.map(l => l.bbox.x0));
-          const minY = Math.min(...blockLines.map(l => l.bbox.y0));
-          const maxX = Math.max(...blockLines.map(l => l.bbox.x1));
-          const maxY = Math.max(...blockLines.map(l => l.bbox.y1));
-          boundingBox = {
-            left: minX,
-            top: minY,
-            width: maxX - minX,
-            height: maxY - minY
-          };
-          pendingCropBox.current = boundingBox;
-          if (cropperReady && cropperRef.current?.cropper) {
-            cropperRef.current.cropper.setCropBoxData(boundingBox);
-          }
-          break;
-        }
-      }
-      await worker.terminate();
-      if (onDebugInfo) {
-        onDebugInfo({
-          boundingBox,
-          blockLines,
-          error: (!blockLines.length ? 'No block found' : undefined)
-        });
       }
     }
     detectInciBlock();

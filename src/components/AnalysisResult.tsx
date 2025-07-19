@@ -64,7 +64,7 @@ const AnalysisResult = React.memo(function AnalysisResult({ analysis, onActionDo
   const sortedIngredients = [...intolerantIngredientsSorted, ...tolerantIngredients];
 
   return (
-    <div className="analysis-result">
+    <>
       {/* Hinweis, wenn keine Inhaltsstoffe erkannt wurden */}
       {displayedIngredients.length === 0 && (
         <div className="no-ingredients-warning">
@@ -119,7 +119,7 @@ const AnalysisResult = React.memo(function AnalysisResult({ analysis, onActionDo
       {/* Zusammenfassung entfernt */}
 
       {/* Button für neuen Scan entfernt */}
-    </div>
+    </>
   );
 });
 

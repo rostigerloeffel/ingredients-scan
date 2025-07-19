@@ -1,16 +1,16 @@
 .analysis-result {
-  background: #232323;
-  border-radius: 18px;
-  box-shadow: 0 4px 24px rgba(0,0,0,0.18);
-  padding: 1.2rem 0.7rem 0.7rem 0.7rem; /* Weniger Padding */
-  width: 100%;
-  max-width: 600px;
-  overflow: hidden;
-  color: #f3f3f3;
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  display: flex;
-  flex-direction: column;
-  gap: 0.7rem; /* Weniger Gap */
+  /* background: #232323; */
+  /* border-radius: 18px; */
+  /* box-shadow: 0 4px 24px rgba(0,0,0,0.18); */
+  /* padding: 1.2rem 0.7rem 0.7rem 0.7rem; */
+  /* width: 100%; */
+  /* max-width: 600px; */
+  /* overflow: hidden; */
+  /* color: #f3f3f3; */
+  /* font-family: system-ui, Avenir, Helvetica, Arial, sans-serif; */
+  /* display: flex; */
+  /* flex-direction: column; */
+  /* gap: 0.7rem; */
 }
 
 .result-header h2 {

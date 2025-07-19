@@ -330,7 +330,7 @@ button:active {
 .vertical-main-layout > .layout-top,
 .vertical-main-layout > .layout-middle,
 .vertical-main-layout > .layout-bottom {
-  /* width: 100%; */
+  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -339,12 +339,12 @@ button:active {
 .layout-top {
   display: flex;
   flex-direction: row;
-  /* width: 100%; */
+  width: 100%;
 }
 
 .layout-bottom {
   display: flex;
-  /* width: 100%; */
+  width: 100%;
   margin-top: 1.2rem;
 }
 

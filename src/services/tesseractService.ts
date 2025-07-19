@@ -15,12 +15,193 @@ function getFuseInstance(): Fuse<string> {
 
 export class TesseractService {
   /**
-   * Detect the largest contiguous text block for cropping initialization
+   * Adaptive cropping strategy with fallback to user-friendly default crops
    */
-  static async detectLargestTextBlock(
+  static async detectAdaptiveCrop(
     image: string,
-    onDebugInfo?: (info: { boundingBox?: { left: number, top: number, width: number, height: number }, blockLines?: any[], error?: string }) => void
-  ): Promise<{ boundingBox?: { left: number, top: number, width: number, height: number }, blockLines: any[] }> {
+    onDebugInfo?: (info: { boundingBox?: { left: number, top: number, width: number, height: number }, blockLines?: any[], error?: string, strategy: string }) => void
+  ): Promise<{ boundingBox?: { left: number, top: number, width: number, height: number }, blockLines: any[], strategy: string }> {
+    
+    // Strategy 1: Template-based detection (look for "Ingredients:" headers)
+    const templateResult = await this.detectByTemplate(image);
+    if (templateResult.boundingBox) {
+      if (onDebugInfo) {
+        onDebugInfo({
+          boundingBox: templateResult.boundingBox,
+          blockLines: templateResult.blockLines,
+          strategy: 'template'
+        });
+      }
+      return { ...templateResult, strategy: 'template' };
+    }
+
+    // Strategy 2: High contrast image analysis
+    const contrastResult = await this.detectByContrast(image);
+    if (contrastResult.boundingBox) {
+      if (onDebugInfo) {
+        onDebugInfo({
+          boundingBox: contrastResult.boundingBox,
+          blockLines: contrastResult.blockLines,
+          strategy: 'contrast'
+        });
+      }
+      return { ...contrastResult, strategy: 'contrast' };
+    }
+
+    // Strategy 3: Optimized OCR detection
+    const ocrResult = await this.detectWithOptimizedOCR(image);
+    if (ocrResult.boundingBox) {
+      if (onDebugInfo) {
+        onDebugInfo({
+          boundingBox: ocrResult.boundingBox,
+          blockLines: ocrResult.blockLines,
+          strategy: 'ocr'
+        });
+      }
+      return { ...ocrResult, strategy: 'ocr' };
+    }
+
+    // Fallback: User-friendly default crops
+    const defaultResult = await this.getDefaultCropAreas(image);
+    if (onDebugInfo) {
+      onDebugInfo({
+        boundingBox: defaultResult.boundingBox,
+        blockLines: [],
+        strategy: 'default',
+        error: 'No text regions detected, using default crop area'
+      });
+    }
+    return { boundingBox: defaultResult.boundingBox, blockLines: [], strategy: 'default' };
+  }
+
+  /**
+   * Template-based detection: Look for "Ingredients:" headers
+   */
+  private static async detectByTemplate(image: string): Promise<{ boundingBox?: { left: number, top: number, width: number, height: number }, blockLines: any[] }> {
+    const worker = await createWorker();
+    await worker.load();
+    await worker.reinitialize('eng+deu');
+    
+    await worker.setParameters({
+      tessedit_pageseg_mode: PSM.AUTO,
+      tessedit_min_conf: '30',
+      user_defined_dpi: '1000'
+    });
+    
+    const { data } = await worker.recognize(image);
+    await worker.terminate();
+
+    const headerRegex = /\b(ingredients?|inc|zutaten|bestandteile|composition|composizione|composición|ingrédients|ingrediënten)\b\s*[:：]/i;
+    
+    for (const block of data.blocks || []) {
+      const lines = (block as any).lines || [];
+      for (const line of lines) {
+        const words = line.words || [];
+        for (const word of words) {
+          const text = word.text?.toLowerCase() || '';
+          if (headerRegex.test(text)) {
+            // Found ingredients header, calculate bounding box for the block
+            const blockLines = (block as any).lines || [];
+            if (blockLines.length > 0) {
+              const minX = Math.min(...blockLines.map((l: any) => l.bbox.x0));
+              const minY = Math.min(...blockLines.map((l: any) => l.bbox.y0));
+              const maxX = Math.max(...blockLines.map((l: any) => l.bbox.x1));
+              const maxY = Math.max(...blockLines.map((l: any) => l.bbox.y1));
+              
+              return {
+                boundingBox: {
+                  left: minX,
+                  top: minY,
+                  width: maxX - minX,
+                  height: maxY - minY
+                },
+                blockLines
+              };
+            }
+          }
+        }
+      }
+    }
+    
+    return { blockLines: [] };
+  }
+
+  /**
+   * Contrast-based detection for high contrast images
+   */
+  private static async detectByContrast(image: string): Promise<{ boundingBox?: { left: number, top: number, width: number, height: number }, blockLines: any[] }> {
+    return new Promise((resolve) => {
+      const img = new window.Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = img.width;
+        canvas.height = img.height;
+        const ctx = canvas.getContext('2d')!;
+        ctx.drawImage(img, 0, 0);
+        
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const data = imageData.data;
+        
+        // Calculate contrast and find text regions
+        const contrastThreshold = 50;
+        const textRegions: { x: number, y: number, width: number, height: number }[] = [];
+        
+        // Simple edge detection and contrast analysis
+        for (let y = 0; y < canvas.height; y += 10) {
+          for (let x = 0; x < canvas.width; x += 10) {
+            const idx = (y * canvas.width + x) * 4;
+            const r = data[idx];
+            const g = data[idx + 1];
+            const b = data[idx + 2];
+            
+            // Calculate local contrast
+            let maxDiff = 0;
+            for (let dy = -5; dy <= 5; dy++) {
+              for (let dx = -5; dx <= 5; dx++) {
+                const nx = x + dx;
+                const ny = y + dy;
+                if (nx >= 0 && nx < canvas.width && ny >= 0 && ny < canvas.height) {
+                  const nidx = (ny * canvas.width + nx) * 4;
+                  const diff = Math.abs(r - data[nidx]) + Math.abs(g - data[nidx + 1]) + Math.abs(b - data[nidx + 2]);
+                  maxDiff = Math.max(maxDiff, diff);
+                }
+              }
+            }
+            
+            if (maxDiff > contrastThreshold) {
+              textRegions.push({ x, y, width: 10, height: 10 });
+            }
+          }
+        }
+        
+        if (textRegions.length > 0) {
+          // Calculate bounding box from text regions
+          const minX = Math.min(...textRegions.map(r => r.x));
+          const minY = Math.min(...textRegions.map(r => r.y));
+          const maxX = Math.max(...textRegions.map(r => r.x + r.width));
+          const maxY = Math.max(...textRegions.map(r => r.y + r.height));
+          
+          resolve({
+            boundingBox: {
+              left: minX,
+              top: minY,
+              width: maxX - minX,
+              height: maxY - minY
+            },
+            blockLines: []
+          });
+        } else {
+          resolve({ blockLines: [] });
+        }
+      };
+      img.src = image;
+    });
+  }
+
+  /**
+   * Optimized OCR detection with multiple PSM modes and parameters
+   */
+  private static async detectWithOptimizedOCR(image: string): Promise<{ boundingBox?: { left: number, top: number, width: number, height: number }, blockLines: any[] }> {
     const psmModes = [
       PSM.SINGLE_BLOCK, // 6
       PSM.AUTO,         // 3
@@ -39,8 +220,8 @@ export class TesseractService {
     for (const psm of psmModes) {
       await worker.setParameters({
         tessedit_pageseg_mode: psm,
-        tessedit_min_conf: '40',
-        user_defined_dpi: '1000'
+        tessedit_min_conf: '20', // Lower confidence threshold
+        user_defined_dpi: '1500' // Higher DPI for better detection
       });
       
       const { data } = await worker.recognize(image);
@@ -80,15 +261,31 @@ export class TesseractService {
     
     await worker.terminate();
     
-    if (onDebugInfo) {
-      onDebugInfo({
-        boundingBox,
-        blockLines,
-        error: (!blockLines.length ? 'No block found' : undefined)
-      });
-    }
-    
     return { boundingBox, blockLines };
+  }
+
+  /**
+   * User-friendly default crop areas
+   */
+  private static async getDefaultCropAreas(image: string): Promise<{ boundingBox: { left: number, top: number, width: number, height: number } }> {
+    return new Promise((resolve) => {
+      const img = new window.Image();
+      img.onload = () => {
+        const imageWidth = img.width;
+        const imageHeight = img.height;
+        
+        // Default: centered area (80% of image size)
+        const boundingBox = {
+          left: imageWidth * 0.1,
+          top: imageHeight * 0.1,
+          width: imageWidth * 0.8,
+          height: imageHeight * 0.8
+        };
+        
+        resolve({ boundingBox });
+      };
+      img.src = image;
+    });
   }
 
   /**

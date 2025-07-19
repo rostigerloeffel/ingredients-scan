@@ -21,7 +21,7 @@ const PrepareView: React.FC<PrepareViewProps> = React.memo(({ image, onCropDone,
   // Automatic cropping to INCI block
   useEffect(() => {
     async function detectInciBlock() {
-      const { boundingBox } = await TesseractService.detectLargestTextBlock(image, onDebugInfo);
+      const { boundingBox } = await TesseractService.detectAdaptiveCrop(image, onDebugInfo);
       
       if (boundingBox) {
         pendingCropBox.current = boundingBox;

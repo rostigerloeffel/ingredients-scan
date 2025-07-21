@@ -1,0 +1,91 @@
+.prepare-preview {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.2rem;
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+  z-index: 1;
+  position: relative;
+}
+
+.cropper-container {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4/3;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #0a0a0a;
+  border: 1px solid #1a1a1a;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+  z-index: 1;
+}
+
+/* Override cropper.js default styles to match our design */
+.cropper-container .cropper-container {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  border-radius: 0;
+}
+
+.cropper-container .cropper-view-box {
+  outline: 2px solid #4a9eff;
+  outline-color: rgba(74, 158, 255, 0.8);
+}
+
+.cropper-container .cropper-face {
+  background-color: rgba(74, 158, 255, 0.1);
+  opacity: 0.3;
+}
+
+.cropper-container .cropper-line {
+  background-color: #4a9eff;
+  opacity: 0.6;
+}
+
+.cropper-container .cropper-point {
+  background-color: #4a9eff;
+  opacity: 0.9;
+  box-shadow: 0 0 0 4px rgba(74, 158, 255, 0.15);
+}
+
+.cropper-container .cropper-point:active,
+.cropper-container .cropper-point:focus {
+  box-shadow: 0 0 0 8px rgba(74, 158, 255, 0.25);
+}
+
+.cropper-container .cropper-dashed {
+  border-color: rgba(74, 158, 255, 0.4);
+  opacity: 0.6;
+}
+
+.cropper-container .cropper-center::before,
+.cropper-container .cropper-center::after {
+  background-color: rgba(74, 158, 255, 0.6);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .prepare-preview {
+    gap: 1rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .cropper-container .cropper-point {
+    height: 32px !important;
+    width: 32px !important;
+    min-width: 32px !important;
+    min-height: 32px !important;
+    border-radius: 50% !important;
+    box-shadow: 0 0 0 8px rgba(74, 158, 255, 0.18) !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .prepare-preview {
+    gap: 0.8rem;
+  }
+} 

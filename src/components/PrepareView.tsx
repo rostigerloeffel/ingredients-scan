@@ -4,6 +4,7 @@ import '../styles/cropper.css';
 import ListsButtons from './ListsButtons';
 import VerticalMainLayout from './VerticalMainLayout';
 import './CameraPreview.css';
+import './PrepareView.css';
 import { TesseractService } from '../services/tesseractService';
 
 interface PrepareViewProps {
@@ -54,11 +55,11 @@ const PrepareView: React.FC<PrepareViewProps> = React.memo(({ image, onCropDone,
     <VerticalMainLayout
       top={<ListsButtons onShowLists={onShowLists} />}
       middle={
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%', maxWidth: '100%', height: '100%', minHeight: 0 }}>
-          <div style={{ width: '100%', maxWidth: 600, maxHeight: '60vh', aspectRatio: '4/3', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+        <div className="prepare-preview">
+          <div className="cropper-container">
             <Cropper
               src={image}
-              style={{ width: '100%', height: '100%', maxHeight: '60vh', minHeight: 0, objectFit: 'contain' }}
+              style={{ width: '100%', height: '100%' }}
               guides={true}
               viewMode={1}
               dragMode="move"

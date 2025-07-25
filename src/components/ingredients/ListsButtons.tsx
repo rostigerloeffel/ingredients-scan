@@ -1,5 +1,5 @@
 import React from 'react';
-import { IngredientListService } from '../services/ingredientLists';
+import { IngredientListService } from '../../services/ingredientLists';
 import './ListsButtons.css';
 
 interface ListsButtonsProps {

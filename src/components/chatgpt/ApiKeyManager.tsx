@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { OpenAIService } from '../services/openaiService';
+import { OpenAIService } from '../../services/openaiService';
 import './ApiKeyManager.css';
 
 interface ApiKeyManagerProps {

@@ -1,7 +1,7 @@
 import React, { useState, useRef, useCallback } from 'react';
 import CameraPreview from './CameraPreview';
 import type { CameraPreviewHandle } from './CameraPreview';
-import ListsButtons from '../ListsButtons';
+import ListsButtons from '../ingredients/ListsButtons';
 import VerticalMainLayout from '../VerticalMainLayout';
 import type { DebugInfo } from '../../debug/DebugOverlay';
 import { t } from '../../i18n';

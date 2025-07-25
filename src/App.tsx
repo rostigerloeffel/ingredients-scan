@@ -2,14 +2,14 @@ import { useState, useEffect } from 'react'
 import ScanView from './components/scan/ScanView';
 import PrepareView from './components/prepare/PrepareView';
 import ResultView from './components/result/ResultView';
-import ApiKeyManager from './components/ApiKeyManager'
-import IngredientLists from './components/IngredientLists'
+import ApiKeyManager from './components/chatgpt/ApiKeyManager'
+import IngredientLists from './components/ingredients/IngredientLists'
 import { OpenAIService, type IngredientAnalysis } from './services/openaiService'
 import { TesseractService } from './services/tesseractService'
 import './App.css'
-import './components/ListsButtons.css'
+import './components/ingredients/ListsButtons.css'
 import './components/scan/CameraPreview.css'
-import './components/ApiKeyManager.css'
+import './components/chatgpt/ApiKeyManager.css'
 import DebugOverlay from './debug/DebugOverlay';
 import type { DebugInfo, TesseractDebugInfo } from './debug/DebugOverlay';
 import CameraPermissionInfo from './components/scan/CameraPermissionInfo';

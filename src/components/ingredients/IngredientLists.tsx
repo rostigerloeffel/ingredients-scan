@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { IngredientListService } from '../services/ingredientLists';
-import type { NegativeIngredient } from '../services/ingredientLists';
+import { IngredientListService } from '../../services/ingredientLists';
+import type { NegativeIngredient } from '../../services/ingredientLists';
 import './IngredientLists.css';
 import Fuse from 'fuse.js';
-import inciNames from '../inci_names.normalized.json';
+import inciNames from '../../inci_names.normalized.json';
 
 interface IngredientListsProps {
   isVisible: boolean;

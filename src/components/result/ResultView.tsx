@@ -2,7 +2,7 @@ import AnalysisResult from './AnalysisResult';
 import type { IngredientAnalysis } from '../../services/openaiService';
 import React from 'react';
 import VerticalMainLayout from '../VerticalMainLayout';
-import ListsButtons from '../ListsButtons';
+import ListsButtons from '../ingredients/ListsButtons';
 import { t } from '../../i18n';
 
 interface ResultViewProps {

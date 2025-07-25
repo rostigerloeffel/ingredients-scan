@@ -3,8 +3,8 @@ import { Cropper } from 'react-cropper';
 import '../styles/cropper.css';
 import ListsButtons from './ListsButtons';
 import VerticalMainLayout from './VerticalMainLayout';
-import './CameraPreview.css';
-import './PrepareView.css';
+import './ScanView/CameraPreview.css';
+import './PrepareView/PrepareView.css';
 import { TesseractService } from '../services/tesseractService';
 
 interface PrepareViewProps {

@@ -1,4 +1,4 @@
-import AnalysisResult from './AnalysisResult';
+import AnalysisResult from './ResultView/AnalysisResult';
 import type { IngredientAnalysis } from '../services/openaiService';
 import React from 'react';
 import VerticalMainLayout from './VerticalMainLayout';

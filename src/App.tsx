@@ -8,11 +8,11 @@ import { OpenAIService, type IngredientAnalysis } from './services/openaiService
 import { TesseractService } from './services/tesseractService'
 import './App.css'
 import './components/ListsButtons.css'
-import './components/CameraPreview.css'
+import './components/ScanView/CameraPreview.css'
 import './components/ApiKeyManager.css'
 import DebugOverlay from './debug/DebugOverlay';
 import type { DebugInfo, TesseractDebugInfo } from './debug/DebugOverlay';
-import CameraPermissionInfo from './components/CameraPermissionInfo';
+import CameraPermissionInfo from './components/ScanView/CameraPermissionInfo';
 
 type CroppingDebugInfo = { boundingBox?: { left: number, top: number, width: number, height: number }, blockLines?: any[], error?: string };
 

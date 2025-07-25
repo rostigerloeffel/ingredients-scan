@@ -1,7 +1,7 @@
 import React, { useRef, useImperativeHandle, forwardRef, useEffect, useCallback } from 'react';
 import Webcam from 'react-webcam';
 import './CameraPreview.css';
-import '../styles/cropper.css';
+import '../../styles/cropper.css';
 
 export interface CameraPreviewHandle {
   getScreenshot: () => string | null;

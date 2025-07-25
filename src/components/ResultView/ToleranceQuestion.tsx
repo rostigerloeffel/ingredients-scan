@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react';
-import { IngredientListService } from '../services/ingredientLists';
-import { type IngredientAnalysis } from '../services/openaiService';
+import { IngredientListService } from '../../services/ingredientLists';
+import { type IngredientAnalysis } from '../../services/openaiService';
 import './ToleranceQuestion.css';
 
 interface ToleranceQuestionProps {

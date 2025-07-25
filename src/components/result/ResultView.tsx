@@ -1,9 +1,9 @@
-import AnalysisResult from './ResultView/AnalysisResult';
-import type { IngredientAnalysis } from '../services/openaiService';
+import AnalysisResult from './AnalysisResult';
+import type { IngredientAnalysis } from '../../services/openaiService';
 import React from 'react';
-import VerticalMainLayout from './VerticalMainLayout';
-import ListsButtons from './ListsButtons';
-import { t } from '../i18n';
+import VerticalMainLayout from '../VerticalMainLayout';
+import ListsButtons from '../ListsButtons';
+import { t } from '../../i18n';
 
 interface ResultViewProps {
   capturedImage: string;

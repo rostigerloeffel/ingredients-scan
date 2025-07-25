@@ -1,18 +1,18 @@
 import { useState, useEffect } from 'react'
-import ScanView from './components/ScanView';
-import PrepareView from './components/PrepareView';
-import ResultView from './components/ResultView';
+import ScanView from './components/scan/ScanView';
+import PrepareView from './components/prepare/PrepareView';
+import ResultView from './components/result/ResultView';
 import ApiKeyManager from './components/ApiKeyManager'
 import IngredientLists from './components/IngredientLists'
 import { OpenAIService, type IngredientAnalysis } from './services/openaiService'
 import { TesseractService } from './services/tesseractService'
 import './App.css'
 import './components/ListsButtons.css'
-import './components/ScanView/CameraPreview.css'
+import './components/scan/CameraPreview.css'
 import './components/ApiKeyManager.css'
 import DebugOverlay from './debug/DebugOverlay';
 import type { DebugInfo, TesseractDebugInfo } from './debug/DebugOverlay';
-import CameraPermissionInfo from './components/ScanView/CameraPermissionInfo';
+import CameraPermissionInfo from './components/scan/CameraPermissionInfo';
 
 type CroppingDebugInfo = { boundingBox?: { left: number, top: number, width: number, height: number }, blockLines?: any[], error?: string };
 

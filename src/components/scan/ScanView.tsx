@@ -1,10 +1,10 @@
 import React, { useState, useRef, useCallback } from 'react';
-import CameraPreview from './ScanView/CameraPreview';
-import type { CameraPreviewHandle } from './ScanView/CameraPreview';
-import ListsButtons from './ListsButtons';
-import VerticalMainLayout from './VerticalMainLayout';
-import type { DebugInfo } from '../debug/DebugOverlay';
-import { t } from '../i18n';
+import CameraPreview from './CameraPreview';
+import type { CameraPreviewHandle } from './CameraPreview';
+import ListsButtons from '../ListsButtons';
+import VerticalMainLayout from '../VerticalMainLayout';
+import type { DebugInfo } from '../../debug/DebugOverlay';
+import { t } from '../../i18n';
 
 interface ScanViewProps {
   onCapture: (imageSrc: string) => void;

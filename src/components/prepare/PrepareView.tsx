@@ -1,11 +1,11 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Cropper } from 'react-cropper';
-import '../styles/cropper.css';
-import ListsButtons from './ListsButtons';
-import VerticalMainLayout from './VerticalMainLayout';
-import './ScanView/CameraPreview.css';
-import './PrepareView/PrepareView.css';
-import { TesseractService } from '../services/tesseractService';
+import '../../styles/cropper.css';
+import ListsButtons from '../ListsButtons';
+import VerticalMainLayout from '../VerticalMainLayout';
+import '../scan/CameraPreview.css';
+import './PrepareView.css';
+import { TesseractService } from '../../services/tesseractService';
 
 interface PrepareViewProps {
   image: string;

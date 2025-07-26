@@ -248,11 +248,12 @@
 .analysis-result h3,
 .result-header h2,
 .warnings-header h3,
+.ingredients-section h2,
 .ingredients-section h3,
 .allergens-section h3,
 .nutrition-section h3,
 .summary-section h3 {
-  color: #FFFFFFDE !important;
+  color: #FFFFFF;
 }
 
 .no-ingredients-warning {

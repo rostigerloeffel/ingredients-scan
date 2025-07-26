@@ -12,5 +12,6 @@
   "cancel": "Cancel",
   "analyzing_ingredients": "Analyzing ingredients...",
   "analyzing_hint": "This may take a few seconds",
-  "openai_key_not_configured": "OpenAI key not configured"
+  "openai_key_not_configured": "OpenAI key not configured",
+  "retry": "Try again"
 } 

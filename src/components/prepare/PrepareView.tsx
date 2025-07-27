@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Cropper } from 'react-cropper';
 import '../../styles/cropper.css';
-import ListsButtons from '../ingredients/ListsButtons';
 import VerticalMainLayout from '../VerticalMainLayout';
 import '../scan/CameraPreview.css';
 import './PrepareView.css';
@@ -10,11 +9,10 @@ import { TesseractService } from '../../services/tesseractService';
 interface PrepareViewProps {
   image: string;
   onCropDone: (croppedImage: string) => void;
-  onShowLists: () => void;
   onDebugInfo?: (info: { boundingBox?: { left: number, top: number, width: number, height: number }, blockLines?: any[], error?: string }) => void;
 }
 
-const PrepareView: React.FC<PrepareViewProps> = React.memo(({ image, onCropDone, onShowLists, onDebugInfo }) => {
+const PrepareView: React.FC<PrepareViewProps> = React.memo(({ image, onCropDone, onDebugInfo }) => {
   const cropperRef = useRef<any>(null);
   const pendingCropBox = useRef<{ left: number, top: number, width: number, height: number } | null>(null);
   const [cropperReady, setCropperReady] = useState(false);
@@ -53,7 +51,7 @@ const PrepareView: React.FC<PrepareViewProps> = React.memo(({ image, onCropDone,
 
   return (
     <VerticalMainLayout
-      top={<ListsButtons onShowLists={onShowLists} />}
+      top={null}
       middle={
         <div className="prepare-preview">
           <div className="cropper-container">

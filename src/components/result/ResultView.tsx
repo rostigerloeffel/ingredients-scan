@@ -2,7 +2,6 @@ import AnalysisResult from './AnalysisResult';
 import type { IngredientAnalysis } from '../../services/openaiService';
 import React from 'react';
 import VerticalMainLayout from '../VerticalMainLayout';
-import ListsButtons from '../ingredients/ListsButtons';
 import { t } from '../../i18n';
 
 interface ResultViewProps {
@@ -12,10 +11,9 @@ interface ResultViewProps {
   error: string | null;
   onClose: () => void;
   onRetry: () => void;
-  onShowLists: () => void;
 }
 
-const ResultView: React.FC<ResultViewProps> = React.memo(({ analysis, isAnalyzing, error, onClose, onRetry, onShowLists }) => {
+const ResultView: React.FC<ResultViewProps> = React.memo(({ analysis, isAnalyzing, error, onClose, onRetry }) => {
   const [showAnalysis, setShowAnalysis] = React.useState(true);
 
   const handleClose = () => {
@@ -27,7 +25,7 @@ const ResultView: React.FC<ResultViewProps> = React.memo(({ analysis, isAnalyzin
 
   return (
     <VerticalMainLayout
-      top={<ListsButtons onShowLists={onShowLists} />}
+      top={null}
       middle={
         <>
           {isAnalyzing && (

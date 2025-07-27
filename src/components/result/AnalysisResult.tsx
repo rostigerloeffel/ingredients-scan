@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import { type IngredientAnalysis } from '../../services/openaiService';
 import { IngredientListService } from '../../services/ingredientLists';
-import type { NegativeIngredient } from '../../services/ingredientLists';
 import './AnalysisResult.css';
 
 interface AnalysisResultProps {
@@ -13,55 +12,59 @@ const AnalysisResult = React.memo(function AnalysisResult({ analysis, onActionDo
   const [displayedIngredients, setDisplayedIngredients] = useState<string[]>(analysis.ingredients);
 
   useEffect(() => {
-    checkIntolerances();
     setDisplayedIngredients(analysis.ingredients);
   }, [analysis]);
 
-  const checkIntolerances = () => {
-    const negativeList: NegativeIngredient[] = IngredientListService.getNegativeList();
-    const negativeNames = negativeList.map(e => e.name);
-    const normalizedNegativeList = IngredientListService.normalizeIngredients(negativeNames);
-    const normalizedAnalysisIngredients = IngredientListService.normalizeIngredients(analysis.ingredients);
-    normalizedAnalysisIngredients.forEach(ingredient => {
-      if (normalizedNegativeList.includes(ingredient)) {
-      }
-    });
-  };
+  // Memoize negative list and normalized lists
+  const negativeList = useMemo(() => IngredientListService.getNegativeList(), []);
+  const normalizedNegativeList = useMemo(() => 
+    IngredientListService.normalizeIngredients(negativeList.map(e => e.name)), 
+    [negativeList]
+  );
+
+
 
   // Buttons sind immer aktiv, außer nach Klick (dann disabled)
   const [positiveClicked, setPositiveClicked] = useState(false);
   const [negativeClicked, setNegativeClicked] = useState(false);
 
-  const handleAddAllToPositiveList = () => {
+  // Memoize event handlers
+  const handleAddAllToPositiveList = useCallback(() => {
     setPositiveClicked(true);
     IngredientListService.addToPositiveList(displayedIngredients);
     if (onActionDone) onActionDone();
-  };
+  }, [displayedIngredients, onActionDone]);
 
-  const handleAddAllToNegativeList = () => {
+  const handleAddAllToNegativeList = useCallback(() => {
     setNegativeClicked(true);
     const positiveList = IngredientListService.getPositiveList();
     const toNegative = displayedIngredients.filter(ing => !positiveList.includes(ing));
     IngredientListService.addToNegativeList(toNegative);
     if (onActionDone) onActionDone();
-  };
+  }, [displayedIngredients, onActionDone]);
 
-  const handleRemoveIngredient = (ingredientToRemove: string) => {
+  const handleRemoveIngredient = useCallback((ingredientToRemove: string) => {
     setDisplayedIngredients(prev => prev.filter(ingredient => ingredient !== ingredientToRemove));
-  };
+  }, []);
 
-  // Zutaten sortieren: Unverträgliche zuerst, absteigend nach count
-  const negativeList: NegativeIngredient[] = IngredientListService.getNegativeList();
-  const normalizedNegativeList = IngredientListService.normalizeIngredients(negativeList.map(e => e.name));
-  const intolerantIngredients = displayedIngredients.filter(ingredient => normalizedNegativeList.includes(IngredientListService.normalizeIngredient(ingredient)));
-  const tolerantIngredients = displayedIngredients.filter(ingredient => !normalizedNegativeList.includes(IngredientListService.normalizeIngredient(ingredient)));
-  // Sortiere die unverträglichen Zutaten nach count absteigend
-  const intolerantIngredientsSorted = [...intolerantIngredients].sort((a, b) => {
-    const countA = IngredientListService.getNegativeCount(a);
-    const countB = IngredientListService.getNegativeCount(b);
-    return countB - countA;
-  });
-  const sortedIngredients = [...intolerantIngredientsSorted, ...tolerantIngredients];
+  // Memoize sorted ingredients calculation
+  const sortedIngredients = useMemo(() => {
+    const intolerantIngredients = displayedIngredients.filter(ingredient => 
+      normalizedNegativeList.includes(IngredientListService.normalizeIngredient(ingredient))
+    );
+    const tolerantIngredients = displayedIngredients.filter(ingredient => 
+      !normalizedNegativeList.includes(IngredientListService.normalizeIngredient(ingredient))
+    );
+    
+    // Sortiere die unverträglichen Zutaten nach count absteigend
+    const intolerantIngredientsSorted = [...intolerantIngredients].sort((a, b) => {
+      const countA = IngredientListService.getNegativeCount(a);
+      const countB = IngredientListService.getNegativeCount(b);
+      return countB - countA;
+    });
+    
+    return [...intolerantIngredientsSorted, ...tolerantIngredients];
+  }, [displayedIngredients, normalizedNegativeList]);
 
   return (
     <>

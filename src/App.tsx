@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import ScanView from './components/scan/ScanView';
 import PrepareView from './components/prepare/PrepareView';
 import ResultView from './components/result/ResultView';
+import ListsButtons from './components/ingredients/ListsButtons';
 import ApiKeyManager from './components/chatgpt/ApiKeyManager'
 import IngredientLists from './components/ingredients/IngredientLists'
 import { OpenAIService, type IngredientAnalysis } from './services/openaiService'
@@ -210,12 +211,14 @@ function App() {
         </button>
       )}
       
+      {/* Globale Verträglichkeits-Buttons */}
+      <ListsButtons onShowLists={handleShowLists} />
+      
       <main className="main-view">
         {view === 'scan' && (
           cameraPermission === 'granted' ? (
             <ScanView
               onCapture={handleCapture}
-              onShowLists={handleShowLists}
               setDebugInfo={setDebugInfo}
               cameraPermission={cameraPermission}
             />
@@ -231,7 +234,6 @@ function App() {
           <PrepareView
             image={capturedImage}
             onCropDone={handleCropDone}
-            onShowLists={(tab: 'positive' | 'negative' = 'positive') => { setIngredientListsTab(tab); setShowIngredientLists(true); }}
             onDebugInfo={setCroppingDebugInfo}
           />
         )}
@@ -243,7 +245,6 @@ function App() {
             error={error}
             onClose={handleResultClose}
             onRetry={handleRetryAnalysis}
-            onShowLists={(tab: 'positive' | 'negative' = 'positive') => { setIngredientListsTab(tab); setShowIngredientLists(true); }}
           />
         )}
       </main>

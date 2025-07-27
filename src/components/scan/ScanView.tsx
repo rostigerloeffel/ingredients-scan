@@ -1,19 +1,17 @@
 import React, { useState, useRef, useCallback } from 'react';
 import CameraPreview from './CameraPreview';
 import type { CameraPreviewHandle } from './CameraPreview';
-import ListsButtons from '../ingredients/ListsButtons';
 import VerticalMainLayout from '../VerticalMainLayout';
 import type { DebugInfo } from '../../debug/DebugOverlay';
 import { t } from '../../i18n';
 
 interface ScanViewProps {
   onCapture: (imageSrc: string) => void;
-  onShowLists: () => void;
   setDebugInfo: (info: DebugInfo) => void;
   cameraPermission: 'unknown' | 'granted' | 'denied';
 }
 
-const ScanView: React.FC<ScanViewProps> = React.memo(({ onCapture, onShowLists, setDebugInfo, cameraPermission }) => {
+const ScanView: React.FC<ScanViewProps> = React.memo(({ onCapture, setDebugInfo, cameraPermission }) => {
   const [cameras, setCameras] = useState<MediaDeviceInfo[]>([]);
   const [selectedCamera, setSelectedCamera] = useState<string>('');
   const cameraRef = useRef<CameraPreviewHandle>(null);
@@ -91,7 +89,7 @@ const ScanView: React.FC<ScanViewProps> = React.memo(({ onCapture, onShowLists, 
 
   return (
     <VerticalMainLayout
-      top={<ListsButtons onShowLists={onShowLists} />}
+      top={null}
       middle={
         <>
           <CameraPreview ref={cameraRef} cameraId={selectedCamera} />

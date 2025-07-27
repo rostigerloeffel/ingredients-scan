@@ -1,4 +1,4 @@
-import React, { useRef, useImperativeHandle, forwardRef, useEffect, useCallback } from 'react';
+import React, { useRef, useImperativeHandle, forwardRef, useCallback } from 'react';
 import Webcam from 'react-webcam';
 import './CameraPreview.css';
 import '../../styles/cropper.css';
@@ -14,32 +14,6 @@ interface CameraPreviewProps {
 
 const CameraPreviewInner = forwardRef<CameraPreviewHandle, CameraPreviewProps>(({ cameraId }, ref) => {
   const webcamRef = useRef<Webcam>(null);
-
-  useEffect(() => {
-    const optimizeCameraSettings = async () => {
-      if (webcamRef.current && webcamRef.current.video) {
-        const video = webcamRef.current.video;
-        if (video.readyState >= 2) {
-          try {
-            const stream = video.srcObject as MediaStream;
-            if (stream) {
-              const videoTrack = stream.getVideoTracks()[0];
-              if (videoTrack) {
-                await videoTrack.applyConstraints({
-                  width: { ideal: 1920, min: 1280 },
-                  height: { ideal: 1080, min: 720 }
-                });
-              }
-            }
-          } catch (error) {
-            console.log('Kamera-Optimierung nicht verfügbar:', error);
-          }
-        }
-      }
-    };
-    const timer = setTimeout(optimizeCameraSettings, 1000);
-    return () => clearTimeout(timer);
-  }, [cameraId]);
 
   const getScreenshot = useCallback(() => {
     if (webcamRef.current) {

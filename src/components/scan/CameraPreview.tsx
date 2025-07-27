@@ -31,10 +31,17 @@ const CameraPreviewInner = forwardRef<CameraPreviewHandle, CameraPreviewProps>((
         const canvas = document.createElement('canvas');
         canvas.width = width;
         canvas.height = height;
-        const ctx = canvas.getContext('2d');
+        const ctx = canvas.getContext('2d', { 
+          alpha: false,
+          willReadFrequently: false,
+          desynchronized: false
+        });
         if (ctx) {
+          // Beste Qualität für Canvas-Rendering
+          ctx.imageSmoothingEnabled = true;
+          ctx.imageSmoothingQuality = 'high';
           ctx.drawImage(video, 0, 0, width, height);
-          return canvas.toDataURL('image/jpeg', 0.98);
+          return canvas.toDataURL('image/jpeg', 1.0);
         }
       }
     }
@@ -59,7 +66,7 @@ const CameraPreviewInner = forwardRef<CameraPreviewHandle, CameraPreviewProps>((
             facingMode: 'environment'
           }}
           screenshotFormat="image/jpeg"
-          screenshotQuality={0.9}
+          screenshotQuality={1.0}
           className="camera-video"
         />
         <div className="scan-overlay">

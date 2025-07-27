@@ -4,7 +4,6 @@ import './CameraPreview.css';
 import '../../styles/cropper.css';
 
 export interface CameraPreviewHandle {
-  getScreenshot: () => string | null;
   getFullResScreenshot: () => Promise<string | null>;
 }
 
@@ -15,12 +14,7 @@ interface CameraPreviewProps {
 const CameraPreviewInner = forwardRef<CameraPreviewHandle, CameraPreviewProps>(({ cameraId }, ref) => {
   const webcamRef = useRef<Webcam>(null);
 
-  const getScreenshot = useCallback(() => {
-    if (webcamRef.current) {
-      return webcamRef.current.getScreenshot();
-    }
-    return null;
-  }, []);
+
 
   const getFullResScreenshot = useCallback(async () => {
     if (webcamRef.current && webcamRef.current.video) {
@@ -49,9 +43,8 @@ const CameraPreviewInner = forwardRef<CameraPreviewHandle, CameraPreviewProps>((
   }, []);
 
   useImperativeHandle(ref, () => ({
-    getScreenshot,
     getFullResScreenshot
-  }), [getScreenshot, getFullResScreenshot]);
+  }), [getFullResScreenshot]);
 
   return (
     <div className="camera-preview">

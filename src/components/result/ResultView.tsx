@@ -51,7 +51,7 @@ const ResultView: React.FC<ResultViewProps> = React.memo(({ analysis, isAnalyzin
       }
       bottom={
         <div className="result-actions">
-          <button onClick={onRetry} className="scan-button" disabled={isAnalyzing}>
+          <button onClick={onRetry} className="retry-button" disabled={isAnalyzing}>
             🔄 {t('retry')}
           </button>
         </div>

@@ -9,7 +9,7 @@ import './components/ingredients/ListsButtons.css'
 import './components/scan/CameraPreview.css'
 import './components/chatgpt/ApiKeyManager.css'
 import DebugOverlay from './debug/DebugOverlay';
-import type { DebugInfo, TesseractDebugInfo } from './debug/DebugOverlay';
+import type { DebugInfo, TesseractDebugInfo, CroppingDebugInfo } from './debug/DebugOverlay';
 
 // Lazy load views
 const ScanView = lazy(() => import('./components/scan/ScanView'));
@@ -17,7 +17,7 @@ const PrepareView = lazy(() => import('./components/prepare/PrepareView'));
 const ResultView = lazy(() => import('./components/result/ResultView'));
 const CameraPermissionInfo = lazy(() => import('./components/scan/CameraPermissionInfo'));
 
-type CroppingDebugInfo = { boundingBox?: { left: number, top: number, width: number, height: number }, blockLines?: any[], error?: string };
+
 
 type AppView = 'scan' | 'prepare' | 'result';
 
@@ -229,19 +229,8 @@ function App() {
           </Suspense>
         )}
       </main>
-      <DebugOverlay debugInfo={debugInfo} tesseractInfo={tesseractDebugInfo} />
-      {import.meta.env.DEV && croppingDebugInfo && (
-        <div style={{position:'fixed',bottom:16,left:16,zIndex:10000,background:'rgba(0,0,0,0.8)',color:'#fff',padding:'12px 18px',borderRadius:10,fontSize:15,maxWidth:380,boxShadow:'0 2px 12px #0008',overflowY:'auto',maxHeight:'90vh'}}>
-          <div><b>Cropper Debug:</b></div>
-          {croppingDebugInfo.error && <div style={{color:'#ff6b6b'}}>{croppingDebugInfo.error}</div>}
-          {croppingDebugInfo.boundingBox && (
-            <div>Bounding Box: left={croppingDebugInfo.boundingBox.left}, top={croppingDebugInfo.boundingBox.top}, width={croppingDebugInfo.boundingBox.width}, height={croppingDebugInfo.boundingBox.height}</div>
-          )}
-          {croppingDebugInfo.blockLines && (
-            <div>Block lines: {croppingDebugInfo.blockLines.length}</div>
-          )}
-        </div>
-      )}
+      <DebugOverlay debugInfo={debugInfo} tesseractInfo={tesseractDebugInfo} croppingInfo={croppingDebugInfo} />
+
     </div>
   )
 }

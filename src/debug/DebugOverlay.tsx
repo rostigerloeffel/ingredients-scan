@@ -18,7 +18,18 @@ export type TesseractDebugInfo = {
   params: Record<string, string>;
 };
 
-type DebugOverlayProps = { debugInfo?: DebugInfo|null, tesseractInfo?: TesseractDebugInfo };
+export type CroppingDebugInfo = {
+  boundingBox?: { left: number, top: number, width: number, height: number };
+  blockLines?: any[];
+  error?: string;
+  strategy?: string;
+};
+
+type DebugOverlayProps = { 
+  debugInfo?: DebugInfo|null, 
+  tesseractInfo?: TesseractDebugInfo,
+  croppingInfo?: CroppingDebugInfo
+};
 
 const DebugOverlay: React.FC<DebugOverlayProps> = React.memo((props) => {
   if (!import.meta.env.DEV) return null;
@@ -63,6 +74,32 @@ const DebugOverlay: React.FC<DebugOverlayProps> = React.memo((props) => {
               </>
             ) : <span style={{color:'#aaa',fontSize:13}}>(Noch kein Preprocessing)</span>}
           </div>
+        </>
+      )}
+      {props.croppingInfo && (
+        <>
+          <hr style={{margin:'12px 0',border:'none',borderTop:'1px solid #333'}} />
+          <div><b>Bounding Box Detection</b></div>
+          {props.croppingInfo.strategy && (
+            <div>Strategy: <span style={{color:'#4ecdc4'}}>{props.croppingInfo.strategy}</span></div>
+          )}
+          {props.croppingInfo.error && (
+            <div style={{color:'#ff6b6b'}}>Error: {props.croppingInfo.error}</div>
+          )}
+          {props.croppingInfo.boundingBox && (
+            <div>
+              <div>Bounding Box:</div>
+              <div style={{fontSize:13,marginLeft:10}}>
+                left: {props.croppingInfo.boundingBox.left.toFixed(1)}<br/>
+                top: {props.croppingInfo.boundingBox.top.toFixed(1)}<br/>
+                width: {props.croppingInfo.boundingBox.width.toFixed(1)}<br/>
+                height: {props.croppingInfo.boundingBox.height.toFixed(1)}
+              </div>
+            </div>
+          )}
+          {props.croppingInfo.blockLines && (
+            <div>Block lines: {props.croppingInfo.blockLines.length}</div>
+          )}
         </>
       )}
     </div>

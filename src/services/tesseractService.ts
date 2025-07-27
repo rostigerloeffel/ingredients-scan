@@ -15,6 +15,40 @@ function getFuseInstance(): Fuse<string> {
 
 export class TesseractService {
   /**
+   * Get image dimensions from base64 string
+   */
+  private static getImageDimensions(image: string): Promise<{ width: number, height: number }> {
+    return new Promise((resolve) => {
+      const img = new window.Image();
+      img.onload = () => {
+        resolve({ width: img.width, height: img.height });
+      };
+      img.src = image;
+    });
+  }
+
+  /**
+   * Check if a bounding box is meaningful (not the default fallback)
+   */
+  private static isMeaningfulBoundingBox(boundingBox: { left: number, top: number, width: number, height: number }, imageWidth: number, imageHeight: number): boolean {
+    // Default bounding box is 80% of image size centered (10% margin on each side)
+    const defaultLeft = imageWidth * 0.1;
+    const defaultTop = imageHeight * 0.1;
+    const defaultWidth = imageWidth * 0.8;
+    const defaultHeight = imageHeight * 0.8;
+    
+    // Check if the bounding box is significantly different from the default
+    const tolerance = 0.05; // 5% tolerance
+    const leftDiff = Math.abs(boundingBox.left - defaultLeft) / imageWidth;
+    const topDiff = Math.abs(boundingBox.top - defaultTop) / imageHeight;
+    const widthDiff = Math.abs(boundingBox.width - defaultWidth) / imageWidth;
+    const heightDiff = Math.abs(boundingBox.height - defaultHeight) / imageHeight;
+    
+    // Return true if any dimension differs significantly from default
+    return leftDiff > tolerance || topDiff > tolerance || widthDiff > tolerance || heightDiff > tolerance;
+  }
+
+  /**
    * Adaptive cropping strategy with fallback to user-friendly default crops
    */
   static async detectAdaptiveCrop(
@@ -22,9 +56,12 @@ export class TesseractService {
     onDebugInfo?: (info: { boundingBox?: { left: number, top: number, width: number, height: number }, blockLines?: any[], error?: string, strategy: string }) => void
   ): Promise<{ boundingBox?: { left: number, top: number, width: number, height: number }, blockLines: any[], strategy: string }> {
     
+    // Get image dimensions for meaningful bounding box check
+    const imageDimensions = await this.getImageDimensions(image);
+    
     // Strategy 1: Template-based detection (look for "Ingredients:" headers)
     const templateResult = await this.detectByTemplate(image);
-    if (templateResult.boundingBox) {
+    if (templateResult.boundingBox && this.isMeaningfulBoundingBox(templateResult.boundingBox, imageDimensions.width, imageDimensions.height)) {
       if (onDebugInfo) {
         onDebugInfo({
           boundingBox: templateResult.boundingBox,
@@ -37,7 +74,7 @@ export class TesseractService {
 
     // Strategy 2: High contrast image analysis
     const contrastResult = await this.detectByContrast(image);
-    if (contrastResult.boundingBox) {
+    if (contrastResult.boundingBox && this.isMeaningfulBoundingBox(contrastResult.boundingBox, imageDimensions.width, imageDimensions.height)) {
       if (onDebugInfo) {
         onDebugInfo({
           boundingBox: contrastResult.boundingBox,
@@ -50,7 +87,7 @@ export class TesseractService {
 
     // Strategy 3: Optimized OCR detection
     const ocrResult = await this.detectWithOptimizedOCR(image);
-    if (ocrResult.boundingBox) {
+    if (ocrResult.boundingBox && this.isMeaningfulBoundingBox(ocrResult.boundingBox, imageDimensions.width, imageDimensions.height)) {
       if (onDebugInfo) {
         onDebugInfo({
           boundingBox: ocrResult.boundingBox,
@@ -68,7 +105,7 @@ export class TesseractService {
         boundingBox: defaultResult.boundingBox,
         blockLines: [],
         strategy: 'default',
-        error: 'No text regions detected, using default crop area'
+        error: 'No meaningful text regions detected, using default crop area'
       });
     }
     return { boundingBox: defaultResult.boundingBox, blockLines: [], strategy: 'default' };

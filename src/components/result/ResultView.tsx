@@ -10,10 +10,9 @@ interface ResultViewProps {
   isAnalyzing: boolean;
   error: string | null;
   onClose: () => void;
-  onRetry: () => void;
 }
 
-const ResultView: React.FC<ResultViewProps> = React.memo(({ analysis, isAnalyzing, error, onClose, onRetry }) => {
+const ResultView: React.FC<ResultViewProps> = React.memo(({ analysis, isAnalyzing, error, onClose }) => {
   const [showAnalysis, setShowAnalysis] = React.useState(true);
 
   const handleClose = () => {
@@ -51,8 +50,8 @@ const ResultView: React.FC<ResultViewProps> = React.memo(({ analysis, isAnalyzin
       }
       bottom={
         <div className="result-actions">
-          <button onClick={onRetry} className="retry-button" disabled={isAnalyzing}>
-            🔄 {t('retry')}
+          <button onClick={handleClose} className="retry-button" disabled={isAnalyzing}>
+            📷 Neuer Scan
           </button>
         </div>
       }

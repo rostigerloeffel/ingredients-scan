@@ -129,55 +129,7 @@ function App() {
     setView('scan');
   };
 
-  const handleRetryAnalysis = async () => {
-    if (!capturedImage) return;
-    
-    setIsAnalyzing(true);
-    setError(null);
-    setAnalysis(null);
-    
-    try {
-      // Base64-String ohne Präfix extrahieren
-      const base64Data = capturedImage.split(',')[1];
-      
-      const [ocrIngredients, aiResult] = await Promise.allSettled([
-        TesseractService.extractIngredients(base64Data, info => { setTesseractDebugInfo(info); }),
-        OpenAIService.analyzeIngredients(base64Data)
-      ]);
 
-      // Ergebnis verarbeiten
-      let finalResult: IngredientAnalysis;
-      
-      if (aiResult.status === 'fulfilled') {
-        // OpenAI-Analyse erfolgreich
-        finalResult = aiResult.value;
-        
-        // OCR-Ergebnisse hinzufügen, falls verfügbar
-        if (ocrIngredients.status === 'fulfilled' && ocrIngredients.value.length > 0) {
-          const combinedIngredients = Array.from(new Set([
-            ...finalResult.ingredients,
-            ...ocrIngredients.value
-          ]));
-          finalResult.ingredients = combinedIngredients;
-        }
-      } else {
-        // Nur OCR verfügbar
-        const ocrResult = ocrIngredients.status === 'fulfilled' ? ocrIngredients.value : [];
-        finalResult = {
-          ingredients: ocrResult,
-          allergens: [],
-          summary: 'Inhaltsstoffe durch Texterkennung erkannt'
-        };
-      }
-      
-      setAnalysis(finalResult);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Unbekannter Fehler');
-      setAnalysis(null);
-    } finally {
-      setIsAnalyzing(false);
-    }
-  };
 
   const handleShowLists = (tab: 'positive' | 'negative' = 'positive') => {
     setIngredientListsTab(tab);
@@ -273,7 +225,6 @@ function App() {
               isAnalyzing={isAnalyzing}
               error={error}
               onClose={handleResultClose}
-              onRetry={handleRetryAnalysis}
             />
           </Suspense>
         )}

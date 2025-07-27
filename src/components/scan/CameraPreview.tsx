@@ -54,9 +54,9 @@ const CameraPreviewInner = forwardRef<CameraPreviewHandle, CameraPreviewProps>((
           audio={false}
           videoConstraints={{
             deviceId: cameraId ? { exact: cameraId } : undefined,
-            width: { ideal: 4096, max: 9999 },
-            height: { ideal: 2160, max: 9999 },
-            facingMode: 'environment'
+            width: { ideal: 3840, min: 640, max: 4096 },
+            height: { ideal: 2160, min: 480, max: 2160 },
+            facingMode: 'user'
           }}
           screenshotFormat="image/jpeg"
           screenshotQuality={0.9}

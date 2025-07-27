@@ -1,7 +1,4 @@
-import { useState, useEffect } from 'react'
-import ScanView from './components/scan/ScanView';
-import PrepareView from './components/prepare/PrepareView';
-import ResultView from './components/result/ResultView';
+import { useState, useEffect, Suspense, lazy } from 'react'
 import ListsButtons from './components/ingredients/ListsButtons';
 import ApiKeyManager from './components/chatgpt/ApiKeyManager'
 import IngredientLists from './components/ingredients/IngredientLists'
@@ -13,7 +10,12 @@ import './components/scan/CameraPreview.css'
 import './components/chatgpt/ApiKeyManager.css'
 import DebugOverlay from './debug/DebugOverlay';
 import type { DebugInfo, TesseractDebugInfo } from './debug/DebugOverlay';
-import CameraPermissionInfo from './components/scan/CameraPermissionInfo';
+
+// Lazy load views
+const ScanView = lazy(() => import('./components/scan/ScanView'));
+const PrepareView = lazy(() => import('./components/prepare/PrepareView'));
+const ResultView = lazy(() => import('./components/result/ResultView'));
+const CameraPermissionInfo = lazy(() => import('./components/scan/CameraPermissionInfo'));
 
 type CroppingDebugInfo = { boundingBox?: { left: number, top: number, width: number, height: number }, blockLines?: any[], error?: string };
 
@@ -217,13 +219,27 @@ function App() {
       <main className="main-view">
         {view === 'scan' && (
           cameraPermission === 'granted' ? (
-            <ScanView
-              onCapture={handleCapture}
-              setDebugInfo={setDebugInfo}
-              cameraPermission={cameraPermission}
-            />
+            <Suspense fallback={
+              <div className="loading-view">
+                <div className="loading-spinner"></div>
+                <p>Lade Scanner...</p>
+              </div>
+            }>
+              <ScanView
+                onCapture={handleCapture}
+                setDebugInfo={setDebugInfo}
+                cameraPermission={cameraPermission}
+              />
+            </Suspense>
           ) : cameraPermission === 'denied' ? (
-            <CameraPermissionInfo />
+            <Suspense fallback={
+              <div className="loading-view">
+                <div className="loading-spinner"></div>
+                <p>Lade Kamera-Info...</p>
+              </div>
+            }>
+              <CameraPermissionInfo />
+            </Suspense>
           ) : (
             <div className="camera-permission-waiting">
               <p>⏳ Kamera-Berechtigung wird angefragt...</p>
@@ -231,21 +247,35 @@ function App() {
           )
         )}
         {view === 'prepare' && capturedImage && (
-          <PrepareView
-            image={capturedImage}
-            onCropDone={handleCropDone}
-            onDebugInfo={setCroppingDebugInfo}
-          />
+          <Suspense fallback={
+            <div className="loading-view">
+              <div className="loading-spinner"></div>
+              <p>Lade Bildbearbeitung...</p>
+            </div>
+          }>
+            <PrepareView
+              image={capturedImage}
+              onCropDone={handleCropDone}
+              onDebugInfo={setCroppingDebugInfo}
+            />
+          </Suspense>
         )}
         {view === 'result' && capturedImage && (
-          <ResultView
-            capturedImage={capturedImage}
-            analysis={analysis}
-            isAnalyzing={isAnalyzing}
-            error={error}
-            onClose={handleResultClose}
-            onRetry={handleRetryAnalysis}
-          />
+          <Suspense fallback={
+            <div className="loading-view">
+              <div className="loading-spinner"></div>
+              <p>Lade Ergebnisse...</p>
+            </div>
+          }>
+            <ResultView
+              capturedImage={capturedImage}
+              analysis={analysis}
+              isAnalyzing={isAnalyzing}
+              error={error}
+              onClose={handleResultClose}
+              onRetry={handleRetryAnalysis}
+            />
+          </Suspense>
         )}
       </main>
       <DebugOverlay debugInfo={debugInfo} tesseractInfo={tesseractDebugInfo} />

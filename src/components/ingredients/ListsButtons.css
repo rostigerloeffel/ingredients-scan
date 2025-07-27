@@ -62,12 +62,15 @@
 
 @media (max-width: 480px) {
   .lists-buttons {
-    gap: 8px;
+    gap: 6px;
     margin-bottom: 0.2rem;
-    flex-direction: column;
+    flex-direction: row;
+    padding: 0 8px;
   }
   .lists-button {
-    padding: 10px 12px;
-    font-size: 0.95rem;
+    padding: 8px 10px;
+    font-size: 0.9rem;
+    min-width: 0;
+    flex: 1 1 0;
   }
 } 

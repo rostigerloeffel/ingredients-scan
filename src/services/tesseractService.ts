@@ -72,20 +72,7 @@ export class TesseractService {
       return { ...templateResult, strategy: 'template' };
     }
 
-    // Strategy 2: High contrast image analysis
-    const contrastResult = await this.detectByContrast(image);
-    if (contrastResult.boundingBox && this.isMeaningfulBoundingBox(contrastResult.boundingBox, imageDimensions.width, imageDimensions.height)) {
-      if (onDebugInfo) {
-        onDebugInfo({
-          boundingBox: contrastResult.boundingBox,
-          blockLines: contrastResult.blockLines,
-          strategy: 'contrast'
-        });
-      }
-      return { ...contrastResult, strategy: 'contrast' };
-    }
-
-    // Strategy 3: Optimized OCR detection
+    // Strategy 2: Optimized OCR detection
     const ocrResult = await this.detectWithOptimizedOCR(image);
     if (ocrResult.boundingBox && this.isMeaningfulBoundingBox(ocrResult.boundingBox, imageDimensions.width, imageDimensions.height)) {
       if (onDebugInfo) {
@@ -96,6 +83,19 @@ export class TesseractService {
         });
       }
       return { ...ocrResult, strategy: 'ocr' };
+    }
+
+    // Strategy 3: High contrast image analysis
+    const contrastResult = await this.detectByContrast(image);
+    if (contrastResult.boundingBox && this.isMeaningfulBoundingBox(contrastResult.boundingBox, imageDimensions.width, imageDimensions.height)) {
+      if (onDebugInfo) {
+        onDebugInfo({
+          boundingBox: contrastResult.boundingBox,
+          blockLines: contrastResult.blockLines,
+          strategy: 'contrast'
+        });
+      }
+      return { ...contrastResult, strategy: 'contrast' };
     }
 
     // Fallback: User-friendly default crops

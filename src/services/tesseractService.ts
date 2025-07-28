@@ -7,7 +7,7 @@ function getFuseInstance(): Fuse<string> {
   if (!fuseInstance) {
     fuseInstance = new Fuse(inciNames, {
       includeScore: true,
-      threshold: 0.35, // adjust according to desired tolerance
+      threshold: 0.70, // adjust according to desired tolerance
     });
   }
   return fuseInstance;

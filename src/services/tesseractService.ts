@@ -164,6 +164,54 @@ export class TesseractService {
   }
 
   /**
+   * Merge overlapping regions to create larger, more meaningful bounding boxes
+   */
+  private static mergeOverlappingRegions(regions: { x: number, y: number, width: number, height: number }[]): { x: number, y: number, width: number, height: number }[] {
+    if (regions.length === 0) return [];
+    
+    const merged: { x: number, y: number, width: number, height: number }[] = [];
+    const used = new Set<number>();
+    
+    for (let i = 0; i < regions.length; i++) {
+      if (used.has(i)) continue;
+      
+      let currentRegion = { ...regions[i] };
+      used.add(i);
+      
+      // Find all overlapping regions
+      for (let j = i + 1; j < regions.length; j++) {
+        if (used.has(j)) continue;
+        
+        const otherRegion = regions[j];
+        
+        // Check if regions overlap
+        const overlapX = !(currentRegion.x + currentRegion.width < otherRegion.x || otherRegion.x + otherRegion.width < currentRegion.x);
+        const overlapY = !(currentRegion.y + currentRegion.height < otherRegion.y || otherRegion.y + otherRegion.height < currentRegion.y);
+        
+        if (overlapX && overlapY) {
+          // Merge regions
+          const minX = Math.min(currentRegion.x, otherRegion.x);
+          const minY = Math.min(currentRegion.y, otherRegion.y);
+          const maxX = Math.max(currentRegion.x + currentRegion.width, otherRegion.x + otherRegion.width);
+          const maxY = Math.max(currentRegion.y + currentRegion.height, otherRegion.y + otherRegion.height);
+          
+          currentRegion = {
+            x: minX,
+            y: minY,
+            width: maxX - minX,
+            height: maxY - minY
+          };
+          used.add(j);
+        }
+      }
+      
+      merged.push(currentRegion);
+    }
+    
+    return merged;
+  }
+
+  /**
    * Contrast-based detection for high contrast images
    */
   private static async detectByContrast(image: string): Promise<{ boundingBox?: { left: number, top: number, width: number, height: number }, blockLines: any[] }> {
@@ -180,21 +228,22 @@ export class TesseractService {
         const data = imageData.data;
         
         // Calculate contrast and find text regions
-        const contrastThreshold = 50;
+        const contrastThreshold = 30; // Lower threshold for more sensitive detection
         const textRegions: { x: number, y: number, width: number, height: number }[] = [];
         
-        // Simple edge detection and contrast analysis
-        for (let y = 0; y < canvas.height; y += 10) {
-          for (let x = 0; x < canvas.width; x += 10) {
+        // More detailed edge detection and contrast analysis
+        const stepSize = 5; // Smaller step size for more precise detection
+        for (let y = 0; y < canvas.height; y += stepSize) {
+          for (let x = 0; x < canvas.width; x += stepSize) {
             const idx = (y * canvas.width + x) * 4;
             const r = data[idx];
             const g = data[idx + 1];
             const b = data[idx + 2];
             
-            // Calculate local contrast
+            // Calculate local contrast with larger neighborhood
             let maxDiff = 0;
-            for (let dy = -5; dy <= 5; dy++) {
-              for (let dx = -5; dx <= 5; dx++) {
+            for (let dy = -10; dy <= 10; dy++) {
+              for (let dx = -10; dx <= 10; dx++) {
                 const nx = x + dx;
                 const ny = y + dy;
                 if (nx >= 0 && nx < canvas.width && ny >= 0 && ny < canvas.height) {
@@ -206,24 +255,35 @@ export class TesseractService {
             }
             
             if (maxDiff > contrastThreshold) {
-              textRegions.push({ x, y, width: 10, height: 10 });
+              // Create larger regions to avoid fragmentation
+              textRegions.push({ x: Math.max(0, x - 10), y: Math.max(0, y - 10), width: 20, height: 20 });
             }
           }
         }
         
         if (textRegions.length > 0) {
-          // Calculate bounding box from text regions
-          const minX = Math.min(...textRegions.map(r => r.x));
-          const minY = Math.min(...textRegions.map(r => r.y));
-          const maxX = Math.max(...textRegions.map(r => r.x + r.width));
-          const maxY = Math.max(...textRegions.map(r => r.y + r.height));
+          // Merge overlapping regions to create larger, more meaningful bounding boxes
+          const mergedRegions = this.mergeOverlappingRegions(textRegions);
+          
+          // Calculate bounding box from merged regions
+          const minX = Math.min(...mergedRegions.map(r => r.x));
+          const minY = Math.min(...mergedRegions.map(r => r.y));
+          const maxX = Math.max(...mergedRegions.map(r => r.x + r.width));
+          const maxY = Math.max(...mergedRegions.map(r => r.y + r.height));
+          
+          // Ensure the bounding box covers a reasonable area
+          const minWidth = canvas.width * 0.3; // At least 30% of image width
+          const minHeight = canvas.height * 0.2; // At least 20% of image height
+          
+          const finalWidth = Math.max(maxX - minX, minWidth);
+          const finalHeight = Math.max(maxY - minY, minHeight);
           
           resolve({
             boundingBox: {
-              left: minX,
-              top: minY,
-              width: maxX - minX,
-              height: maxY - minY
+              left: Math.max(0, minX - canvas.width * 0.05), // Add 5% margin
+              top: Math.max(0, minY - canvas.height * 0.05),
+              width: Math.min(finalWidth + canvas.width * 0.1, canvas.width), // Add 10% margin
+              height: Math.min(finalHeight + canvas.height * 0.1, canvas.height)
             },
             blockLines: []
           });

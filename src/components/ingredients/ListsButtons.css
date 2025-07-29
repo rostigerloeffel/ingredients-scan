@@ -23,9 +23,7 @@
   flex: 1 1 0;
   box-shadow: 0 2px 8px rgba(0,0,0,0.10);
   text-align: center;
-  white-space: normal;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
+  white-space: nowrap;
   margin: 0;
   width: 100%;
 }

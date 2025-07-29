@@ -389,14 +389,37 @@
   font-weight: 500;
   font-size: 15px;
   color: #fff;
-  background: none;
-  border: none;
+  background: #2a2a2a;
+  border: 1px solid #444;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: background 0.2s, border 0.2s;
+}
+.tolerant-chip:hover {
+  background: #353535;
+  border-color: #555;
 }
 .tolerant-chip:focus {
   outline: 2px solid #4ecdc4;
   outline-offset: 2px;
+}
+
+.intolerant-chip {
+  padding: 6px 14px;
+  border-radius: 16px;
+  margin: 4px;
+  display: inline-flex;
+  align-items: center;
+  font-weight: 500;
+  font-size: 15px;
+  color: #fff;
+  background: #3a2323;
+  border: 1px solid #ff6b6b;
+  cursor: default;
+  transition: background 0.2s, border 0.2s;
+}
+.intolerant-chip:hover {
+  background: #4a2a2a;
+  border-color: #ff7b7b;
 }
 
 /* Mobile Optimierung */
